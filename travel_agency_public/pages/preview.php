@@ -6,6 +6,20 @@
 require_once 'config/app.php';
 require_once 'config/config_functions.php';
 
+// Verificar acceso público
+$is_public = isset($_GET['public']) && $_GET['public'] == '1';
+
+if (!$is_public) {
+    // Acceso normal - verificar login
+    if (!App::isLoggedIn()) {
+        header('Location: ' . APP_URL . '/login');
+        exit;
+    }
+} else {
+    // Acceso público - limpiar sesión temporal
+    unset($_SESSION['temp_public_access']);
+}
+
 // Obtener ID del programa y generar token único
 $programa_id = $_GET['id'] ?? null;
 $token = $_GET['token'] ?? null;
@@ -91,6 +105,18 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($titulo_programa) ?> - Vista Previa</title>
+
+    <!-- Google Translate -->
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: '<?= $programa['idioma_predeterminado'] ?? 'es' ?>',
+            includedLanguages: 'en,fr,pt,it,de,es',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false
+        }, 'google_translate_element');
+    }
+</script>
     
     <!-- Meta tags para compartir en redes sociales -->
     <meta property="og:title" content="<?= htmlspecialchars($titulo_programa) ?>">
@@ -226,6 +252,147 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             font-size: 16px;
             color: #3b82f6;
         }
+
+        /* ===== SELECTOR DE IDIOMA ELEGANTE ===== */
+.translate-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+#google_translate_element {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    padding: 10px 15px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transition: all 0.3s ease;
+}
+
+#google_translate_element:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+
+.goog-te-gadget-icon {
+    display: none !important;
+}
+
+.goog-te-gadget-simple {
+    background: transparent !important;
+    border: none !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+.VIpgJd-ZVi9od-xl07Ob-lTBxed {
+    background: transparent !important;
+    border: none !important;
+    color: #2c3e50 !important;
+    text-decoration: none !important;
+    font-family: inherit !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.VIpgJd-ZVi9od-xl07Ob-lTBxed:hover {
+    background: rgba(52, 152, 219, 0.1) !important;
+    color: #3498db !important;
+}
+
+.VIpgJd-ZVi9od-xl07Ob-lTBxed img {
+    display: none !important;
+}
+
+.VIpgJd-ZVi9od-xl07Ob-lTBxed span[style*="border-left"] {
+    display: none !important;
+}
+
+.VIpgJd-ZVi9od-xl07Ob-lTBxed span[aria-hidden="true"] {
+    color: #6b7280 !important;
+    font-size: 12px !important;
+    margin-left: 6px !important;
+    transition: all 0.2s ease !important;
+}
+
+.VIpgJd-ZVi9od-xl07Ob-lTBxed:hover span[aria-hidden="true"] {
+    color: #3498db !important;
+    transform: translateY(1px) !important;
+}
+
+.goog-te-menu-frame {
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15) !important;
+    backdrop-filter: blur(10px) !important;
+    overflow: hidden !important;
+    margin-top: 5px !important;
+}
+
+.goog-te-menu2 {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border: none !important;
+    padding: 8px 0 !important;
+}
+
+.goog-te-menu2-item {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #374151 !important;
+    padding: 12px 18px !important;
+    transition: all 0.15s ease !important;
+    cursor: pointer !important;
+    border: none !important;
+    margin: 0 8px !important;
+    border-radius: 8px !important;
+}
+
+.goog-te-menu2-item:hover {
+    background: rgba(52, 152, 219, 0.1) !important;
+    color: #3498db !important;
+    transform: translateX(3px) !important;
+}
+
+.goog-te-menu2-item-selected {
+    background: #3498db !important;
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+.goog-te-banner-frame.skiptranslate { 
+    display: none !important; 
+}
+
+body { 
+    top: 0px !important; 
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .translate-container {
+        top: 15px;
+        right: 15px;
+    }
+    
+    #google_translate_element {
+        padding: 8px 12px;
+    }
+    
+    .VIpgJd-ZVi9od-xl07Ob-lTBxed {
+        font-size: 13px !important;
+        padding: 5px 10px !important;
+    }
+}
         
         /* ========================================
            CONTENIDO DEL PROGRAMA
@@ -433,30 +600,46 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
         }
         
         /* Botón para ver itinerario completo */
-        .itinerary-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 18px 35px;
-            font-size: 16px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            margin-top: 15px;
-            opacity: 0;
-            animation: fadeInUp 1s ease-out 1.5s forwards;
-        }
+        /* Botón para ver itinerario completo - Diseño plano */
+.itinerary-button {
+    background: #374151;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 16px 32px;
+    font-size: 15px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(55, 65, 81, 0.15);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: 15px;
+    opacity: 0;
+    animation: fadeInUp 1s ease-out 1.5s forwards;
+}
+
+.itinerary-button:hover {
+    background: #4b5563;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(55, 65, 81, 0.25);
+}
+
+.itinerary-button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 5px rgba(55, 65, 81, 0.2);
+}
+
+.itinerary-button i {
+    font-size: 16px;
+}
         
         .itinerary-button::before {
             content: '';
@@ -650,6 +833,10 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
 </head>
 
 <body>
+
+<div class="translate-container">
+        <div id="google_translate_element"></div>
+    </div>
     <!-- Fondo con imagen y efecto zoom -->
     <div class="hero-background"></div>
     <div class="hero-overlay"></div>
@@ -776,13 +963,26 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
         
         // Nueva función para ver el itinerario completo
         function verItinerarioCompleto() {
+            // Verificar si es acceso público
+            const isPublic = new URLSearchParams(window.location.search).get('public') === '1';
+            const programaId = '<?= $programa_id ?>';
+            
             // Agregar efecto de clic
             const button = document.querySelector('.itinerary-button');
             button.style.transform = 'scale(0.95)';
             
             setTimeout(() => {
-                // Abrir itinerario completo en nueva pestaña para mejor experiencia
-                window.open('<?= APP_URL ?>/itinerary?id=<?= $programa_id ?>', '_blank');
+                if (isPublic) {
+                    // Si es público, generar enlace de compartir para itinerary
+                    const timestamp = Date.now();
+                    const tokenData = `${programaId}_${timestamp}`;
+                    const token = btoa(tokenData);
+                    const itineraryUrl = `<?= APP_URL ?>/share?t=${token}&type=itinerary`;
+                    window.location.href = itineraryUrl;
+                } else {
+                    // Si es acceso normal, abrir directamente
+                    window.open(`<?= APP_URL ?>/itinerary?id=${programaId}`, '_blank');
+                }
             }, 150);
         }
         
@@ -855,25 +1055,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             return window.innerWidth <= 768;
         }
         
-        // Efectos hover para el nuevo botón
         document.addEventListener('DOMContentLoaded', function() {
-            const itineraryBtn = document.querySelector('.itinerary-button');
-            
-            if (itineraryBtn) {
-                // Efecto hover
-                itineraryBtn.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-3px)';
-                    this.style.boxShadow = '0 12px 35px rgba(102, 126, 234, 0.4)';
-                    this.style.background = 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)';
-                });
-                
-                itineraryBtn.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                    this.style.boxShadow = '0 8px 25px rgba(102, 126, 234, 0.3)';
-                    this.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-                });
-            }
-            
             // Precargar imagen de fondo si no está cargada
             const img = new Image();
             img.src = '<?= addslashes($imagen_portada) ?>';
@@ -883,6 +1065,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                 document.body.classList.add('loaded');
             });
         });
+        
         
         console.log('🌟 Vista previa del programa cargada exitosamente');
         console.log('📍 Destino: <?= addslashes($destino) ?>');
@@ -950,5 +1133,51 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             }
         }
     </style>
+    <?php if ($is_public_access): ?>
+<script>
+// Limpiar sesión pública cuando se cierre la ventana
+window.addEventListener('beforeunload', function() {
+    fetch('<?= APP_URL ?>/api/clear_public_session.php');
+});
+</script>
+<?php 
+// Limpiar sesión después de mostrar la página
+unset($_SESSION['public_programa_id']);
+unset($_SESSION['is_public_access']);
+endif; 
+?>
+<script>
+// JavaScript para Google Translate
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-aplicar idioma guardado
+    setTimeout(() => {
+        const savedLang = sessionStorage.getItem('language') || 
+                         localStorage.getItem('preferredLanguage') || 
+                         '<?= $programa['idioma_predeterminado'] ?? 'es' ?>';
+        
+        if (savedLang && savedLang !== '<?= $programa['idioma_predeterminado'] ?? 'es' ?>') {
+            const select = document.querySelector('.goog-te-combo');
+            if (select) {
+                select.value = savedLang;
+                select.dispatchEvent(new Event('change'));
+            }
+        }
+    }, 1000);
+
+    // Guardar idioma seleccionado
+    setTimeout(function() {
+        const select = document.querySelector('.goog-te-combo');
+        if (select) {
+            select.addEventListener('change', function() {
+                if (this.value) {
+                    sessionStorage.setItem('language', this.value);
+                    localStorage.setItem('preferredLanguage', this.value);
+                }
+            });
+        }
+    }, 2000);
+});
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

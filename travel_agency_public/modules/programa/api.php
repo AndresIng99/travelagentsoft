@@ -59,6 +59,7 @@ class ProgramaAPI {
                 case 'delete_programa_admin':
                     $result = $this->deleteProgramaAdmin();
                     break;
+               
                 default:
                     throw new Exception('Acción no válida: ' . $action);
             }
@@ -293,7 +294,9 @@ private function eliminarProgramaPrincipal($programa_id) {
             'fecha_salida' => $original['fecha_salida'],
             'numero_pasajeros' => $original['numero_pasajeros'],
             'acompanamiento' => $original['acompanamiento'],
-            'user_id' => $user_id
+            'user_id' => $user_id,
+            'preview_token' => bin2hex(random_bytes(16)),    // ← Nuevo token preview
+            'itinerary_token' => bin2hex(random_bytes(16))   // ← Nuevo token itinerary
         ];
         
         $nuevo_programa_id = $this->db->insert('programa_solicitudes', $nuevo_programa_data);
@@ -364,6 +367,7 @@ private function duplicarDias($programa_original_id, $nuevo_programa_id) {
                 'titulo' => $dia_original['titulo'],
                 'descripcion' => $dia_original['descripcion'],
                 'ubicacion' => $dia_original['ubicacion'],
+                'duracion_estancia' => $dia_original['duracion_estancia'] ?? 1, // ← AGREGAR
                 'fecha_dia' => $dia_original['fecha_dia'],
                 'imagen1' => $dia_original['imagen1'],
                 'imagen2' => $dia_original['imagen2'],
@@ -596,7 +600,9 @@ private function duplicarPrecios($programa_original_id, $nuevo_programa_id) {
                 'fecha_salida' => $_POST['departure_date'] ?? null,
                 'numero_pasajeros' => intval($_POST['passengers'] ?? 1),
                 'acompanamiento' => trim($_POST['accompaniment'] ?? 'sin-acompanamiento'),
-                'user_id' => $user_id
+                'user_id' => $user_id,
+                'preview_token' => bin2hex(random_bytes(16)),    // ← Token para preview
+                'itinerary_token' => bin2hex(random_bytes(16))   // ← Token para itinerary
             ];
             
             error_log("📝 Insertando programa con datos: " . print_r($data, true));
@@ -974,6 +980,8 @@ private function duplicarPrecios($programa_original_id, $nuevo_programa_id) {
         }
     }
     
+
+
     private function sendError($message) {
         ob_clean();
         header('Content-Type: application/json; charset=utf-8');

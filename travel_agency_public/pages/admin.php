@@ -87,6 +87,39 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
             transform: scale(1.05);
         }
 
+        /* Ayuda de contraseña */
+        .password-help {
+            margin-top: 8px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #e2e8f0;
+        }
+
+        .password-requirement {
+            font-size: 12px;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+        }
+
+        .password-requirement.valid {
+            color: #059669;
+        }
+
+        .password-requirement.invalid {
+            color: #dc2626;
+        }
+
+        .password-requirement.valid::before {
+            content: "✓";
+            margin-right: 5px;
+        }
+
+        .password-requirement.invalid::before {
+            content: "✗";
+            margin-right: 5px;
+        }
+
         .back-btn {
             background: rgba(255, 255, 255, 0.2);
             color: white;
@@ -140,15 +173,180 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         }
 
         /* Google Translate mejorado */
-        #google_translate_element {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 8px 15px;
-            border-radius: 25px;
-            backdrop-filter: blur(10px);
+        /* Google Translate en la esquina */
+        /* ===== MEJORAR EL SELECTOR DE GOOGLE TRANSLATE ===== */
+
+        /* Contenedor principal */
+        .translate-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
         }
 
-        .goog-te-banner-frame.skiptranslate { display: none !important; }
-        body { top: 0px !important; }
+        /* Caja del widget */
+        #google_translate_element {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            padding: 8px 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        #google_translate_element:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Ocultar el icono de Google */
+        .goog-te-gadget-icon {
+            display: none !important;
+        }
+
+        /* Contenedor del gadget */
+        .goog-te-gadget-simple {
+            background: transparent !important;
+            border: none !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        /* El enlace principal */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed {
+            background: transparent !important;
+            border: none !important;
+            color: #2d3748 !important;
+            text-decoration: none !important;
+            font-family: inherit !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            padding: 4px 8px !important;
+            border-radius: 6px !important;
+            transition: all 0.2s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+        }
+
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed:hover {
+            background: rgba(102, 126, 234, 0.1) !important;
+            color: #667eea !important;
+        }
+
+        /* El texto "Seleccionar idioma" */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed span:first-child {
+            color: inherit !important;
+            font-weight: inherit !important;
+        }
+
+        /* Ocultar las imágenes separadoras */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed img {
+            display: none !important;
+        }
+
+        /* Ocultar el separador */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed span[style*="border-left"] {
+            display: none !important;
+        }
+
+        /* Mejorar la flecha */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed span[aria-hidden="true"] {
+            color: #6b7280 !important;
+            font-size: 12px !important;
+            margin-left: 4px !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed:hover span[aria-hidden="true"] {
+            color: #667eea !important;
+            transform: translateY(1px) !important;
+        }
+
+        /* Menú desplegable cuando aparece */
+        .goog-te-menu-frame {
+            border: none !important;
+            border-radius: 10px !important;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15) !important;
+            backdrop-filter: blur(10px) !important;
+            overflow: hidden !important;
+            margin-top: 4px !important;
+        }
+
+        .goog-te-menu2 {
+            background: rgba(255, 255, 255, 0.98) !important;
+            border: none !important;
+            padding: 8px 0 !important;
+        }
+
+        /* Items de la lista */
+        .goog-te-menu2-item {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            color: #374151 !important;
+            padding: 10px 16px !important;
+            transition: all 0.15s ease !important;
+            cursor: pointer !important;
+            border: none !important;
+            margin: 0 6px !important;
+            border-radius: 6px !important;
+        }
+
+        .goog-te-menu2-item:hover {
+            background: rgba(102, 126, 234, 0.1) !important;
+            color: #667eea !important;
+            transform: translateX(2px) !important;
+        }
+
+        .goog-te-menu2-item:active {
+            transform: translateX(2px) scale(0.98) !important;
+        }
+
+        .goog-te-menu2-item-selected {
+            background: #667eea !important;
+            color: white !important;
+            font-weight: 600 !important;
+        }
+
+        /* Ocultar banner azul */
+        .goog-te-banner-frame.skiptranslate { 
+            display: none !important; 
+        }
+
+        body { 
+            top: 0px !important; 
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .translate-container {
+                top: 10px;
+                right: 10px;
+            }
+            
+            #google_translate_element {
+                padding: 6px 10px;
+            }
+            
+            .VIpgJd-ZVi9od-xl07Ob-lTBxed {
+                font-size: 12px !important;
+                padding: 3px 6px !important;
+            }
+            
+            .goog-te-menu2-item {
+                font-size: 12px !important;
+                padding: 8px 14px !important;
+            }
+        }
+        
+        .goog-te-gadget img {
+            vertical-align: middle;
+            border: none;
+            display: none;
+        }
 
         /* Main Content mejorado */
         .main-content {
@@ -478,7 +676,38 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
             color: #2d3748;
             font-size: 16px; /* MÁS GRANDE */
         }
+        /* Contenedor de contraseña con botón */
+        .password-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
 
+        .password-input-container input {
+            padding-right: 50px !important; /* Espacio para el botón */
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .password-toggle:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: scale(1.1);
+        }
+
+        .password-toggle:active {
+            transform: scale(0.95);
+        }
         .form-group input,
         .form-group select {
             padding: 16px 20px; /* MÁS PADDING */
@@ -828,7 +1057,19 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
 
                 <div class="form-group" id="passwordGroup">
                     <label for="password">🔒 Contraseña *</label>
-                    <input type="password" id="password" name="password" placeholder="Mínimo 6 caracteres" minlength="6">
+                    <div class="password-input-container">
+                        <input type="password" id="password" name="password" placeholder="8+ caracteres, mayúscula, minúscula, número y carácter especial" minlength="8">
+                        <button type="button" class="password-toggle" id="passwordToggle" onclick="togglePassword()">
+                            👁️
+                        </button>
+                    </div>
+                    <div id="passwordHelp" class="password-help">
+                            <div class="password-requirement" id="req-length">✗ Mínimo 8 caracteres</div>
+                            <div class="password-requirement" id="req-upper">✗ Una letra mayúscula (A-Z)</div>
+                            <div class="password-requirement" id="req-lower">✗ Una letra minúscula (a-z)</div>
+                            <div class="password-requirement" id="req-number">✗ Un número (0-9)</div>
+                            <div class="password-requirement" id="req-special">✗ Un carácter especial (!@#$%^&*)</div>
+                        </div>
                 </div>
 
                 <div class="form-group">
@@ -865,6 +1106,28 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         loadUsers();
         initializeGoogleTranslate();
     });
+
+    // Validación de contraseña en tiempo real
+        document.getElementById('password').addEventListener('input', function(e) {
+            validatePasswordRealTime(e.target.value);
+        });
+
+        function validatePasswordRealTime(password) {
+            const requirements = {
+                'req-length': password.length >= 8,
+                'req-upper': /[A-Z]/.test(password),
+                'req-lower': /[a-z]/.test(password),
+                'req-number': /[0-9]/.test(password),
+                'req-special': /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+            
+            Object.keys(requirements).forEach(reqId => {
+                const element = document.getElementById(reqId);
+                if (element) {
+                    element.className = requirements[reqId] ? 'password-requirement valid' : 'password-requirement invalid';
+                }
+            });
+        }
 
     // Funciones de sidebar
     function toggleSidebar() {
@@ -1182,10 +1445,17 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         }
     });
 
-    // Toggle status del usuario
+  
+    // Toggle status del usuario - VERSIÓN CORREGIDA
     async function toggleUserStatus(id) {
-        const user = users.find(u => u.id === id);
-        if (!user) return;
+        console.log('Toggleando usuario ID:', id);
+        
+        const user = users.find(u => u.id == id); // Usar == en lugar de ===
+        if (!user) {
+            console.error('Usuario no encontrado con ID:', id);
+            showToast('Usuario no encontrado', 'error');
+            return;
+        }
 
         const action = user.active ? 'desactivar' : 'activar';
         if (!confirm(`¿Estás seguro de que quieres ${action} este usuario?`)) {
@@ -1193,24 +1463,33 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         }
 
         try {
+            console.log('Enviando toggle para usuario:', user.username, 'Estado actual:', user.active);
+            
             const formData = new FormData();
             formData.append('action', 'toggle_user');
             formData.append('id', id);
+
+            console.log('FormData enviada:', Object.fromEntries(formData.entries()));
 
             const response = await fetch(`${APP_URL}/admin/api`, {
                 method: 'POST',
                 body: formData
             });
 
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
             const data = await response.json();
+            console.log('Respuesta de la API:', data);
 
             if (!data.success) {
                 throw new Error(data.error || 'Error al cambiar estado del usuario');
             }
 
             showToast(data.message, 'success');
-            await loadUsers();
-            await loadStatistics();
+            await loadUsers(); // Recargar la lista de usuarios
+            await loadStatistics(); // Actualizar estadísticas
 
         } catch (error) {
             console.error('Error al cambiar estado:', error);
@@ -1302,6 +1581,22 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         }, 2000);
     }
 
+    // Función para mostrar/ocultar contraseña
+    function togglePassword() {
+        const passwordField = document.getElementById('password');
+        const toggleButton = document.getElementById('passwordToggle');
+        
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleButton.innerHTML = '🙈'; // Ojo cerrado
+            toggleButton.title = 'Ocultar contraseña';
+        } else {
+            passwordField.type = 'password';
+            toggleButton.innerHTML = '👁️'; // Ojo abierto
+            toggleButton.title = 'Mostrar contraseña';
+        }
+    }
+    
     // Cerrar modal al hacer clic fuera
     document.getElementById('userModal').addEventListener('click', function(e) {
         if (e.target === this) {

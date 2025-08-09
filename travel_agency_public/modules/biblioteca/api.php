@@ -318,41 +318,62 @@ class BibliotecaAPI {
     }
     
     private function uploadImage($file, $type, $resourceId, $field) {
-        // Validar archivo
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        if (!in_array($file['type'], $allowedTypes)) {
-            throw new Exception('Tipo de archivo no permitido');
-        }
-        
-        if ($file['size'] > 5 * 1024 * 1024) {
-            throw new Exception('Archivo demasiado grande (máx 5MB)');
-        }
-        
-        // Crear directorio
-        $baseDir = $_SERVER['DOCUMENT_ROOT'] . '/assets/uploads/biblioteca/';
-        $yearMonth = date('Y/m');
-        $typeDir = $baseDir . $type . '/' . $yearMonth . '/';
-        
-        if (!is_dir($typeDir)) {
-            if (!mkdir($typeDir, 0755, true)) {
-                throw new Exception('No se pudo crear directorio');
+        try {
+            error_log("=== UPLOADING IMAGE ===");
+            error_log("File: " . print_r($file, true));
+            error_log("Type: $type, ResourceId: $resourceId, Field: $field");
+            
+            // Validar archivo
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!in_array($file['type'], $allowedTypes)) {
+                throw new Exception('Tipo de archivo no permitido: ' . $file['type']);
             }
+            
+            if ($file['size'] > 10 * 1024 * 1024) { // 10MB máximo
+                throw new Exception('Archivo demasiado grande (máx 10MB)');
+            }
+            
+            // Crear directorio con ruta correcta
+            $uploadsBase = dirname(__DIR__, 2) . '/assets/uploads/biblioteca/';
+            $yearMonth = date('Y/m');
+            $fullDir = $uploadsBase . $type . '/' . $yearMonth . '/';
+            
+            error_log("Creating directory: " . $fullDir);
+            
+            if (!is_dir($fullDir)) {
+                if (!mkdir($fullDir, 0755, true)) {
+                    throw new Exception('No se pudo crear directorio: ' . $fullDir);
+                }
+            }
+            
+            // Generar nombre único
+            $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $fileName = $type . '_' . $resourceId . '_' . $field . '_' . time() . '.' . $extension;
+            $filePath = $fullDir . $fileName;
+            
+            error_log("Moving file to: " . $filePath);
+            
+            // Mover archivo
+            if (!move_uploaded_file($file['tmp_name'], $filePath)) {
+                throw new Exception('Error moviendo archivo a: ' . $filePath);
+            }
+            
+            // Verificar que el archivo se creó
+            if (!file_exists($filePath)) {
+                throw new Exception('El archivo no se creó correctamente');
+            }
+            
+            // Generar URL relativa al dominio
+            $url = APP_URL . '/assets/uploads/biblioteca/' . $type . '/' . $yearMonth . '/' . $fileName;
+            
+            error_log("Image uploaded successfully: " . $url);
+            
+            return $url;
+            
+        } catch (Exception $e) {
+            error_log("Upload error: " . $e->getMessage());
+            throw $e;
         }
-        
-        // Generar nombre
-        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $fileName = $type . '_' . $resourceId . '_' . $field . '_' . time() . '.' . $extension;
-        $filePath = $typeDir . $fileName;
-        
-        // Mover archivo
-        if (!move_uploaded_file($file['tmp_name'], $filePath)) {
-            throw new Exception('Error moviendo archivo');
-        }
-        
-        // Generar URL
-        $url = APP_URL . '/assets/uploads/biblioteca/' . $type . '/' . $yearMonth . '/' . $fileName;
-        
-        return $url;
     }
     
     // ✅ FUNCIONES FALTANTES QUE NECESITAS AGREGAR:
@@ -377,11 +398,10 @@ class BibliotecaAPI {
                     'descripcion' => trim($postData['descripcion'] ?? ''),
                     'ubicacion' => trim($postData['ubicacion'] ?? ''),
                     'tipo' => $postData['tipo'] ?? 'hotel',
-                    'categoria' => (int)($postData['categoria'] ?? 3),
+                    'categoria' => !empty($postData['categoria']) ? (int)$postData['categoria'] : null,
                     'latitud' => !empty($postData['latitud']) ? (float)$postData['latitud'] : null,
                     'longitud' => !empty($postData['longitud']) ? (float)$postData['longitud'] : null,
-                    'website' => trim($postData['website'] ?? ''),
-                    'incluye_desayuno' => isset($postData['incluye_desayuno']) ? 1 : 0
+                    'sitio_web' => trim($postData['sitio_web'] ?? '')
                 ];
                 break;
                 
@@ -429,6 +449,25 @@ class BibliotecaAPI {
                 if (empty($data['nombre'])) {
                     throw new Exception('El nombre es obligatorio');
                 }
+                if (empty($data['descripcion'])) {
+                    throw new Exception('La descripción es obligatoria');
+                }
+                if (empty($data['tipo'])) {
+                    throw new Exception('El tipo es obligatorio');
+                }
+                
+                // Validar tipo
+                $tiposValidos = ['hotel','camping','casa_huespedes','crucero','lodge','atipico','campamento','camping_car','tren'];
+                if (!in_array($data['tipo'], $tiposValidos)) {
+                    throw new Exception('Tipo de alojamiento no válido');
+                }
+                
+                // Validar categoría si es hotel
+                if ($data['tipo'] === 'hotel' && !empty($data['categoria'])) {
+                    if ($data['categoria'] < 1 || $data['categoria'] > 5) {
+                        throw new Exception('La categoría debe estar entre 1 y 5 estrellas');
+                    }
+                }
                 break;
                 
             case 'actividades':
@@ -450,8 +489,9 @@ class BibliotecaAPI {
             case 'dias':
                 return ['imagen1', 'imagen2', 'imagen3'];
             case 'alojamientos':
-            case 'actividades':
                 return ['imagen'];
+            case 'actividades':
+                return ['imagen1', 'imagen2', 'imagen3'];
             case 'transportes':
                 return []; // Los transportes no tienen imágenes
             default:

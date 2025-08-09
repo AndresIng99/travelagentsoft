@@ -98,8 +98,12 @@ switch($path) {
         include 'modules/admin/api.php';
         break;
 
+   
+    case '/share':
+        include 'share.php';
+        break;
+
     case '/preview':
-        App::requireLogin();
         require_once 'pages/preview.php';
         break;
 
@@ -108,7 +112,7 @@ switch($path) {
             header('Location: ' . APP_URL . '/itinerarios');
             exit;
         }
-        require_once __DIR__ . '/pages/itinerary.php';
+        require_once 'pages/itinerary.php';
         break;
         
     case '/perfil':

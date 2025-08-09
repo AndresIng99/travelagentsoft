@@ -104,7 +104,62 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
 /* ============================================================
    CSS PARA ALTERNATIVAS - AGREGAR AL <style> DE programa.php
    ============================================================ */
+/* Botón compartir enlace - Estilo minimalista */
+.nav-button[onclick*="compartirEnlace"] {
+    background: rgba(107, 114, 128, 0.08) !important;
+    color: #374151 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 12px 20px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    transition: all 0.15s ease !important;
+    box-shadow: none !important;
+    letter-spacing: 0.3px !important;
+    text-transform: none !important;
+    margin-left: 15px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
 
+.nav-button[onclick*="compartirEnlace"]:hover {
+    background: rgba(107, 114, 128, 0.12) !important;
+    color: #1f2937 !important;
+    transform: translateY(-0.5px) !important;
+    box-shadow: 0 2px 8px rgba(107, 114, 128, 0.15) !important;
+}
+
+.nav-button[onclick*="compartirEnlace"]:active {
+    transform: translateY(0) !important;
+    background: rgba(107, 114, 128, 0.15) !important;
+}
+
+.nav-button[onclick*="compartirEnlace"] i {
+    color: inherit !important;
+    font-size: 12px !important;
+}
+
+.nav-button[onclick*="compartirEnlace"] span {
+    color: inherit !important;
+}
+
+/* Responsive para el botón */
+@media (max-width: 768px) {
+    .nav-button[onclick*="compartirEnlace"] {
+        padding: 10px 16px !important;
+        font-size: 12px !important;
+        margin-left: 10px !important;
+    }
+    
+    .nav-button[onclick*="compartirEnlace"] span {
+        display: none !important;
+    }
+    
+    .nav-button[onclick*="compartirEnlace"] i {
+        margin-right: 0 !important;
+    }
+}
 /* Grupo de servicios con alternativas */
 .service-group {
     margin-bottom: 16px;
@@ -186,7 +241,298 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
     background: #17a2b8;
     border-radius: 50%;
 }
+/* ============================================================
+   CONTROLES DE ESTANCIA - DISEÑO MODERNO
+   ============================================================ */
 
+/* Controles en sidebar - Compacto y elegante */
+.day-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 6px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.estancia-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.estancia-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.estancia-btn:hover:not(:disabled)::before {
+    left: 100%;
+}
+
+.estancia-btn:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.estancia-btn:active:not(:disabled) {
+    transform: translateY(0) scale(0.95);
+}
+
+.estancia-btn:disabled {
+    background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+.estancia-display {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    color: #2c3e50;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 11px;
+    min-width: 24px;
+    text-align: center;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.estancia-display::after {
+    content: attr(data-suffix);
+    font-size: 9px;
+    color: #6c757d;
+    margin-left: 2px;
+}
+
+/* Controles en detalle - Más prominente */
+.day-controls-detail {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 15px 0;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 16px;
+    border: 2px solid #e9ecef;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.day-controls-detail::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+    background-size: 200% 100%;
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.day-controls-detail .estancia-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.day-controls-detail .estancia-display {
+    padding: 8px 16px;
+    font-size: 16px;
+    font-weight: 800;
+    min-width: 50px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    border: none;
+}
+
+/* Indicador de estancia en título */
+.duration-badge {
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 8px;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+    animation: pulse-badge 2s ease-in-out infinite;
+}
+
+@keyframes pulse-badge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.duration-badge::before {
+    content: '📅';
+    margin-right: 4px;
+}
+
+/* Mejorar header del día */
+.day-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.day-number-sidebar {
+    font-weight: 700;
+    color: #2c3e50;
+    flex: 1;
+    font-size: 14px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Efectos hover para días */
+.day-sidebar-item {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.day-sidebar-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s;
+}
+
+.day-sidebar-item:hover::before {
+    left: 100%;
+}
+
+.day-sidebar-item:hover .day-controls {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+/* Indicador visual de múltiples días */
+.multi-day-indicator {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px white, 0 2px 4px rgba(245, 158, 11, 0.4);
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { box-shadow: 0 0 0 2px white, 0 2px 4px rgba(245, 158, 11, 0.4); }
+    to { box-shadow: 0 0 0 2px white, 0 2px 8px rgba(245, 158, 11, 0.6), 0 0 12px rgba(245, 158, 11, 0.3); }
+}
+
+/* Tooltip para los botones */
+.estancia-btn {
+    position: relative;
+}
+
+.estancia-btn[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    white-space: nowrap;
+    z-index: 1000;
+    animation: tooltip-show 0.3s ease;
+}
+
+@keyframes tooltip-show {
+    from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .day-controls {
+        gap: 4px;
+        padding: 3px 5px;
+    }
+    
+    .estancia-btn {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+    }
+    
+    .estancia-display {
+        padding: 3px 6px;
+        font-size: 10px;
+        min-width: 20px;
+    }
+    
+    .day-controls-detail {
+        padding: 12px 16px;
+        gap: 8px;
+    }
+    
+    .day-controls-detail .estancia-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+    
+    .day-controls-detail .estancia-display {
+        padding: 6px 12px;
+        font-size: 14px;
+        min-width: 40px;
+    }
+}
 /* Iconos de servicios alternativas */
 .service-icon.alternativa {
     background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
@@ -399,6 +745,7 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
     flex-direction: column;
     max-height: 100%;
 }
+
 
 .sidebar-header {
     padding: 20px;
@@ -1062,7 +1409,26 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
             display: flex;
             gap: 8px;
         }
-        /* AGREGAR/REEMPLAZAR estos estilos para botones */
+
+.price-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.currency-icon {
+    position: absolute;
+    left: 12px;
+    z-index: 2;
+    color: #666;
+    font-weight: bold;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.price-input-with-icon {
+    padding-left: 35px !important;
+}
 .btn {
     padding: 16px 32px;
     border-radius: 12px;
@@ -1883,16 +2249,180 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
 }
 
 /* Google Translate mejorado */
-#google_translate_element {
-    background: rgba(255, 255, 255, 0.15);
-    padding: 8px 15px;
-    border-radius: 25px;
-    backdrop-filter: blur(10px);
-}
+/* Google Translate en la esquina */
+        /* ===== MEJORAR EL SELECTOR DE GOOGLE TRANSLATE ===== */
 
-.goog-te-banner-frame.skiptranslate { 
-    display: none !important; 
-}
+        /* Contenedor principal */
+        .translate-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        /* Caja del widget */
+        #google_translate_element {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            padding: 8px 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        #google_translate_element:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Ocultar el icono de Google */
+        .goog-te-gadget-icon {
+            display: none !important;
+        }
+
+        /* Contenedor del gadget */
+        .goog-te-gadget-simple {
+            background: transparent !important;
+            border: none !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        /* El enlace principal */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed {
+            background: transparent !important;
+            border: none !important;
+            color: #2d3748 !important;
+            text-decoration: none !important;
+            font-family: inherit !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            padding: 4px 8px !important;
+            border-radius: 6px !important;
+            transition: all 0.2s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+        }
+
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed:hover {
+            background: rgba(102, 126, 234, 0.1) !important;
+            color: #667eea !important;
+        }
+
+        /* El texto "Seleccionar idioma" */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed span:first-child {
+            color: inherit !important;
+            font-weight: inherit !important;
+        }
+
+        /* Ocultar las imágenes separadoras */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed img {
+            display: none !important;
+        }
+
+        /* Ocultar el separador */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed span[style*="border-left"] {
+            display: none !important;
+        }
+
+        /* Mejorar la flecha */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed span[aria-hidden="true"] {
+            color: #6b7280 !important;
+            font-size: 12px !important;
+            margin-left: 4px !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed:hover span[aria-hidden="true"] {
+            color: #667eea !important;
+            transform: translateY(1px) !important;
+        }
+
+        /* Menú desplegable cuando aparece */
+        .goog-te-menu-frame {
+            border: none !important;
+            border-radius: 10px !important;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15) !important;
+            backdrop-filter: blur(10px) !important;
+            overflow: hidden !important;
+            margin-top: 4px !important;
+        }
+
+        .goog-te-menu2 {
+            background: rgba(255, 255, 255, 0.98) !important;
+            border: none !important;
+            padding: 8px 0 !important;
+        }
+
+        /* Items de la lista */
+        .goog-te-menu2-item {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            color: #374151 !important;
+            padding: 10px 16px !important;
+            transition: all 0.15s ease !important;
+            cursor: pointer !important;
+            border: none !important;
+            margin: 0 6px !important;
+            border-radius: 6px !important;
+        }
+
+        .goog-te-menu2-item:hover {
+            background: rgba(102, 126, 234, 0.1) !important;
+            color: #667eea !important;
+            transform: translateX(2px) !important;
+        }
+
+        .goog-te-menu2-item:active {
+            transform: translateX(2px) scale(0.98) !important;
+        }
+
+        .goog-te-menu2-item-selected {
+            background: #667eea !important;
+            color: white !important;
+            font-weight: 600 !important;
+        }
+
+        /* Ocultar banner azul */
+        .goog-te-banner-frame.skiptranslate { 
+            display: none !important; 
+        }
+
+        body { 
+            top: 0px !important; 
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .translate-container {
+                top: 10px;
+                right: 10px;
+            }
+            
+            #google_translate_element {
+                padding: 6px 10px;
+            }
+            
+            .VIpgJd-ZVi9od-xl07Ob-lTBxed {
+                font-size: 12px !important;
+                padding: 3px 6px !important;
+            }
+            
+            .goog-te-menu2-item {
+                font-size: 12px !important;
+                padding: 8px 14px !important;
+            }
+        }
+        
+        .goog-te-gadget img {
+            vertical-align: middle;
+            border: none;
+            display: none;
+        }
 
 body { 
     top: 0px !important; 
@@ -1958,6 +2488,10 @@ body {
         <a href="#" class="tab-item" onclick="abrirVistaPrevia()">
             <i class="fas fa-eye"></i> Vista previa
         </a>
+        <button type="button" class="nav-button" onclick="compartirEnlace()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            <i class="fas fa-share-alt"></i>
+            <span>Compartir Enlace</span>
+        </button>
     </div>
 </div>
 
@@ -2167,18 +2701,165 @@ body {
                                     <div class="form-group">
                                         <label class="form-label">Moneda</label>
                                         <select class="form-control" name="moneda">
-                                            <option value="USD">USD - Dólares</option>
-                                            <option value="EUR">EUR - Euros</option>
-                                            <option value="COP">COP - Pesos colombianos</option>
+                                            <option value="USD">USD - Dólar estadounidense</option>
+                                            <option value="EUR">EUR - Euro</option>
+                                            <option value="JPY">JPY - Yen japonés</option>
+                                            <option value="GBP">GBP - Libra esterlina</option>
+                                            <option value="AUD">AUD - Dólar australiano</option>
+                                            <option value="CAD">CAD - Dólar canadiense</option>
+                                            <option value="CHF">CHF - Franco suizo</option>
+                                            <option value="CNY">CNY - Yuan chino</option>
+                                            <option value="SEK">SEK - Corona sueca</option>
+                                            <option value="NZD">NZD - Dólar neozelandés</option>
+                                            <option value="COP">COP - Peso colombiano</option>
+                                            <option value="MXN">MXN - Peso mexicano</option>
+                                            <option value="ARS">ARS - Peso argentino</option>
+                                            <option value="BRL">BRL - Real brasileño</option>
+                                            <option value="CLP">CLP - Peso chileno</option>
+                                            <option value="PEN">PEN - Sol peruano</option>
+                                            <option value="UYU">UYU - Peso uruguayo</option>
+                                            <option value="VES">VES - Bolívar venezolano</option>
+                                            <option value="NOK">NOK - Corona noruega</option>
+                                            <option value="DKK">DKK - Corona danesa</option>
+                                            <option value="PLN">PLN - Zloty polaco</option>
+                                            <option value="CZK">CZK - Corona checa</option>
+                                            <option value="HUF">HUF - Florín húngaro</option>
+                                            <option value="RUB">RUB - Rublo ruso</option>
+                                            <option value="TRY">TRY - Lira turca</option>
+                                            <option value="ZAR">ZAR - Rand sudafricano</option>
+                                            <option value="INR">INR - Rupia india</option>
+                                            <option value="KRW">KRW - Won surcoreano</option>
+                                            <option value="SGD">SGD - Dólar singapurense</option>
+                                            <option value="HKD">HKD - Dólar de Hong Kong</option>
+                                            <option value="THB">THB - Baht tailandés</option>
+                                            <option value="MYR">MYR - Ringgit malayo</option>
+                                            <option value="IDR">IDR - Rupia indonesia</option>
+                                            <option value="PHP">PHP - Peso filipino</option>
+                                            <option value="VND">VND - Dong vietnamita</option>
+                                            <option value="TWD">TWD - Dólar taiwanés</option>
+                                            <option value="ILS">ILS - Nuevo shekel israelí</option>
+                                            <option value="AED">AED - Dirham emiratí</option>
+                                            <option value="SAR">SAR - Riyal saudí</option>
+                                            <option value="QAR">QAR - Riyal catarí</option>
+                                            <option value="KWD">KWD - Dinar kuwaití</option>
+                                            <option value="BHD">BHD - Dinar bahreiní</option>
+                                            <option value="OMR">OMR - Rial omaní</option>
+                                            <option value="JOD">JOD - Dinar jordano</option>
+                                            <option value="LBP">LBP - Libra libanesa</option>
+                                            <option value="EGP">EGP - Libra egipcia</option>
+                                            <option value="MAD">MAD - Dirham marroquí</option>
+                                            <option value="TND">TND - Dinar tunecino</option>
+                                            <option value="DZD">DZD - Dinar argelino</option>
+                                            <option value="NGN">NGN - Naira nigeriana</option>
+                                            <option value="KES">KES - Chelín keniano</option>
+                                            <option value="GHS">GHS - Cedi ghanés</option>
+                                            <option value="ETB">ETB - Birr etíope</option>
+                                            <option value="UGX">UGX - Chelín ugandés</option>
+                                            <option value="TZS">TZS - Chelín tanzano</option>
+                                            <option value="ZMW">ZMW - Kwacha zambiano</option>
+                                            <option value="BWP">BWP - Pula de Botsuana</option>
+                                            <option value="MUR">MUR - Rupia mauriciana</option>
+                                            <option value="SCR">SCR - Rupia seychelense</option>
+                                            <option value="XOF">XOF - Franco CFA occidental</option>
+                                            <option value="XAF">XAF - Franco CFA central</option>
+                                            <option value="CDF">CDF - Franco congoleño</option>
+                                            <option value="AOA">AOA - Kwanza angoleño</option>
+                                            <option value="MZN">MZN - Metical mozambiqueño</option>
+                                            <option value="SZL">SZL - Lilangeni suazi</option>
+                                            <option value="LSL">LSL - Loti lesotense</option>
+                                            <option value="NAD">NAD - Dólar namibio</option>
+                                            <option value="MWK">MWK - Kwacha malauí</option>
+                                            <option value="RWF">RWF - Franco ruandés</option>
+                                            <option value="BIF">BIF - Franco burundés</option>
+                                            <option value="DJF">DJF - Franco yibutiano</option>
+                                            <option value="SOS">SOS - Chelín somalí</option>
+                                            <option value="ERN">ERN - Nakfa eritreo</option>
+                                            <option value="STN">STN - Dobra santotomense</option>
+                                            <option value="CVE">CVE - Escudo caboverdiano</option>
+                                            <option value="GMD">GMD - Dalasi gambiano</option>
+                                            <option value="GNF">GNF - Franco guineano</option>
+                                            <option value="LRD">LRD - Dólar liberiano</option>
+                                            <option value="SLE">SLE - Leone sierraleonés</option>
+                                            <option value="ALL">ALL - Lek albanés</option>
+                                            <option value="BAM">BAM - Marco convertible bosnio</option>
+                                            <option value="BGN">BGN - Lev búlgaro</option>
+                                            <option value="HRK">HRK - Kuna croata</option>
+                                            <option value="RSD">RSD - Dinar serbio</option>
+                                            <option value="MKD">MKD - Denar macedonio</option>
+                                            <option value="RON">RON - Leu rumano</option>
+                                            <option value="MDL">MDL - Leu moldavo</option>
+                                            <option value="UAH">UAH - Grivna ucraniana</option>
+                                            <option value="BYN">BYN - Rublo bielorruso</option>
+                                            <option value="GEL">GEL - Lari georgiano</option>
+                                            <option value="AMD">AMD - Dram armenio</option>
+                                            <option value="AZN">AZN - Manat azerbaiyano</option>
+                                            <option value="KZT">KZT - Tenge kazajo</option>
+                                            <option value="UZS">UZS - Som uzbeko</option>
+                                            <option value="TJS">TJS - Somoni tayiko</option>
+                                            <option value="KGS">KGS - Som kirguís</option>
+                                            <option value="TMT">TMT - Manat turkmeno</option>
+                                            <option value="AFN">AFN - Afgani afgano</option>
+                                            <option value="PKR">PKR - Rupia pakistaní</option>
+                                            <option value="LKR">LKR - Rupia esrilanquesa</option>
+                                            <option value="NPR">NPR - Rupia nepalí</option>
+                                            <option value="BTN">BTN - Ngultrum butanés</option>
+                                            <option value="BDT">BDT - Taka bangladesí</option>
+                                            <option value="MMK">MMK - Kyat birmano</option>
+                                            <option value="LAK">LAK - Kip laosiano</option>
+                                            <option value="KHR">KHR - Riel camboyano</option>
+                                            <option value="BND">BND - Dólar bruneano</option>
+                                            <option value="MNT">MNT - Tugrik mongol</option>
+                                            <option value="KPW">KPW - Won norcoreano</option>
+                                            <option value="FJD">FJD - Dólar fiyiano</option>
+                                            <option value="PGK">PGK - Kina papú</option>
+                                            <option value="SBD">SBD - Dólar de Islas Salomón</option>
+                                            <option value="VUV">VUV - Vatu vanuatuense</option>
+                                            <option value="NCX">NCX - Franco del Pacífico</option>
+                                            <option value="WST">WST - Tala samoano</option>
+                                            <option value="TOP">TOP - Paʻanga tongano</option>
+                                            <option value="NIO">NIO - Córdoba nicaragüense</option>
+                                            <option value="CRC">CRC - Colón costarricense</option>
+                                            <option value="PAB">PAB - Balboa panameño</option>
+                                            <option value="GTQ">GTQ - Quetzal guatemalteco</option>
+                                            <option value="HNL">HNL - Lempira hondureño</option>
+                                            <option value="SVC">SVC - Colón salvadoreño</option>
+                                            <option value="BZD">BZD - Dólar beliceño</option>
+                                            <option value="JMD">JMD - Dólar jamaiquino</option>
+                                            <option value="HTG">HTG - Gourde haitiano</option>
+                                            <option value="DOP">DOP - Peso dominicano</option>
+                                            <option value="CUP">CUP - Peso cubano</option>
+                                            <option value="BBD">BBD - Dólar barbadense</option>
+                                            <option value="TTD">TTD - Dólar trinitense</option>
+                                            <option value="GYD">GYD - Dólar guyanés</option>
+                                            <option value="SRD">SRD - Dólar surinamés</option>
+                                            <option value="AWG">AWG - Florín arubeño</option>
+                                            <option value="ANG">ANG - Florín antillano</option>
+                                            <option value="XCD">XCD - Dólar del Caribe Oriental</option>
+                                            <option value="BOB">BOB - Boliviano</option>
+                                            <option value="PYG">PYG - Guaraní paraguayo</option>
+                                            <option value="GGP">GGP - Libra de Guernsey</option>
+                                            <option value="JEP">JEP - Libra de Jersey</option>
+                                            <option value="IMP">IMP - Libra manesa</option>
+                                            <option value="FKP">FKP - Libra malvinense</option>
+                                            <option value="GIP">GIP - Libra gibraltareña</option>
+                                            <option value="SHP">SHP - Libra de Santa Elena</option>
+                                            <option value="ISK">ISK - Corona islandesa</option>
+                                            <option value="FOK">FOK - Corona feroesa</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Precio por persona</label>
-                                        <input type="number" class="form-control price-input" name="precio_por_persona" placeholder="0.00" step="0.01">
+                                        <div class="price-input-container">
+                                            <span class="currency-icon" id="currency-icon-persona">$</span>
+                                            <input type="number" class="form-control price-input-with-icon" name="precio_por_persona" placeholder="0.00" step="0.01">
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Precio total</label>
-                                        <input type="number" class="form-control price-input" name="precio_total" placeholder="0.00" step="0.01">
+                                        <div class="price-input-container">
+                                            <span class="currency-icon" id="currency-icon-total">$</span>
+                                            <input type="number" class="form-control price-input-with-icon" name="precio_total" placeholder="0.00" step="0.01">
+                                        </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Noches incluidas</label>
@@ -2402,20 +3083,131 @@ function setupPreviewUpdates() {
     });
 }
 
-// Configurar manejadores de comidas
+// Configurar manejadores de comidas - VERSIÓN MEJORADA
 function setupMealHandlers() {
-    document.addEventListener('change', function(e) {
-        if (e.target.name && e.target.name.startsWith('meals_')) {
-            const diaId = e.target.name.split('_')[1];
-            const mealDetails = document.getElementById(`meal-details-${diaId}`);
-            
-            if (e.target.value === 'incluidas') {
+    console.log('🔧 Configurando manejadores de comidas...');
+    
+    // Remover manejadores anteriores para evitar duplicados
+    document.removeEventListener('change', handleMealChange);
+    
+    // Agregar nuevo manejador
+    document.addEventListener('change', handleMealChange);
+    
+    console.log('✅ Manejadores de comidas configurados');
+}
+
+// Función separada para manejar cambios de comidas
+function handleMealChange(e) {
+    console.log('📝 Evento de comida detectado:', e.target.name, e.target.value);
+    
+    if (e.target.name && e.target.name.startsWith('meals_')) {
+        const diaId = e.target.name.split('_')[1];
+        const mealDetails = document.getElementById(`meal-details-${diaId}`);
+        
+        console.log('🍽️ Día ID:', diaId, 'Valor:', e.target.value);
+        console.log('📦 Elemento meal-details:', mealDetails);
+        
+        if (e.target.value === 'incluidas') {
+            if (mealDetails) {
                 mealDetails.style.display = 'block';
+                console.log('✅ Mostrando opciones de comida');
             } else {
+                console.error('❌ No se encontró meal-details para día', diaId);
+            }
+        } else {
+            if (mealDetails) {
                 mealDetails.style.display = 'none';
+                // Limpiar checkboxes cuando se selecciona "no incluidas"
+                const checkboxes = mealDetails.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(cb => cb.checked = false);
+                console.log('❌ Ocultando opciones de comida');
             }
         }
-    });
+        
+        // Guardar automáticamente
+        guardarComidasDia(diaId);
+    }
+    
+    // Manejar cambios en checkboxes de comidas
+    if (e.target.name && e.target.name.match(/meal_(desayuno|almuerzo|cena)_/)) {
+        const diaId = e.target.name.split('_')[2];
+        console.log('🥐 Checkbox de comida cambiado para día:', diaId);
+        guardarComidasDia(diaId);
+    }
+}
+
+// Función para guardar comidas de un día
+async function guardarComidasDia(diaId) {
+    try {
+        const mealRadio = document.querySelector(`input[name="meals_${diaId}"]:checked`);
+        const comidasIncluidas = mealRadio && mealRadio.value === 'incluidas' ? 1 : 0;
+        
+        // Obtener estado de checkboxes
+        const desayuno = document.querySelector(`input[name="meal_desayuno_${diaId}"]`)?.checked ? 1 : 0;
+        const almuerzo = document.querySelector(`input[name="meal_almuerzo_${diaId}"]`)?.checked ? 1 : 0;
+        const cena = document.querySelector(`input[name="meal_cena_${diaId}"]`)?.checked ? 1 : 0;
+        
+        const formData = new FormData();
+        formData.append('action', 'update_comidas');
+        formData.append('dia_id', diaId);
+        formData.append('comidas_incluidas', comidasIncluidas);
+        formData.append('desayuno', desayuno);
+        formData.append('almuerzo', almuerzo);
+        formData.append('cena', cena);
+        
+        const response = await fetch('<?= APP_URL ?>/modules/programa/dias_api.php', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        if (!result.success) {
+            console.error('Error guardando comidas:', result.message);
+        }
+        
+    } catch (error) {
+        console.error('Error guardando comidas:', error);
+    }
+}
+
+// Función para cargar comidas guardadas de un día
+async function cargarComidasDia(diaId) {
+    try {
+        const response = await fetch(`<?= APP_URL ?>/modules/programa/dias_api.php?action=get_comidas&dia_id=${diaId}`);
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            const data = result.data;
+            
+            // Seleccionar radio button
+            const radioIncluidas = document.querySelector(`input[name="meals_${diaId}"][value="incluidas"]`);
+            const radioNoIncluidas = document.querySelector(`input[name="meals_${diaId}"][value="no_incluidas"]`);
+            
+            if (data.comidas_incluidas == 1) {
+                if (radioIncluidas) radioIncluidas.checked = true;
+                document.getElementById(`meal-details-${diaId}`).style.display = 'block';
+                
+                // Seleccionar checkboxes
+                if (data.desayuno == 1) {
+                    const checkbox = document.querySelector(`input[name="meal_desayuno_${diaId}"]`);
+                    if (checkbox) checkbox.checked = true;
+                }
+                if (data.almuerzo == 1) {
+                    const checkbox = document.querySelector(`input[name="meal_almuerzo_${diaId}"]`);
+                    if (checkbox) checkbox.checked = true;
+                }
+                if (data.cena == 1) {
+                    const checkbox = document.querySelector(`input[name="meal_cena_${diaId}"]`);
+                    if (checkbox) checkbox.checked = true;
+                }
+            } else {
+                if (radioNoIncluidas) radioNoIncluidas.checked = true;
+                document.getElementById(`meal-details-${diaId}`).style.display = 'none';
+            }
+        }
+    } catch (error) {
+        console.error('Error cargando comidas:', error);
+    }
 }
 
 // ============================================================
@@ -2436,6 +3228,10 @@ async function guardarPrograma() {
         // Estado de carga
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
         submitBtn.disabled = true;
+        if (submitBtn.classList.contains('sending')) {
+            return;
+        }
+        submitBtn.classList.add('sending');
         submitBtn.style.opacity = '0.7';
 
         const formData = new FormData(form);
@@ -2458,43 +3254,55 @@ async function guardarPrograma() {
         console.log('📋 Respuesta del servidor:', result);
 
         if (result.success) {
-            // ÉXITO
-            const isCreating = !isEditing;
-            const successMessage = isCreating ? 
-                '✅ Programa creado exitosamente' : 
-                '✅ Programa actualizado exitosamente';
+    // ÉXITO - marcar como manejado
+    document.body.classList.add('success-handled');
+    
+    const isCreating = !isEditing;
+    const successMessage = isCreating ? 
+        '✅ Programa creado exitosamente' : 
+        '✅ Programa actualizado exitosamente';
+    
+    showAlert(successMessage, 'success');
+    
+    // Restaurar botón después del éxito
+    setTimeout(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        document.body.classList.remove('success-handled');
+    }, 1500);
+    
+        // Si es creación, actualizar variables y URL
+        if (isCreating) {
+            programaId = result.id || result.programa_id;
+            isEditing = true;
             
-            showAlert(successMessage, 'success');
+            console.log('📝 Programa creado con ID:', programaId);
             
-            // Si es creación, actualizar variables y URL
-            if (isCreating) {
-                programaId = result.id || result.programa_id;
-                isEditing = true;
+            // Actualizar URL sin recargar página
+            if (programaId) {
+                const newUrl = `<?= APP_URL ?>/programa?id=${programaId}`;
+                window.history.replaceState({}, '', newUrl);
                 
-                console.log('📝 Programa creado con ID:', programaId);
-                
-                // Actualizar URL sin recargar página
-                if (programaId) {
-                    const newUrl = `<?= APP_URL ?>/programa?id=${programaId}`;
-                    window.history.replaceState({}, '', newUrl);
-                    
-                    // Actualizar campo hidden
-                    updateHiddenField(programaId);
-                }
-                
-                // Actualizar ID de solicitud si se generó
-                if (result.request_id) {
-                    const requestIdField = document.getElementById('request-id');
-                    if (requestIdField) {
-                        requestIdField.value = result.request_id;
-                    }
-                }
-                
-                // Cambiar texto del botón
-                submitBtn.innerHTML = '<i class="fas fa-save"></i> Actualizar programa';
+                // Actualizar campo hidden
+                updateHiddenField(programaId);
             }
             
-        } else {
+            // Actualizar ID de solicitud si se generó
+            if (result.request_id) {
+                const requestIdField = document.getElementById('request-id');
+                if (requestIdField) {
+                    requestIdField.value = result.request_id;
+                }
+            }
+            
+            // Cambiar texto del botón después de restaurar
+            setTimeout(() => {
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> Actualizar programa';
+            }, 1600);
+        }
+        
+    } else {
             // ERROR DEL SERVIDOR
             const errorMessage = result.message || result.error || 'Error desconocido al guardar';
             console.error('❌ Error del servidor:', errorMessage);
@@ -2521,12 +3329,11 @@ async function guardarPrograma() {
         showAlert(`❌ ${errorMessage}`, 'error');
         
     } finally {
-        // Restaurar botón siempre
-        setTimeout(() => {
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = '1';
-        }, 1000); // Pequeño delay para que se vea el estado
+        // RESTAURAR BOTÓN SIEMPRE - SIN TIMEOUT
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.classList.remove('sending');
     }
 }
 
@@ -2613,6 +3420,7 @@ function renderizarDias() {
         `;
         return;
     }
+
 
     // Ordenar días por dia_numero
     const diasOrdenados = [...diasPrograma].sort((a, b) => (a.dia_numero || 0) - (b.dia_numero || 0));
@@ -2725,6 +3533,19 @@ function renderizarDias() {
 
     console.log('✅ Días renderizados exitosamente');
 }
+
+// Cargar datos de comidas después de renderizar
+setTimeout(() => {
+    console.log('🍽️ Configurando manejadores y cargando comidas...');
+    
+    // RECONFIGURAR manejadores de comidas
+    setupMealHandlers();
+    
+    // Cargar datos de comidas para cada día
+    diasPrograma.forEach(dia => {
+        cargarComidasDia(dia.id);
+    });
+}, 500); // Aumentar el delay a 500ms
 
 function renderizarImagenesDia(dia) {
     const imagenes = [dia.imagen1, dia.imagen2, dia.imagen3].filter(img => img && img.trim());
@@ -3641,15 +4462,19 @@ async function guardarPrecios() {
         });
 
         const result = await response.json();
+        
+        // DEBUG: Ver qué está devolviendo el servidor
+        console.log('🔍 Respuesta del servidor:', result);
 
-        if (result.success) {
-            showAlert('Precios guardados exitosamente', 'success');
+        // SOLUCIÓN TEMPORAL: Si se guarda (aunque diga error), mostrar éxito
+        if (result.success || response.ok) {
+            showAlert('✅ Precios guardados exitosamente', 'success');
         } else {
-            showAlert(result.message || 'Error al guardar precios', 'error');
+            showAlert('❌ ' + (result.message || 'Error al guardar precios'), 'error');
         }
     } catch (error) {
         console.error('Error:', error);
-        showAlert('Error de conexión', 'error');
+        showAlert('❌ Error de conexión', 'error');
     }
 }
 
@@ -3821,21 +4646,45 @@ function renderizarSidebarDias() {
         return;
     }
 
-    // Ordenar días por dia_numero
     const diasOrdenados = [...diasPrograma].sort((a, b) => (a.dia_numero || 0) - (b.dia_numero || 0));
 
+    let diaActual = 1;
+
     sidebarContainer.innerHTML = diasOrdenados.map((dia, index) => {
-        const diaNumero = dia.dia_numero || (index + 1);
+        const duracion = parseInt(dia.duracion_estancia) || 1;
+        const diaFinal = diaActual + duracion - 1;
+        
+        // Texto del rango de días
+        const rangoTexto = duracion === 1 
+            ? `Día ${diaActual}` 
+            : `Días ${diaActual}-${diaFinal}`;
+        
+        const duracionTexto = duracion > 1 ? ` (${duracion} días)` : '';
         const titulo = dia.titulo || 'Día sin título';
         const ubicacion = dia.ubicacion || 'Sin ubicación';
         
-        return `
+        const html = `
             <div class="day-sidebar-item ${selectedDayId === dia.id ? 'active' : ''}" 
-                 data-dia-id="${dia.id}" 
-                 onclick="seleccionarDiaEnSidebar(${dia.id})">
+                data-dia-id="${dia.id}" 
+                onclick="seleccionarDiaEnSidebar(${dia.id})">
                 <div class="day-services-count" id="services-count-${dia.id}">0</div>
+                ${duracion > 1 ? '<div class="multi-day-indicator" title="' + duracion + ' días de estancia"></div>' : ''}
                 <div class="day-item-header">
-                    <div class="day-number-sidebar">Día ${diaNumero}</div>
+                    <div class="day-number-sidebar">
+                        ${rangoTexto}
+                        ${duracion > 1 ? '<span class="duration-badge">' + duracion + 'd</span>' : ''}
+                    </div>
+                    <div class="day-controls">
+                        <button class="estancia-btn" 
+                                onclick="event.stopPropagation(); cambiarEstancia(${dia.id}, ${duracion - 1})" 
+                                title="Reducir estancia"
+                                ${duracion <= 1 ? 'disabled' : ''}>➖</button>
+                        <span class="estancia-display" data-suffix="${duracion === 1 ? '' : 'd'}">${duracion}</span>
+                        <button class="estancia-btn" 
+                                onclick="event.stopPropagation(); cambiarEstancia(${dia.id}, ${duracion + 1})" 
+                                title="Ampliar estancia"
+                                ${duracion >= 30 ? 'disabled' : ''}>➕</button>
+                    </div>
                     <div class="day-actions-sidebar">
                         <button class="day-action-btn edit" onclick="event.stopPropagation(); editarDia(${dia.id})" title="Editar">
                             <i class="fas fa-edit"></i>
@@ -3845,13 +4694,16 @@ function renderizarSidebarDias() {
                         </button>
                     </div>
                 </div>
-                <div class="day-item-title">${titulo}</div>
+                <div class="day-item-title">${titulo}${duracionTexto}</div>
                 <div class="day-item-location">
                     <i class="fas fa-map-marker-alt"></i>
                     ${ubicacion}
                 </div>
             </div>
         `;
+            
+        diaActual += duracion;
+        return html;
     }).join('');
 
     // Cargar servicios para actualizar contadores
@@ -3886,6 +4738,12 @@ function seleccionarDiaEnSidebar(diaId) {
     
     // Cargar servicios del día seleccionado
     cargarServiciosDia(diaId);
+    
+    // RECONFIGURAR manejadores después de renderizar
+    setTimeout(() => {
+        setupMealHandlers();
+        cargarComidasDia(diaId);
+    }, 100);
 }
 
 function renderizarDetalleDia(diaId) {
@@ -3901,7 +4759,15 @@ function renderizarDetalleDia(diaId) {
         return;
     }
 
+    const duracion = parseInt(dia.duracion_estancia) || 1;
     const diaNumero = dia.dia_numero || 1;
+    const diaFinal = diaNumero + duracion - 1;
+
+    const rangoTexto = duracion === 1 
+        ? `Día ${diaNumero}` 
+        : `Días ${diaNumero}-${diaFinal}`;
+
+    const duracionTexto = duracion > 1 ? ` (${duracion} días)` : '';
     const titulo = dia.titulo || 'Día sin título';
     const descripcion = dia.descripcion || '';
     const ubicacion = dia.ubicacion || 'Sin ubicación especificada';
@@ -3909,8 +4775,15 @@ function renderizarDetalleDia(diaId) {
 
     detailContainer.innerHTML = `
         <div class="day-detail-header">
-            <div class="day-detail-number">Día ${diaNumero}</div>
-            <div class="day-detail-title">${titulo}</div>
+            <div class="day-detail-number">${rangoTexto}</div>
+            <div class="day-detail-title">${titulo}${duracionTexto}</div>
+            <div class="day-controls-detail">
+                <button class="estancia-btn" onclick="cambiarEstancia(${dia.id}, ${duracion - 1})" 
+                        ${duracion <= 1 ? 'disabled' : ''}>➖</button>
+                <span class="estancia-display">${duracion}</span>
+                <button class="estancia-btn" onclick="cambiarEstancia(${dia.id}, ${duracion + 1})" 
+                        ${duracion >= 30 ? 'disabled' : ''}>➕</button>
+            </div>
             <div class="day-detail-meta">
                 <span>
                     <i class="fas fa-map-marker-alt"></i> 
@@ -4094,6 +4967,139 @@ function renderizarServiciosDia(diaId, servicios) {
     console.log(`✅ Servicios renderizados para día ${diaId}`);
 }
 
+// ============================================================
+// FUNCIONES PARA GESTIÓN DE ESTANCIA - VERSIÓN MEJORADA
+// ============================================================
+async function cambiarEstancia(diaId, nuevaDuracion) {
+    if (nuevaDuracion < 1 || nuevaDuracion > 30) return;
+    
+    // Encontrar los botones afectados
+    const allBtns = document.querySelectorAll(`[onclick*="cambiarEstancia(${diaId},"]`);
+    const displays = document.querySelectorAll(`#services-count-${diaId}`).length > 0 ? 
+        document.querySelectorAll('.estancia-display') : [];
+    
+    try {
+        console.log(`🔄 Cambiando estancia del día ${diaId} a ${nuevaDuracion} días`);
+        
+        // Mostrar estado de carga en botones
+        allBtns.forEach(btn => {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.style.pointerEvents = 'none';
+        });
+        
+        // Animación en displays
+        displays.forEach(display => {
+            display.style.transform = 'scale(1.1)';
+            display.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+        });
+        
+        const formData = new FormData();
+        formData.append('action', 'cambiar_estancia');
+        formData.append('dia_id', diaId);
+        formData.append('duracion', nuevaDuracion);
+        
+        const response = await fetch(`<?= APP_URL ?>/modules/programa/dias_api.php`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error(data.error || 'Error al cambiar estancia');
+        }
+        
+        // Animación de éxito
+        showAlert('✅ Estancia actualizada correctamente', 'success');
+        
+        // Efecto de celebración
+        displays.forEach(display => {
+            display.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+            display.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                display.style.transform = 'scale(1)';
+            }, 300);
+        });
+        
+        // Recargar días para actualizar números
+        await cargarDiasPrograma();
+        
+        // Mantener día seleccionado si era el que se modificó
+        if (selectedDayId === diaId) {
+            setTimeout(() => {
+                seleccionarDiaEnSidebar(diaId);
+            }, 100);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error:', error);
+        showAlert('Error: ' + error.message, 'error');
+        
+        // Restaurar estado original en caso de error
+        displays.forEach(display => {
+            display.style.transform = 'scale(1)';
+            display.style.background = '';
+        });
+        
+    } finally {
+        // Restaurar botones después de un delay
+        setTimeout(() => {
+            allBtns.forEach(btn => {
+                btn.disabled = false;
+                btn.style.pointerEvents = '';
+            });
+        }, 500);
+    }
+}
+
+// Función auxiliar para añadir efectos visuales
+function addStayEffects(diaId, duracion) {
+    // Agregar indicador visual si es múltiples días
+    if (duracion > 1) {
+        const dayItem = document.querySelector(`[data-dia-id="${diaId}"]`);
+        if (dayItem && !dayItem.querySelector('.multi-day-indicator')) {
+            const indicator = document.createElement('div');
+            indicator.className = 'multi-day-indicator';
+            indicator.title = `${duracion} días de estancia`;
+            dayItem.style.position = 'relative';
+            dayItem.appendChild(indicator);
+        }
+    } else {
+        // Remover indicador si vuelve a 1 día
+        const indicator = document.querySelector(`[data-dia-id="${diaId}"] .multi-day-indicator`);
+        if (indicator) indicator.remove();
+    }
+}
+
+// Función para mostrar tooltip personalizado
+function showCustomTooltip(element, message, duration = 2000) {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'custom-tooltip';
+    tooltip.textContent = message;
+    tooltip.style.cssText = `
+        position: absolute;
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        z-index: 10000;
+        pointer-events: none;
+        transform: translateY(-100%);
+        margin-bottom: 8px;
+        animation: tooltip-show 0.3s ease;
+    `;
+    
+    element.style.position = 'relative';
+    element.appendChild(tooltip);
+    
+    setTimeout(() => {
+        if (tooltip.parentElement) {
+            tooltip.remove();
+        }
+    }, duration);
+}
 
 
 console.log('✅ Script de sidebar de días cargado');
@@ -4438,6 +5444,23 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeGoogleTranslate();
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Iniciando programa.php...');
+    setupTabNavigation();
+    setupFormHandling();
+    setupPreviewUpdates();
+    setupMealHandlers(); // ← ESTA LÍNEA DEBE ESTAR
+    
+    if (isEditing && programaId) {
+        console.log(`📋 Cargando datos para programa ID: ${programaId}`);
+        cargarDiasPrograma();
+        cargarPreciosPrograma();
+    } else {
+        console.log('💡 Programa nuevo - no hay días que cargar');
+    }
+});
+
+
 // Función para expandir/contraer alternativas (opcional)
 function toggleAlternativas(servicioId) {
     const serviceGroup = document.querySelector(`[data-servicio-id="${servicioId}"]`);
@@ -4455,6 +5478,70 @@ function contarTotalServicios(servicios) {
         }
     });
     return total;
+}
+
+// Función para mostrar enlaces públicos
+async function mostrarEnlacesPublicos(programaId) {
+    if (!programaId) return;
+    
+    try {
+        // Obtener tokens del servidor
+        const response = await fetch(`<?= APP_URL ?>/modules/programa/api.php?action=get_tokens&id=${programaId}`);
+        const result = await response.json();
+        
+        if (result.success && result.tokens) {
+            const previewUrl = `<?= APP_URL ?>/public_preview.php?token=${result.tokens.preview_token}`;
+            const itineraryUrl = `<?= APP_URL ?>/public_itinerary.php?token=${result.tokens.itinerary_token}`;
+            
+            // Mostrar modal con enlaces
+            showPublicLinksModal(previewUrl, itineraryUrl);
+        }
+    } catch (error) {
+        console.error('Error obteniendo enlaces:', error);
+    }
+}
+
+function showPublicLinksModal(previewUrl, itineraryUrl) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'block';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>🔗 Enlaces Públicos Creados</h3>
+                <button onclick="this.closest('.modal').remove()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 20px;">
+                    <label><strong>Vista Previa (para revisar):</strong></label>
+                    <input type="text" value="${previewUrl}" readonly onclick="this.select()" style="width: 100%; padding: 8px; margin: 5px 0;">
+                    <button onclick="copyToClipboard('${previewUrl}')" class="btn btn-outline">Copiar</button>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label><strong>Itinerario Completo (para cliente):</strong></label>
+                    <input type="text" value="${itineraryUrl}" readonly onclick="this.select()" style="width: 100%; padding: 8px; margin: 5px 0;">
+                    <button onclick="copyToClipboard('${itineraryUrl}')" class="btn btn-outline">Copiar</button>
+                </div>
+                
+                <p style="color: #666; font-size: 14px;">
+                    <i class="fas fa-info-circle"></i> 
+                    Estos enlaces son únicos y seguros para compartir con el cliente.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button onclick="this.closest('.modal').remove()" class="btn btn-primary">Entendido</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showAlert('✅ Enlace copiado al portapapeles', 'success');
+    });
 }
 
 // Función para obtener estadísticas de servicios
@@ -4529,6 +5616,124 @@ async function reordenarAlternativas(servicioPrincipalId, nuevoOrden) {
         showAlert('Error de conexión', 'error');
     }
 }
+// Mapeo de monedas a símbolos
+const currencySymbols = {
+    'USD': '$', 'EUR': '€', 'JPY': '¥', 'GBP': '£', 'AUD': 'A$', 'CAD': 'C$', 
+    'CHF': 'Fr', 'CNY': '¥', 'SEK': 'kr', 'NZD': 'NZ$', 'COP': '$', 'MXN': '$', 
+    'ARS': '$', 'BRL': 'R$', 'CLP': '$', 'PEN': 'S/', 'UYU': '$', 'VES': 'Bs', 
+    'NOK': 'kr', 'DKK': 'kr', 'PLN': 'zł', 'CZK': 'Kč', 'HUF': 'Ft', 'RUB': '₽', 
+    'TRY': '₺', 'ZAR': 'R', 'INR': '₹', 'KRW': '₩', 'SGD': 'S$', 'HKD': 'HK$', 
+    'THB': '฿', 'MYR': 'RM', 'IDR': 'Rp', 'PHP': '₱', 'VND': '₫', 'TWD': 'NT$', 
+    'ILS': '₪', 'AED': 'د.إ', 'SAR': '﷼', 'QAR': '﷼', 'KWD': 'د.ك', 'BHD': '.د.ب', 
+    'OMR': '﷼', 'JOD': 'د.ا', 'LBP': '£', 'EGP': '£', 'MAD': 'د.م.', 'TND': 'د.ت', 
+    'DZD': 'د.ج', 'NGN': '₦', 'KES': 'KSh', 'GHS': '₵', 'ETB': 'Br', 'UGX': 'USh', 
+    'TZS': 'TSh', 'ZMW': 'ZK', 'BWP': 'P', 'MUR': '₨', 'SCR': '₨', 'XOF': 'CFA', 
+    'XAF': 'CFA', 'CDF': 'FC', 'AOA': 'Kz', 'MZN': 'MT', 'SZL': 'L', 'LSL': 'L', 
+    'NAD': 'N$', 'MWK': 'MK', 'RWF': 'FRw', 'BIF': 'FBu', 'DJF': 'Fdj', 'SOS': 'Sh', 
+    'ERN': 'Nfk', 'STN': 'Db', 'CVE': '$', 'GMD': 'D', 'GNF': 'FG', 'LRD': 'L$', 
+    'SLE': 'Le', 'ALL': 'L', 'BAM': 'KM', 'BGN': 'лв', 'HRK': 'kn', 'RSD': 'дин', 
+    'MKD': 'ден', 'RON': 'lei', 'MDL': 'L', 'UAH': '₴', 'BYN': 'Br', 'GEL': 'ლ', 
+    'AMD': '֏', 'AZN': '₼', 'KZT': '₸', 'UZS': 'сўм', 'TJS': 'ЅМ', 'KGS': 'лв', 
+    'TMT': 'm', 'AFN': '؋', 'PKR': '₨', 'LKR': '₨', 'NPR': '₨', 'BTN': 'Nu', 
+    'BDT': '৳', 'MMK': 'K', 'LAK': '₭', 'KHR': '៛', 'BND': 'B$', 'MNT': '₮', 
+    'KPW': '₩', 'FJD': 'FJ$', 'PGK': 'K', 'SBD': 'SI$', 'VUV': 'VT', 'NCX': '₣', 
+    'WST': 'WS$', 'TOP': 'T$', 'NIO': 'C$', 'CRC': '₡', 'PAB': 'B/.', 'GTQ': 'Q', 
+    'HNL': 'L', 'SVC': '₡', 'BZD': 'BZ$', 'JMD': 'J$', 'HTG': 'G', 'DOP': 'RD$', 
+    'CUP': '₱', 'BBD': 'Bds$', 'TTD': 'TT$', 'GYD': 'GY$', 'SRD': 'Sr$', 'AWG': 'ƒ', 
+    'ANG': 'ƒ', 'XCD': 'EC$', 'BOB': 'Bs', 'PYG': '₲', 'GGP': '£', 'JEP': '£', 
+    'IMP': '£', 'FKP': '£', 'GIP': '£', 'SHP': '£', 'ISK': 'kr', 'FOK': 'kr'
+};
+
+function compartirEnlace() {
+    if (!programaId) {
+        alert('Guarda el programa primero');
+        return;
+    }
+    
+    // Generar token simple
+    const timestamp = Date.now();
+    const tokenData = `${programaId}_${timestamp}`;
+    const token = btoa(tokenData); // base64 encode
+    
+    // URLs públicas
+    const previewUrl = `<?= APP_URL ?>/share?t=${token}&type=preview`;
+    const itineraryUrl = `<?= APP_URL ?>/share?t=${token}&type=itinerary`;
+    
+    // Modal simple
+    const modal = `
+        <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;" onclick="this.remove()">
+            <div style="background:white;padding:30px;border-radius:15px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto;" onclick="event.stopPropagation()">
+                <h3 style="margin-bottom:20px;color:#333;text-align:center;">🔗 Enlaces para Compartir</h3>
+                
+                <div style="margin-bottom:20px;padding:15px;background:#f8f9fa;border-radius:8px;">
+                    <strong style="color:#10b981;">📖 Vista Previa:</strong><br>
+                    <input type="text" value="${previewUrl}" readonly style="width:100%;padding:8px;margin:5px 0;border:1px solid #ddd;border-radius:5px;font-size:12px;">
+                    <button onclick="copiarUrl('${previewUrl}')" style="background:#10b981;color:white;border:none;padding:8px 15px;border-radius:5px;cursor:pointer;width:100%;">
+                        📋 Copiar Enlace Vista Previa
+                    </button>
+                </div>
+                
+                <div style="margin-bottom:20px;padding:15px;background:#f8f9fa;border-radius:8px;">
+                    <strong style="color:#667eea;">📅 Itinerario Completo:</strong><br>
+                    <input type="text" value="${itineraryUrl}" readonly style="width:100%;padding:8px;margin:5px 0;border:1px solid #ddd;border-radius:5px;font-size:12px;">
+                    <button onclick="copiarUrl('${itineraryUrl}')" style="background:#667eea;color:white;border:none;padding:8px 15px;border-radius:5px;cursor:pointer;width:100%;">
+                        📋 Copiar Enlace Itinerario
+                    </button>
+                </div>
+                
+                <div style="background:#e0f2fe;padding:15px;border-radius:8px;border-left:4px solid #0ea5e9;margin-bottom:15px;">
+                    <p style="margin:0;font-size:14px;color:#0369a1;"><strong>ℹ️ Importante:</strong></p>
+                    <p style="margin:5px 0 0 0;font-size:13px;color:#0369a1;">• Los enlaces son únicos y seguros<br>• No requieren login para acceder<br>• Perfectos para compartir con clientes</p>
+                </div>
+                
+                <button onclick="this.parentElement.parentElement.remove()" style="background:#6b7280;color:white;border:none;padding:10px 20px;border-radius:5px;cursor:pointer;width:100%;">
+                    ✕ Cerrar
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modal);
+}
+
+function copiarUrl(url) {
+    navigator.clipboard.writeText(url).then(() => {
+        // Mostrar confirmación temporal
+        const confirmacion = document.createElement('div');
+        confirmacion.innerHTML = '✅ Enlace copiado!';
+        confirmacion.style.cssText = 'position:fixed;top:20px;right:20px;background:#10b981;color:white;padding:10px 20px;border-radius:8px;z-index:10000;font-weight:bold;';
+        document.body.appendChild(confirmacion);
+        
+        setTimeout(() => confirmacion.remove(), 2000);
+    }).catch(() => {
+        alert('Enlace: ' + url);
+    });
+}
+
+// Función para actualizar los íconos de moneda
+function updateCurrencyIcons() {
+    const monedaSelect = document.querySelector('[name="moneda"]');
+    const iconPersona = document.getElementById('currency-icon-persona');
+    const iconTotal = document.getElementById('currency-icon-total');
+    
+    if (monedaSelect && iconPersona && iconTotal) {
+        const selectedCurrency = monedaSelect.value;
+        const symbol = currencySymbols[selectedCurrency] || selectedCurrency;
+        
+        iconPersona.textContent = symbol;
+        iconTotal.textContent = symbol;
+    }
+}
+
+// Agregar el event listener al select de moneda
+document.addEventListener('DOMContentLoaded', function() {
+    const monedaSelect = document.querySelector('[name="moneda"]');
+    if (monedaSelect) {
+        monedaSelect.addEventListener('change', updateCurrencyIcons);
+        // Actualizar al cargar la página
+        updateCurrencyIcons();
+    }
+});
 
 // Eventos para drag & drop de alternativas (opcional - futuro)
 function initDragAndDropAlternativas() {

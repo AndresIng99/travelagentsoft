@@ -21,6 +21,31 @@ App::requireRole('admin');
 
 class AdminAPI {
     private $db;
+
+    private function validatePassword($password) {
+        // Validaciones
+        if (strlen($password) < 8) {
+            return ['valid' => false, 'message' => 'La contraseña debe tener al menos 8 caracteres'];
+        }
+        
+        if (!preg_match('/[A-Z]/', $password)) {
+            return ['valid' => false, 'message' => 'La contraseña debe incluir al menos una letra mayúscula (A-Z)'];
+        }
+        
+        if (!preg_match('/[a-z]/', $password)) {
+            return ['valid' => false, 'message' => 'La contraseña debe incluir al menos una letra minúscula (a-z)'];
+        }
+        
+        if (!preg_match('/[0-9]/', $password)) {
+            return ['valid' => false, 'message' => 'La contraseña debe incluir al menos un número (0-9)'];
+        }
+        
+        if (!preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)) {
+            return ['valid' => false, 'message' => 'La contraseña debe incluir al menos un carácter especial (!@#$%^&*)'];
+        }
+        
+        return ['valid' => true, 'message' => 'Contraseña válida'];
+    }
     
     public function __construct() {
         try {
@@ -119,8 +144,25 @@ class AdminAPI {
                 throw new Exception('El nombre de usuario debe tener entre 3 y 50 caracteres');
             }
             
-            if (strlen($password) < 6) {
-                throw new Exception('La contraseña debe tener al menos 6 caracteres');
+            // Validar longitud mínima
+            if (strlen($password) < 8) {
+                throw new Exception('La contraseña debe tener al menos 8 caracteres');
+            }
+            // Validar mayúscula
+            if (!preg_match('/[A-Z]/', $password)) {
+                throw new Exception('La contraseña debe incluir al menos una letra mayúscula (A-Z)');
+            }
+            // Validar minúscula
+            if (!preg_match('/[a-z]/', $password)) {
+                throw new Exception('La contraseña debe incluir al menos una letra minúscula (a-z)');
+            }
+            // Validar número
+            if (!preg_match('/[0-9]/', $password)) {
+                throw new Exception('La contraseña debe incluir al menos un número (0-9)');
+            }
+            // Validar carácter especial
+            if (!preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)) {
+                throw new Exception('La contraseña debe incluir al menos un carácter especial (!@#$%^&*)');
             }
             
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -183,7 +225,7 @@ class AdminAPI {
                 throw new Exception('Usuario no encontrado');
             }
             
-            // Validar datos
+            // Validar datos básicos
             $username = trim($_POST['username'] ?? '');
             $email = trim($_POST['email'] ?? '');
             $full_name = trim($_POST['full_name'] ?? '');
@@ -213,28 +255,64 @@ class AdminAPI {
                 throw new Exception('El nombre de usuario o email ya existe en otro usuario');
             }
             
-            // Preparar datos para actualizar
-            $updateData = [
-                'username' => $username,
-                'email' => $email,
-                'full_name' => $full_name,
-                'role' => $role,
-                'active' => $active,
-                'updated_at' => date('Y-m-d H:i:s')
-            ];
+            // Preparar consulta SQL manualmente para mayor control
+            $updateFields = [];
+            $updateValues = [];
+            
+            $updateFields[] = "username = ?";
+            $updateValues[] = $username;
+            
+            $updateFields[] = "email = ?";
+            $updateValues[] = $email;
+            
+            $updateFields[] = "full_name = ?";
+            $updateValues[] = $full_name;
+            
+            $updateFields[] = "role = ?";
+            $updateValues[] = $role;
+            
+            $updateFields[] = "active = ?";
+            $updateValues[] = $active;
+            
+            $updateFields[] = "updated_at = ?";
+            $updateValues[] = date('Y-m-d H:i:s');
             
             // Solo actualizar contraseña si se proporcionó una nueva
             if (!empty($password)) {
-                if (strlen($password) < 6) {
-                    throw new Exception('La contraseña debe tener al menos 6 caracteres');
+                // Validar longitud mínima
+                if (strlen($password) < 8) {
+                    throw new Exception('La contraseña debe tener al menos 8 caracteres');
                 }
-                $updateData['password'] = password_hash($password, PASSWORD_DEFAULT);
+                // Validar mayúscula
+                if (!preg_match('/[A-Z]/', $password)) {
+                    throw new Exception('La contraseña debe incluir al menos una letra mayúscula (A-Z)');
+                }
+                // Validar minúscula
+                if (!preg_match('/[a-z]/', $password)) {
+                    throw new Exception('La contraseña debe incluir al menos una letra minúscula (a-z)');
+                }
+                // Validar número
+                if (!preg_match('/[0-9]/', $password)) {
+                    throw new Exception('La contraseña debe incluir al menos un número (0-9)');
+                }
+                // Validar carácter especial
+                if (!preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)) {
+                    throw new Exception('La contraseña debe incluir al menos un carácter especial (!@#$%^&*)');
+                }
+                
+                $updateFields[] = "password = ?";
+                $updateValues[] = password_hash($password, PASSWORD_DEFAULT);
             }
             
-            // Actualizar usuario
-            $updated = $this->db->update('users', $updateData, ['id' => $id]);
+            // Agregar ID al final para la condición WHERE
+            $updateValues[] = $id;
             
-            if (!$updated) {
+            // Construir y ejecutar consulta
+            $sql = "UPDATE users SET " . implode(", ", $updateFields) . " WHERE id = ?";
+            
+            $stmt = $this->db->query($sql, $updateValues);
+            
+            if (!$stmt) {
                 throw new Exception('Error al actualizar el usuario en la base de datos');
             }
             
@@ -244,6 +322,7 @@ class AdminAPI {
             ];
             
         } catch(Exception $e) {
+            error_log("Error en updateUser: " . $e->getMessage());
             throw new Exception('Error al actualizar usuario: ' . $e->getMessage());
         }
     }
@@ -254,6 +333,8 @@ class AdminAPI {
             if (!$id) {
                 throw new Exception('ID de usuario requerido');
             }
+            
+            error_log("Toggling user ID: " . $id);
             
             // No permitir desactivar al usuario con ID 1 (admin principal)
             if ($id === 1) {
@@ -266,26 +347,29 @@ class AdminAPI {
                 throw new Exception('Usuario no encontrado');
             }
             
+            error_log("Current user status: " . print_r($user, true));
+            
             // Cambiar estado
             $newStatus = $user['active'] ? 0 : 1;
             $action = $newStatus ? 'activado' : 'desactivado';
             
-            $updated = $this->db->update('users', 
-                ['active' => $newStatus, 'updated_at' => date('Y-m-d H:i:s')], 
-                ['id' => $id]
-            );
+            // Actualizar en base de datos
+            $updated = $this->db->update('users', ['active' => $newStatus], 'id = ?', [$id]);
             
             if (!$updated) {
-                throw new Exception('Error al cambiar el estado del usuario');
+                throw new Exception('Error al actualizar el estado del usuario');
             }
+            
+            error_log("User {$id} status changed to: " . $newStatus);
             
             return [
                 'success' => true,
-                'message' => "Usuario '{$user['username']}' {$action} correctamente"
+                'message' => "Usuario {$action} correctamente"
             ];
             
         } catch(Exception $e) {
-            throw new Exception('Error al cambiar estado del usuario: ' . $e->getMessage());
+            error_log("Toggle user error: " . $e->getMessage());
+            throw new Exception('Error al cambiar estado: ' . $e->getMessage());
         }
     }
     
@@ -545,6 +629,17 @@ class AdminAPI {
             }
         }
         
+        // ✅ CONVERSIÓN IMPORTANTE
+        if (isset($configData['maintenance_mode'])) {
+            $configData['maintenance_mode'] = (int)$configData['maintenance_mode'];
+        }
+        if (isset($configData['session_timeout'])) {
+            $configData['session_timeout'] = (int)$configData['session_timeout'];
+        }
+        if (isset($configData['max_file_size'])) {
+            $configData['max_file_size'] = (int)$configData['max_file_size'];
+        }
+        
         return $configData;
     }
     
@@ -573,8 +668,35 @@ class AdminAPI {
     }
     
     private function updateConfig($id, $data) {
-        $data['updated_at'] = date('Y-m-d H:i:s');
-        return $this->db->update('company_settings', $data, ['id' => $id]);
+        try {
+            $data['updated_at'] = date('Y-m-d H:i:s');
+            
+            // Preparar consulta SQL manualmente
+            $updateFields = [];
+            $updateValues = [];
+            
+            foreach ($data as $key => $value) {
+                $updateFields[] = "`{$key}` = ?";
+                $updateValues[] = $value;
+            }
+            
+            // Agregar ID para WHERE
+            $updateValues[] = $id;
+            
+            // Ejecutar consulta
+            $sql = "UPDATE company_settings SET " . implode(", ", $updateFields) . " WHERE id = ?";
+            $result = $this->db->query($sql, $updateValues);
+            
+            if (!$result) {
+                throw new Exception('Error al ejecutar la consulta de actualización');
+            }
+            
+            return true;
+            
+        } catch(Exception $e) {
+            error_log("Error en updateConfig: " . $e->getMessage());
+            throw $e;
+        }
     }
     
     private function createConfig($data) {
