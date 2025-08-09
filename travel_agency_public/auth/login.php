@@ -14,6 +14,22 @@ if (empty($username) || empty($password)) {
 try {
     $db = Database::getInstance();
     
+    // ✅ VERIFICAR MODO MANTENIMIENTO
+    $config = $db->fetch("SELECT maintenance_mode FROM company_settings LIMIT 1");
+    if ($config && $config['maintenance_mode'] == 1) {
+        // Verificar si el usuario existe Y es admin
+        $user = $db->fetch(
+            "SELECT role FROM users WHERE username = ? AND active = 1",
+            [$username]
+        );
+        
+        // Si no es admin, bloquear acceso
+        if (!$user || $user['role'] !== 'admin') {
+            $_SESSION['error'] = '🚧 El sitio está en modo mantenimiento. Solo los administradores pueden acceder.';
+            App::redirect('/login');
+        }
+    }
+    
     $user = $db->fetch(
         "SELECT id, username, password, full_name, role, active FROM users WHERE username = ? AND active = 1",
         [$username]
