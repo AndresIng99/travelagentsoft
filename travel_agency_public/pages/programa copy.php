@@ -273,6 +273,7 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
 }
 
 .estancia-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
     width: 24px;
@@ -285,31 +286,34 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
     align-items: center;
     justify-content: center;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
     position: relative;
     overflow: hidden;
 }
 
-/* Botón MÁS - Verde */
-.estancia-btn[onclick*="+ 1"] {
-    background: #48bb78;
-    box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
+.estancia-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
 }
 
-.estancia-btn[onclick*="+ 1"]:hover:not(:disabled) {
-    background: #38a169;
-    box-shadow: 0 4px 15px rgba(72, 187, 120, 0.4);
+.estancia-btn:hover:not(:disabled)::before {
+    left: 100%;
 }
 
-/* Botón MENOS - Rojo suave */
-.estancia-btn[onclick*="- 1"] {
-    background: #f56565;
-    box-shadow: 0 2px 8px rgba(245, 101, 101, 0.3);
+.estancia-btn:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
-.estancia-btn[onclick*="- 1"]:hover:not(:disabled) {
-    background: #e53e3e;
-    box-shadow: 0 4px 15px rgba(245, 101, 101, 0.4);
-}}
+.estancia-btn:active:not(:disabled) {
+    transform: translateY(0) scale(0.95);
+}
 
 .estancia-btn:disabled {
     background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%);
@@ -378,14 +382,7 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
     height: 36px;
     font-size: 16px;
     border-radius: 12px;
-}
-
-.day-controls-detail .estancia-btn[onclick*="+ 1"] {
-    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
-}
-
-.day-controls-detail .estancia-btn[onclick*="- 1"] {
-    box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .day-controls-detail .estancia-display {
@@ -819,15 +816,9 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
 }
 
 .day-sidebar-item.active {
-    background: white;
-    color: #2d3748;
-    border: 3px solid #4a5568;
-    box-shadow: 0 8px 25px rgba(74, 85, 104, 0.4), 0 4px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
-}
-.day-sidebar-item.active:hover {
-    box-shadow: 0 12px 35px rgba(74, 85, 104, 0.5), 0 6px 15px rgba(0, 0, 0, 0.2);
-    transform: translateY(-3px);
+    background: linear-gradient(135deg, #2d5a4a 0%, #4a7c59 100%);
+    color: white;
+    border-color: #2d5a4a;
 }
 
 .day-item-header {
@@ -878,13 +869,13 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
 }
 
 .day-sidebar-item.active .day-action-btn.edit {
-    background: rgba(108, 117, 125, 0.2);
-    color: #6c757d;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
 .day-sidebar-item.active .day-action-btn.delete {
-    background: rgba(220, 53, 69, 0.2);
-    color: #dc3545;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
 .day-action-btn:hover {
@@ -923,8 +914,7 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
 }
 
 .day-sidebar-item.active .day-services-count {
-    background: #4a5568;
-    color: white;
+    background: rgba(255, 255, 255, 0.3);
 }
 
 /* Contenido del día seleccionado */
@@ -1195,94 +1185,85 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
         
         /* Container principal */
         .main-container {
-            min-height: 100vh;
-            padding: 20px;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: block; /* Cambiar de flex a block */
             margin-left: 0;
             transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
+        
         .form-section {
-            width: 98%;
-            max-width: none;
-            margin: 0;
+            width: 80%; /* Hacer que ocupe el 80% del ancho */
+            max-width: 1400px; /* Aumentar el ancho máximo */
+            margin: 0 auto; /* Centrar horizontalmente */
         }
 
         .section-card {
             background: white;
-            border-radius: 24px;
-            box-shadow: 0 8px 35px rgba(0,0,0,0.12);
-            margin-bottom: 50px;
+            border-radius: 16px; /* Bordes más redondeados */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08); /* Sombra más prominente */
+            margin-bottom: 40px; /* Más espacio entre tarjetas */
             overflow: hidden;
             border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
         }
 
-        .section-card:hover {
-            box-shadow: 0 12px 45px rgba(0,0,0,0.15);
-            transform: translateY(-2px);
+        .section-header {
+            padding: 40px 50px; /* Más padding */
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .section-body {
+            padding: 50px; /* Más padding interno */
+        }
+
+        .section-title {
+            font-size: 24px; /* Título más grande */
+            font-weight: 700;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title i {
+            color: var(--primary-color);
+            font-size: 26px;
         }
 
         /* Mejorar campos del formulario */
         .form-group {
             flex: 1;
-            margin-bottom: 45px;
-            position: relative;
+            margin-bottom: 32px; /* Más espacio entre campos */
         }
 
         .form-label {
             display: block;
-            margin-bottom: 18px;
-            font-weight: 700;
-            color: #1a202c;
-            font-size: 20px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            position: relative;
-        }
-
-        .form-label::before {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 40px;
-            height: 3px;
-            background: var(--primary-gradient);
-            border-radius: 2px;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 16px; /* Etiquetas más grandes */
         }
 
         .form-control {
             width: 100%;
-            padding: 24px 28px;
-            border: 3px solid #e2e8f0;
-            border-radius: 18px;
-            font-size: 20px;
-            font-weight: 500;
-            background: white;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            position: relative;
-        }
-
-        .form-control::placeholder {
-            color: #a0aec0;
-            font-style: italic;
-            font-weight: 400;
+            padding: 16px 20px; /* Campos más grandes */
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 6px rgba(102, 126, 234, 0.15), 0 8px 25px rgba(0,0,0,0.1);
-            transform: translateY(-3px);
-            background: #fafbfc;
-        }
-
-        .form-control:hover:not(:focus) {
-            border-color: #cbd5e0;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
         }
 
         /* Centrar y mejorar botones de acción */
@@ -1295,39 +1276,18 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
         }
 
         .btn {
-            padding: 20px 40px;
-            border-radius: 16px;
-            font-weight: 700;
-            font-size: 18px;
+            padding: 16px 32px; /* Botones más grandes */
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 15px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            gap: 10px;
+            transition: all 0.3s ease;
             border: none;
             cursor: pointer;
-            margin: 0 15px;
-            min-width: 250px;
-            justify-content: center;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.6s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
+            margin: 0 8px;
         }
 
         .btn:hover {
@@ -1353,69 +1313,31 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
         }
         
         .section-header {
-            padding: 60px 70px;
+            padding: 32px 40px;
             border-bottom: 1px solid #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
-            background: #6b7280;
-            color: white;
-            position: relative;
-            overflow: hidden;
         }
-
-       
-        .section-header:hover::before {
-            left: 100%;
-        }
-
+        
         .section-title {
-            font-size: 32px;
-            font-weight: 800;
-            color: #ffffff;
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
             display: flex;
             align-items: center;
-            gap: 20px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            letter-spacing: -0.5px;
-        }
-
-        .section-title i {
-            color: #ffffff;
-            font-size: 36px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            gap: 12px;
         }
         
         .section-body {
-            padding: 70px;
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border-top: 1px solid rgba(0,0,0,0.05);
-            position: relative;
-        }
-
-        .section-body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(0,0,0,0.1), transparent);
+            padding: 40px;
         }
         
         .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 50px;
-            margin-bottom: 35px;
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
+            display: flex;
+            gap: 32px;
+            margin-bottom: 24px;
         }
         
         .form-group {
@@ -1892,56 +1814,22 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
         /* Estilos para biblioteca modal */
         .biblioteca-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
             margin-top: 20px;
-            max-height: 55vh;
+            max-height: 60vh;
             overflow-y: auto;
-            padding: 20px;
-            background: #f8fafc;
-            border-radius: 12px;
+            padding-right: 10px;
         }
-
+        
         .biblioteca-item {
             background: white;
-            border: 2px solid #e2e8f0;
+            border: 2px solid #e0e0e0;
             border-radius: 16px;
             overflow: hidden;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-            position: relative;
-        }
-
-        .biblioteca-item:hover {
-            border-color: #4299e1;
-            box-shadow: 0 12px 30px rgba(66, 153, 225, 0.15);
-            transform: translateY(-3px);
-        }
-
-        .biblioteca-item.selected {
-            border-color: #48bb78;
-            background: #f0fff4;
-            box-shadow: 0 12px 30px rgba(72, 187, 120, 0.2);
-            transform: translateY(-3px);
-        }
-
-        .biblioteca-item.selected::after {
-            content: '✓';
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: #48bb78;
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 14px;
-            box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
         
         .biblioteca-item:hover {
@@ -1956,7 +1844,12 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
             box-shadow: 0 8px 25px rgba(45, 90, 74, 0.3);
         }
         
-        
+        .biblioteca-item-image {
+            height: 180px;
+            background: #f8f9fa;
+            position: relative;
+            overflow: hidden;
+        }
         
         .biblioteca-item-image img {
             width: 100%;
@@ -1969,65 +1862,28 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
             transform: scale(1.1);
         }
         
-        .biblioteca-item-image {
-            height: 140px;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .biblioteca-item-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .biblioteca-item:hover .biblioteca-item-image img {
-            transform: scale(1.05);
-        }
-
         .biblioteca-item-content {
-            padding: 16px;
+            padding: 20px;
         }
-
+        
         .biblioteca-item-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #2d3748;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
             margin-bottom: 8px;
             line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
         }
-
+        
         .biblioteca-item-description {
-            color: #718096;
-            font-size: 13px;
-            line-height: 1.4;
-            margin-bottom: 10px;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 12px;
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-
-        .biblioteca-item-location {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: #4a5568;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .biblioteca-item-location i {
-            color: #e53e3e;
-            font-size: 11px;
-        }
-      
         
         .biblioteca-item-location {
             display: flex;
@@ -2216,14 +2072,11 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
         }
         
         .expand-icon {
-            color: #ffffff;
-            font-size: 24px;
-            transition: all 0.3s ease;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
         }
-
-        .section-header:hover .expand-icon {
-            transform: scale(1.1);
+        
+        .section-header.collapsed .expand-icon {
+            transform: rotate(180deg);
         }
         
         .section-body.collapsed {
@@ -2235,123 +2088,42 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
             position: fixed;
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0,0,0,0.75);
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
             z-index: 10000;
-            backdrop-filter: blur(8px);
-            padding: 0;
-            margin: 0;
-            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        .modal[style*="block"] {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }
-
+        
         .modal-content {
             background: white;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 900px;
-            max-height: 85vh;
-            overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-            animation: modalAppear 0.3s ease-out;
-        }
-
-        @keyframes modalAppear {
-            from {
-                opacity: 0;
-                transform: scale(0.9) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         
-        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
         
         .modal-body {
             padding: 20px;
         }
         
-        .modal-header {
-            padding: 30px 30px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 20px 20px 0 0;
-        }
-
-        .modal-header h3 {
-            margin: 0;
-            font-size: 24px;
-            font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .close-modal {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 20px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .close-modal:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.1);
-        }
-
-        .modal-body {
-            overflow-y: auto;
-            max-height: calc(85vh - 180px);
-        }
-
         .modal-footer {
-            padding: 25px 30px;
-            background: #f8fafc;
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
             display: flex;
-            justify-content: center;
-            gap: 15px;
-            border-radius: 0 0 20px 20px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .modal-footer .btn {
-            min-width: 160px;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .modal-footer .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .modal-footer .btn-primary {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-            color: white;
-        }
-
-        .modal-footer .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            justify-content: flex-end;
+            gap: 10px;
         }
         
         .close-modal {
@@ -2390,7 +2162,10 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
     /* resto igual */
 }
 
-
+.day-sidebar-item.active {
+    background: var(--primary-gradient);
+    /* resto igual */
+}
         .preview-details {
             margin-bottom: 20px;
         }
@@ -2736,277 +2511,13 @@ body {
         margin-left: 0;
     }
 }
-/* ============================================================
-   NUEVOS ESTILOS MEJORADOS PARA FORMULARIO GRANDE
-   ============================================================ */
-
-/* Placeholders y ejemplos mejorados */
-.form-control[placeholder] {
-    position: relative;
-}
-
-.form-group[data-example]::after {
-    content: attr(data-example);
-    position: absolute;
-    top: 100%;
-    left: 0;
-    font-size: 14px;
-    color: #718096;
-    font-style: italic;
-    margin-top: 8px;
-    padding: 8px 12px;
-    background: #f7fafc;
-    border-radius: 8px;
-    border-left: 3px solid var(--primary-color);
-}
-
-/* Efectos de enfoque mejorados */
-.form-group:focus-within .form-label {
-    color: var(--primary-color);
-    transform: translateY(-2px);
-}
-
-.form-group:focus-within .form-label::before {
-    width: 60px;
-    background: var(--primary-color);
-}
-
-/* Animaciones suaves para campos */
-.form-control {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Estados especiales para diferentes tipos de input */
-input[type="date"].form-control {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234299e1'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 20px center;
-    background-size: 24px;
-}
-
-select.form-control {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234299e1'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 20px center;
-    background-size: 20px;
-    appearance: none;
-}
-
-/* Mejorar textarea */
-textarea.form-control {
-    min-height: 140px;
-    resize: vertical;
-    line-height: 1.6;
-}
-
-/* Efecto de carga para campos */
-.form-control.loading {
-    background-image: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-}
-
-/* Indicadores visuales mejorados */
-.form-control:valid:not(:placeholder-shown) {
-    border-color: #48bb78;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2348bb78'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 13l4 4L19 7'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 20px center;
-    background-size: 20px;
-}
-
-.form-control:invalid:not(:placeholder-shown) {
-    border-color: #f56565;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23f56565'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 18L18 6M6 6l12 12'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 20px center;
-    background-size: 20px;
-}
-
-/* Mejorar el expand icon */
-.expand-icon {
-    color: #ffffff;
-    font-size: 24px;
-    transition: all 0.3s ease;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.section-header:hover .expand-icon {
-    transform: scale(1.1);
-}
-
-/* Responsive mejorado */
-@media (max-width: 1200px) {
-    .section-body {
-        padding: 50px;
-    }
-    
-    .section-header {
-        padding: 50px;
-    }
-}
-
-@media (max-width: 768px) {
-    .section-body {
-        padding: 30px;
-    }
-    
-    .section-header {
-        padding: 30px;
-    }
-    
-    .section-title {
-        font-size: 24px;
-    }
-    
-    .form-control {
-        padding: 20px 24px;
-        font-size: 18px;
-    }
-    
-    .form-label {
-        font-size: 18px;
-    }
-}
-/* ============================================================
-   MEJORAS DE CONTRASTE Y UX/UI PARA TÍTULOS
-   ============================================================ */
-
-/* Variaciones de color por sección */
 
 
-/* Hover mejorado para headers */
-.section-header:hover {
-    background: #4b5563;
-    transform: translateY(-1px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-}
-
-.section-header:hover .section-title {
-    color: #ffffff;
-    text-shadow: 0 4px 8px rgba(0,0,0,0.5);
-}
-
-.section-header:hover .section-title i {
-    color: #ffffff;
-    transform: scale(1.05);
-}
-
-/* Estados activos y colapsados */
-.section-header.collapsed {
-    background: #9ca3af;
-}
-
-.section-header.collapsed .section-title,
-.section-header.collapsed .section-title i,
-.section-header.collapsed .expand-icon {
-    color: #ffffff;
-}
-
-/* Indicador visual de estado */
-
-
-/* Mejorar accesibilidad */
-.section-header:focus {
-    outline: 3px solid #63b3ed;
-    outline-offset: 2px;
-}
-
-/* Responsive para títulos */
-@media (max-width: 768px) {
-    .section-title {
-        font-size: 24px;
-        gap: 15px;
-    }
-    
-    .section-title i {
-        font-size: 28px;
-    }
-    
-    .expand-icon {
-        font-size: 20px;
-    }
-}
-
-/* Animación de carga para títulos */
-@keyframes titleGlow {
-    0%, 100% { text-shadow: 0 3px 6px rgba(0,0,0,0.4); }
-    50% { text-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 20px rgba(255,255,255,0.1); }
-}
-
-.section-header:hover .section-title {
-    animation: titleGlow 2s ease-in-out infinite;
-}
-.day-action-btn.edit {
-    display: none !important;
-}
-/* ============================================================
-   CENTRADO FORZADO PARA MODAL
-   ============================================================ */
-
-#bibliotecaModal {
-    display: none;
-}
-
-#bibliotecaModal.show,
-#bibliotecaModal[style*="block"] {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 20px !important;
-    box-sizing: border-box !important;
-}
-
-/* Asegurar que el modal-content esté centrado */
-#bibliotecaModal .modal-content {
-    margin: auto;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-/* Para pantallas pequeñas */
-@media (max-height: 600px) {
-    #bibliotecaModal .modal-content {
-        top: 0;
-        transform: none;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        max-height: calc(100vh - 40px);
-    }
-}
-
-
-
-/* Ocultar pestañas si no está guardado */
-.programa-no-guardado .tab-item[data-tab="dia-a-dia"],
-.programa-no-guardado .tab-item[data-tab="precio"],
-.programa-no-guardado .tab-item[onclick*="abrirVistaPrevia"],
-.programa-no-guardado .nav-button[onclick*="compartirEnlace"] {
-    opacity: 0.3;
-    pointer-events: none;
-    position: relative;
-}
-
-.programa-no-guardado .tab-item[data-tab="dia-a-dia"]::after,
-.programa-no-guardado .tab-item[data-tab="precio"]::after,
-.programa-no-guardado .tab-item[onclick*="abrirVistaPrevia"]::after,
-.programa-no-guardado .nav-button[onclick*="compartirEnlace"]::after {
-    content: "🔒";
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    font-size: 12px;
-}
     </style>
 </head>
 
-<body class="<?= !$is_editing ? 'programa-no-guardado' : 'programa-guardado' ?>">
+<body>
+    
 
     <!-- Header con componentes -->
 <?= UIComponents::renderHeader($user) ?>
@@ -3075,41 +2586,31 @@ textarea.form-control {
                                 <div class="form-group">
                                     <label class="form-label" for="traveler-name">Nombre del viajero *</label>
                                     <input type="text" class="form-control" id="traveler-name" name="traveler_name" 
-                                        value="<?= htmlspecialchars($form_data['traveler_name']) ?>" 
-                                        placeholder="Ejemplo: María Alejandra García" required>
+                                           value="<?= htmlspecialchars($form_data['traveler_name']) ?>" required>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label" for="traveler-lastname">Apellido del viajero *</label>
                                     <input type="text" class="form-control" id="traveler-lastname" name="traveler_lastname" 
-                                        value="<?= htmlspecialchars($form_data['traveler_lastname']) ?>" 
-                                        placeholder="Ejemplo: Rodríguez Martínez" required>
+                                           value="<?= htmlspecialchars($form_data['traveler_lastname']) ?>" required>
                                 </div>
                             </div>
                             
                             <div class="form-group">
                                 <label class="form-label" for="destination">Destino *</label>
                                 <input type="text" class="form-control" id="destination" name="destination" 
-                                    value="<?= htmlspecialchars($form_data['destination']) ?>" 
-                                    placeholder="Ejemplo: Tailandia - Bangkok y Phuket" required>
+                                       value="<?= htmlspecialchars($form_data['destination']) ?>" required>
                             </div>
                             
                             <div class="form-row">
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label class="form-label" for="arrival-date">Fecha de llegada *</label>
-                                        <input type="date" class="form-control" id="arrival-date" name="arrival_date" 
-                                            value="<?= htmlspecialchars($form_data['arrival_date']) ?>" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label">Fecha de salida</label>
-                                        <input type="text" class="form-control" id="calculated-departure" name="calculated_departure" readonly 
-                                            placeholder="Se calcula automáticamente según los días del programa"
-                                            style="background: #f8fafc; color: #718096; font-style: italic;">
-                                        <small class="form-text text-muted">
-                                            <i class="fas fa-info-circle"></i> La fecha de salida se calcula automáticamente basada en los días agregados en "Día a día"
-                                        </small>
-                                    </div>
-                                    <input type="hidden" name="departure_date" id="departure-date-hidden" value="">
+                                <div class="form-group">
+                                    <label class="form-label" for="arrival-date">Fecha de llegada *</label>
+                                    <input type="date" class="form-control" id="arrival-date" name="arrival_date" 
+                                           value="<?= htmlspecialchars($form_data['arrival_date']) ?>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="departure-date">Fecha de salida *</label>
+                                    <input type="date" class="form-control" id="departure-date" name="departure_date" 
+                                           value="<?= htmlspecialchars($form_data['departure_date']) ?>" required>
                                 </div>
                             </div>
                             
@@ -3145,8 +2646,7 @@ textarea.form-control {
                                 <div class="form-group">
                                     <label class="form-label" for="program-title">Título del programa</label>
                                     <input type="text" class="form-control" id="program-title" name="program_title" 
-                                        value="<?= htmlspecialchars($form_data['program_title']) ?>"
-                                        placeholder="Ejemplo: Descubrir Tailandia en familia durante 15 días">
+                                           value="<?= htmlspecialchars($form_data['program_title']) ?>">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label" for="language">Idioma predeterminado</label>
@@ -3861,7 +3361,6 @@ async function guardarPrograma() {
             setTimeout(() => {
                 submitBtn.innerHTML = '<i class="fas fa-save"></i> Actualizar programa';
             }, 1600);
-            document.body.className = 'programa-guardado';
         }
         
     } else {
@@ -4138,14 +3637,7 @@ function agregarDia() {
 
 async function abrirModalBiblioteca() {
     const modal = document.getElementById('bibliotecaModal');
-    modal.style.display = 'flex';
-    modal.style.alignItems = 'center';
-    modal.style.justifyContent = 'center';
-    
-    // Forzar el layout
-    setTimeout(() => {
-        modal.classList.add('show');
-    }, 10);
+    modal.style.display = 'block';
     
     await cargarDiasBiblioteca();
 }
@@ -4323,12 +3815,7 @@ async function agregarDiaSeleccionado() {
 
 function cerrarModalBiblioteca() {
     const modal = document.getElementById('bibliotecaModal');
-    modal.classList.remove('show');
-    
-    setTimeout(() => {
-        modal.style.display = 'none';
-    }, 300);
-    
+    modal.style.display = 'none';
     selectedDiaId = null;
     document.getElementById('btn-agregar-dia').disabled = true;
     
@@ -6392,59 +5879,6 @@ function abrirMiBiblioteca() {
         window.location.href = '<?= APP_URL ?>/biblioteca';
     }, 100);
 }
-// Función para calcular y mostrar fecha de salida automáticamente
-// Función para calcular y mostrar fecha de salida automáticamente
-function actualizarFechaSalida() {
-    const fechaLlegada = document.getElementById('arrival-date').value;
-    const calculatedDeparture = document.getElementById('calculated-departure');
-    const hiddenDeparture = document.getElementById('departure-date-hidden');
-    
-    if (!fechaLlegada || !diasPrograma || diasPrograma.length === 0) {
-        calculatedDeparture.value = 'Agrega días al programa primero';
-        hiddenDeparture.value = ''; // Limpiar campo hidden
-        return;
-    }
-    
-    // Calcular duración total
-    let duracionTotal = 0;
-    diasPrograma.forEach(dia => {
-        const duracion = parseInt(dia.duracion_estancia) || 1;
-        duracionTotal += duracion;
-    });
-    
-    if (duracionTotal === 0) {
-        duracionTotal = diasPrograma.length;
-    }
-    
-    // Calcular fecha de salida
-    const fechaInicio = new Date(fechaLlegada);
-    const fechaSalida = new Date(fechaInicio);
-    fechaSalida.setDate(fechaInicio.getDate() + duracionTotal - 1);
-    
-    // Formatear fecha para mostrar
-    const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
-    const fechaFormateada = fechaSalida.toLocaleDateString('es-ES', opciones);
-    
-    // Formatear fecha para el backend (YYYY-MM-DD)
-    const fechaBackend = fechaSalida.toISOString().split('T')[0];
-    
-    calculatedDeparture.value = `${fechaFormateada} (${duracionTotal} días total)`;
-    hiddenDeparture.value = fechaBackend; // Enviar al backend
-}
-
-// Ejecutar cuando cambie la fecha de llegada o se carguen días
-document.getElementById('arrival-date')?.addEventListener('change', actualizarFechaSalida);
-document.addEventListener('DOMContentLoaded', function() {
-    if (document.getElementById('arrival-date').value) {
-        actualizarFechaSalida();
-    }
-});
-// Función que se ejecuta después de cargar días
-const originalCargarDiasPrograma = cargarDiasPrograma;
-cargarDiasPrograma = async function() {
-    await originalCargarDiasPrograma();
-    actualizarFechaSalida();
-};
 </script>
 </body>
 </html>

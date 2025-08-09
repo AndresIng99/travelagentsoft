@@ -76,27 +76,40 @@ $titulo_programa = $programa['titulo_programa'] ?: 'Mi Viaje a ' . $programa['de
 $nombre_viajero = trim($programa['nombre_viajero'] . ' ' . $programa['apellido_viajero']);
 $imagen_portada = $programa['foto_portada'] ?: APP_URL . '/assets/images/default-travel.jpg';
 $destino = $programa['destino'];
-$num_dias = count($dias);
+$num_dias = $duracion_dias; // Usar la duración calculada en lugar del conteo
 $num_pasajeros = $programa['numero_pasajeros'];
 
 // Calcular duración del viaje
-$duracion_dias = 'N/A';
-if ($programa['fecha_llegada'] && $programa['fecha_salida']) {
+$duracion_dias = 0;
+foreach ($dias as $dia) {
+    $duracion_estancia = intval($dia['duracion_estancia']) ?: 1;
+    $duracion_dias += $duracion_estancia;
+}
+
+// Si no hay días en el programa, usar el conteo de días
+if ($duracion_dias == 0) {
+    $duracion_dias = count($dias);
+}
+
+// Calcular fechas basado en fecha de llegada + días del programa
+$fecha_inicio_formatted = '';
+$fecha_fin_formatted = '';
+
+if ($programa['fecha_llegada']) {
     $fecha_inicio = new DateTime($programa['fecha_llegada']);
-    $fecha_fin = new DateTime($programa['fecha_salida']);
-    $diferencia = $fecha_inicio->diff($fecha_fin);
-    $duracion_dias = $diferencia->days > 0 ? $diferencia->days : 1;
+    $fecha_inicio_formatted = $fecha_inicio->format('d M Y');
+    
+    // Calcular fecha de salida: fecha_llegada + duración_días - 1
+    $fecha_fin = clone $fecha_inicio;
+    $fecha_fin->add(new DateInterval('P' . ($duracion_dias - 1) . 'D'));
+    $fecha_fin_formatted = $fecha_fin->format('d M Y');
 }
 
 // URL única para compartir
 $share_token = md5($programa_id . 'travel_preview_' . date('Y-m-d'));
 $share_url = APP_URL . '/preview?id=' . $programa_id . '&token=' . $share_token;
 
-// Fechas formateadas
-$fecha_inicio_formatted = $programa['fecha_llegada'] ? 
-    date('d M Y', strtotime($programa['fecha_llegada'])) : '';
-$fecha_fin_formatted = $programa['fecha_salida'] ? 
-    date('d M Y', strtotime($programa['fecha_salida'])) : '';
+
 ?>
 
 <!DOCTYPE html>
@@ -909,7 +922,7 @@ body {
             <div class="trip-summary">
                 <div class="summary-item">
                     <i class="fas fa-route"></i>
-                    <span>Itinerario personalizado de <?= $num_dias ?> <?= $num_dias == 1 ? 'día' : 'días' ?></span>
+                    <span class="hero-title">Itinerario personalizado de <?= $duracion_dias ?> <?= $duracion_dias == 1 ? 'día' : 'días' ?></span>
                 </div>
                 <div class="summary-item">
                     <i class="fas fa-heart"></i>

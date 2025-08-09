@@ -250,22 +250,36 @@ function formatAccommodationType($tipo) {
 $titulo_programa = $programa['titulo_programa'] ?: 'Viaje a ' . $programa['destino'];
 $nombre_viajero = trim($programa['nombre_viajero'] . ' ' . $programa['apellido_viajero']);
 $imagen_portada = $programa['foto_portada'] ?: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&h=600&fit=crop';
-$num_dias = count($dias);
+$num_dias = $duracion_dias; 
 $num_pasajeros = $programa['numero_pasajeros'];
 
 // Calcular duración
-$duracion_dias = 'N/A';
-if ($programa['fecha_llegada'] && $programa['fecha_salida']) {
-    $fecha_inicio = new DateTime($programa['fecha_llegada']);
-    $fecha_fin = new DateTime($programa['fecha_salida']);
-    $diferencia = $fecha_inicio->diff($fecha_fin);
-    $duracion_dias = $diferencia->days + 1; // +1 porque si llegas un día y sales el siguiente, son 2 días
+// Calcular duración real basada en los días del programa
+$duracion_dias = 0;
+foreach ($dias as $dia) {
+    $duracion_estancia = intval($dia['duracion_estancia']) ?: 1;
+    $duracion_dias += $duracion_estancia;
 }
 
-$fecha_inicio_formatted = $programa['fecha_llegada'] ? 
-    date('d M Y', strtotime($programa['fecha_llegada'])) : '';
-$fecha_fin_formatted = $programa['fecha_salida'] ? 
-    date('d M Y', strtotime($programa['fecha_salida'])) : '';
+// Si no hay días en el programa, usar el conteo de días
+if ($duracion_dias == 0) {
+    $duracion_dias = count($dias);
+}
+
+// Calcular fechas basado en fecha de llegada + días del programa
+$fecha_inicio_formatted = '';
+$fecha_fin_formatted = '';
+
+if ($programa['fecha_llegada']) {
+    $fecha_inicio = new DateTime($programa['fecha_llegada']);
+    $fecha_inicio_formatted = $fecha_inicio->format('d M Y');
+    
+    // Calcular fecha de salida: fecha_llegada + duración_días - 1
+    $fecha_fin = clone $fecha_inicio;
+    $fecha_fin->add(new DateInterval('P' . ($duracion_dias - 1) . 'D'));
+    $fecha_fin_formatted = $fecha_fin->format('d M Y');
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -373,11 +387,14 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             margin-bottom: 5px;
         }
         
-        .hero-stat-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
+        .hero-stat-title {
+            display: block;
+            font-size: 12px;
+            color: rgba(255,255,255,0.8);
             text-transform: uppercase;
             letter-spacing: 1px;
+            margin-bottom: 4px;
+            font-weight: 600;
         }
         
         .scroll-indicator {
@@ -1985,15 +2002,15 @@ body {
     <section class="hero-section">
         <div class="hero-content">
             <div class="hero-subtitle">Tu aventura perfecta</div>
-            <h1 class="hero-title"><?= htmlspecialchars($titulo_programa) ?></h1>
+            <h1 class="hero-title">Itinerario personalizado de <?= $duracion_dias ?> <?= $duracion_dias == 1 ? 'día' : 'días' ?></h1>
             <div class="hero-description">
                 Diseñado especialmente para <strong><?= htmlspecialchars($nombre_viajero) ?></strong>
             </div>
             
             <div class="hero-stats">
                 <div class="hero-stat">
-                    <span class="hero-stat-number"><?= $num_dias ?></span>
-                    <span class="hero-stat-label"><?= $num_dias == 1 ? 'Día' : 'Días' ?></span>
+                    <span class="hero-stat-number"><?= $duracion_dias ?></span>
+                    <span class="hero-stat-label"><?= $duracion_dias == 1 ? 'Día' : 'Días' ?></span>
                 </div>
                 <div class="hero-stat">
                     <span class="hero-stat-number"><?= $num_pasajeros ?></span>
@@ -2001,6 +2018,7 @@ body {
                 </div>
                 <?php if ($fecha_inicio_formatted): ?>
                 <div class="hero-stat">
+                    <span class="hero-stat-title">Fecha de Salida</span>
                     <span class="hero-stat-number"><?= date('j', strtotime($programa['fecha_llegada'])) ?></span>
                     <span class="hero-stat-label"><?= date('M Y', strtotime($programa['fecha_llegada'])) ?></span>
                 </div>
@@ -2043,8 +2061,9 @@ body {
                                 <i class="fas fa-calendar-alt"></i>
                             </div>
                             <div class="detail-info">
-                                <h4>Fechas</h4>
-                                <p><?= $fecha_inicio_formatted ?> - <?= $fecha_fin_formatted ?></p>
+                                <h4>Fechas del Viaje</h4>
+                                <p><strong>Salida:</strong> <?= $fecha_inicio_formatted ?><br>
+                                <strong>Regreso:</strong> <?= $fecha_fin_formatted ?></p>
                             </div>
                         </div>
                         
@@ -2064,7 +2083,7 @@ body {
                             </div>
                             <div class="detail-info">
                                 <h4>Duración</h4>
-                                <p><?= $duracion_dias ?> <?= $duracion_dias == 1 ? 'día' : 'días' ?> increíbles</p>
+                                <p><?= $duracion_dias ?> <?= $duracion_dias == 1 ? 'día increíble' : 'días increíbles' ?></p>
                             </div>
                         </div>
                     </div>
@@ -2107,7 +2126,7 @@ body {
                             </div>
                             <div class="detail-info">
                                 <h4>Duración</h4>
-                                <p><?= $num_dias ?> <?= $num_dias == 1 ? 'día' : 'días' ?> increíbles</p>
+                                <p><?= $duracion_dias ?> <?= $duracion_dias == 1 ? 'día' : 'días' ?> de aventura</p>
                             </div>
                         </div>
                         

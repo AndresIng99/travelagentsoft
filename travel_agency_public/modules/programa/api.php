@@ -544,9 +544,13 @@ private function duplicarPrecios($programa_original_id, $nuevo_programa_id) {
             'traveler_lastname' => 'Apellido del viajero', 
             'destination' => 'Destino',
             'arrival_date' => 'Fecha de llegada',
-            'departure_date' => 'Fecha de salida',
             'passengers' => 'Número de pasajeros'
         ];
+        
+        // Si no hay departure_date, usar arrival_date como valor por defecto
+        if (empty($_POST['departure_date'])) {
+            $_POST['departure_date'] = $_POST['arrival_date'];
+        }
         
         foreach ($required_fields as $field => $label) {
             if (empty($_POST[$field])) {
@@ -555,17 +559,15 @@ private function duplicarPrecios($programa_original_id, $nuevo_programa_id) {
             }
         }
         
-        // Validar fechas
-        $arrival_date = $_POST['arrival_date'];
-        $departure_date = $_POST['departure_date'];
         
+       // Validar fecha de llegada solamente
+        $arrival_date = $_POST['arrival_date'];
+
         if (strtotime($arrival_date) < strtotime(date('Y-m-d'))) {
             throw new Exception('La fecha de llegada no puede ser anterior a hoy');
         }
-        
-        if (strtotime($departure_date) < strtotime($arrival_date)) {
-            throw new Exception('La fecha de salida debe ser posterior a la fecha de llegada');
-        }
+
+        // La fecha de salida se calcula automáticamente, no validar
         
         // Validar número de pasajeros
         $passengers = intval($_POST['passengers']);
