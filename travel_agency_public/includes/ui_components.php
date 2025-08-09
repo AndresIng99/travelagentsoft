@@ -508,7 +508,7 @@ class UIComponents {
 
             <div class="header-right">
                 <div class="user-info" onclick="toggleUserMenu()">
-                    <div class="user-avatar">' . strtoupper(substr($user['name'], 0, 2)) . '</div>
+                    <div class="user-avatar" translate="no">' . strtoupper(substr($user['name'], 0, 2)) . '</div>
                     <div>
                         <div style="font-size: 14px; font-weight: 500;">' . htmlspecialchars($user['name']) . '</div>
                         <div style="font-size: 12px; opacity: 0.8;">' . ($user['role'] === 'admin' ? 'Administrador' : 'Agente de Viajes') . '</div>
