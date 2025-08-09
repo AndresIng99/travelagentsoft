@@ -557,6 +557,12 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
     transform: translateY(1px) !important;
 }
 
+.VIpgJd-ZVi9od-ORHb-OEVmcd {
+            left: 0;
+            display: none !important;
+            top: 0;
+        }
+
 .goog-te-menu-frame {
     border: none !important;
     border-radius: 12px !important;

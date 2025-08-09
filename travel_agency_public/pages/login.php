@@ -262,6 +262,11 @@ $backgroundImage = ConfigManager::get('background_image');
             color: #667eea !important;
             transform: translateY(1px) !important;
         }
+        .VIpgJd-ZVi9od-ORHb-OEVmcd {
+            left: 0;
+            display: none !important;
+            top: 0;
+        }
 
         /* Menú desplegable cuando aparece */
         .goog-te-menu-frame {
@@ -810,7 +815,7 @@ $backgroundImage = ConfigManager::get('background_image');
                     </div>
                     <div class="demo-account">
                         <span class="username">agente1</span>
-                        <span class="password">password</span>
+                        <span class="password">123456Aa*</span>
                     </div>
                 </div>
                 

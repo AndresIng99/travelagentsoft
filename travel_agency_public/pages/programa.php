@@ -105,7 +105,7 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
    CSS PARA ALTERNATIVAS - AGREGAR AL <style> DE programa.php
    ============================================================ */
 /* Botón compartir enlace - Estilo minimalista */
-.nav-button[onclick*="compartirEnlace"] {
+.nav-button[onclick*="compartirEnlace"], .nav-button[onclick*="abrirMiBiblioteca"] {
     background: rgba(107, 114, 128, 0.08) !important;
     color: #374151 !important;
     border: none !important;
@@ -123,24 +123,24 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
     gap: 8px !important;
 }
 
-.nav-button[onclick*="compartirEnlace"]:hover {
+.nav-button[onclick*="compartirEnlace"]:hover, .nav-button[onclick*="abrirMiBiblioteca"]:hover {
     background: rgba(107, 114, 128, 0.12) !important;
     color: #1f2937 !important;
     transform: translateY(-0.5px) !important;
     box-shadow: 0 2px 8px rgba(107, 114, 128, 0.15) !important;
 }
 
-.nav-button[onclick*="compartirEnlace"]:active {
+.nav-button[onclick*="compartirEnlace"]:active, .nav-button[onclick*="abrirMiBiblioteca"]:active {
     transform: translateY(0) !important;
     background: rgba(107, 114, 128, 0.15) !important;
 }
 
-.nav-button[onclick*="compartirEnlace"] i {
+.nav-button[onclick*="compartirEnlace"] i, .nav-button[onclick*="abrirMiBiblioteca"] i {
     color: inherit !important;
     font-size: 12px !important;
 }
 
-.nav-button[onclick*="compartirEnlace"] span {
+.nav-button[onclick*="compartirEnlace"] span, .nav-button[onclick*="abrirMiBiblioteca"] span {
     color: inherit !important;
 }
 
@@ -157,6 +157,20 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
     }
     
     .nav-button[onclick*="compartirEnlace"] i {
+        margin-right: 0 !important;
+    }
+
+     .nav-button[onclick*="abrirMiBiblioteca"] {
+        padding: 10px 16px !important;
+        font-size: 12px !important;
+        margin-left: 10px !important;
+    }
+    
+    .nav-button[onclick*="abrirMiBiblioteca"] span {
+        display: none !important;
+    }
+    
+    .nav-button[onclick*="abrirMiBiblioteca"] i {
         margin-right: 0 !important;
     }
 }
@@ -1088,6 +1102,34 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
             padding-bottom: 1px;
         }
         
+/* Estilos para el campo ID de solicitud */
+#request-id-group {
+    transition: all 0.4s ease;
+}
+
+#request-id-group .form-text {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+#request-id-group .form-text i {
+    margin-right: 0.25rem;
+    color: #007bff;
+}
+
+/* Animación de aparición */
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
         .top-nav .nav-links a:hover {
             border-bottom-color: white;
         }
@@ -2260,6 +2302,12 @@ $page_title = $is_editing ? 'Editar Programa' : 'Nuevo Programa';
             z-index: 1000;
         }
 
+        .VIpgJd-ZVi9od-ORHb-OEVmcd {
+            left: 0;
+            display: none !important;
+            top: 0;
+        }
+
         /* Caja del widget */
         #google_translate_element {
             background: rgba(255, 255, 255, 0.95);
@@ -2463,6 +2511,8 @@ body {
         margin-left: 0;
     }
 }
+
+
     </style>
 </head>
 
@@ -2492,6 +2542,11 @@ body {
             <i class="fas fa-share-alt"></i>
             <span>Compartir Enlace</span>
         </button>
+        <!-- NUEVO BOTÓN MI BIBLIOTECA - Mismo estilo que Compartir Enlace -->
+        <button type="button" class="nav-button" onclick="abrirMiBiblioteca()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+            <i class="fas fa-book"></i>
+            <span>Mi Biblioteca</span>
+        </button>
     </div>
 </div>
 
@@ -2518,10 +2573,13 @@ body {
                             <i class="fas fa-chevron-up expand-icon"></i>
                         </div>
                         <div class="section-body">
-                            <div class="form-group">
+                            <div class="form-group" id="request-id-group" <?php if (!$is_editing || empty($form_data['request_id'])): ?>style="display: none;"<?php endif; ?>>
                                 <label class="form-label">ID de solicitud</label>
                                 <input type="text" class="form-control" id="request-id" name="request_id" 
-                                       value="<?= htmlspecialchars($form_data['request_id']) ?>" readonly>
+                                    value="<?= htmlspecialchars($form_data['request_id']) ?>" readonly>
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle"></i> Este ID se genera automáticamente al crear el programa
+                                </small>
                             </div>
                             
                             <div class="form-row">
@@ -3290,10 +3348,13 @@ async function guardarPrograma() {
             
             // Actualizar ID de solicitud si se generó
             if (result.request_id) {
-                const requestIdField = document.getElementById('request-id');
-                if (requestIdField) {
-                    requestIdField.value = result.request_id;
-                }
+                // Usar la nueva función que maneja la animación
+                mostrarCampoRequestId(result.request_id);
+                
+                // Mostrar notificación adicional
+                setTimeout(() => {
+                    showAlert(`📋 ID de solicitud generado: ${result.request_id}`, 'info');
+                }, 500);
             }
             
             // Cambiar texto del botón después de restaurar
@@ -5735,6 +5796,53 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+/**
+ * Muestra el campo ID de solicitud con animación suave
+ */
+function mostrarCampoRequestId(requestId) {
+    console.log('📋 Mostrando campo ID de solicitud:', requestId);
+    
+    const requestIdGroup = document.getElementById('request-id-group');
+    const requestIdField = document.getElementById('request-id');
+    
+    if (!requestIdGroup || !requestIdField) {
+        console.error('❌ No se encontraron los elementos del campo ID de solicitud');
+        return;
+    }
+    
+    // Asignar el valor primero
+    requestIdField.value = requestId;
+    
+    // Si ya está visible, no hacer nada más
+    if (requestIdGroup.style.display !== 'none') {
+        return;
+    }
+    
+    // Preparar animación
+    requestIdGroup.style.display = 'block';
+    requestIdGroup.style.opacity = '0';
+    requestIdGroup.style.transform = 'translateY(-10px)';
+    requestIdGroup.style.transition = 'all 0.4s ease';
+    
+    // Mostrar con animación
+    setTimeout(() => {
+        requestIdGroup.style.opacity = '1';
+        requestIdGroup.style.transform = 'translateY(0)';
+        
+        // Agregar efecto de resaltado temporal
+        requestIdField.style.borderColor = '#28a745';
+        requestIdField.style.boxShadow = '0 0 0 0.2rem rgba(40, 167, 69, 0.25)';
+        
+        // Quitar resaltado después de 2 segundos
+        setTimeout(() => {
+            requestIdField.style.borderColor = '';
+            requestIdField.style.boxShadow = '';
+        }, 2000);
+    }, 100);
+    
+    console.log('✅ Campo ID de solicitud mostrado exitosamente');
+}
+
 // Eventos para drag & drop de alternativas (opcional - futuro)
 function initDragAndDropAlternativas() {
     // TODO: Implementar drag & drop para reordenar alternativas
@@ -5755,5 +5863,22 @@ console.log('   - reordenarAlternativas()');
 
 
     </script>
+    <script>
+function abrirMiBiblioteca() {
+    // Agregar efecto visual de clic
+    const button = event.target.closest('.nav-button');
+    button.style.transform = 'scale(0.95)';
+    
+    // Restaurar el botón después del efecto
+    setTimeout(() => {
+        button.style.transform = '';
+    }, 150);
+    
+    // Redirigir a la página de biblioteca
+    setTimeout(() => {
+        window.location.href = '<?= APP_URL ?>/biblioteca';
+    }, 100);
+}
+</script>
 </body>
 </html>

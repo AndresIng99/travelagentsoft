@@ -309,6 +309,11 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
                 padding: 8px 14px !important;
             }
         }
+        .VIpgJd-ZVi9od-ORHb-OEVmcd {
+            left: 0;
+            display: none !important;
+            top: 0;
+        }
         
         .goog-te-gadget img {
             vertical-align: middle;

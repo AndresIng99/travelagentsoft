@@ -217,6 +217,12 @@ try {
             transition: all 0.2s ease !important;
         }
 
+        .VIpgJd-ZVi9od-ORHb-OEVmcd {
+            left: 0;
+            display: none !important;
+            top: 0;
+        }
+
         .VIpgJd-ZVi9od-xl07Ob-lTBxed:hover span[aria-hidden="true"] {
             color: #667eea !important;
             transform: translateY(1px) !important;

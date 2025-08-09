@@ -87,103 +87,7 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
             transform: scale(1.05);
         }
 
-        /* Ayuda de contraseña */
-        .password-help {
-            margin-top: 8px;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 3px solid #e2e8f0;
-        }
-
-        .password-requirement {
-            font-size: 12px;
-            margin: 3px 0;
-            transition: all 0.3s ease;
-        }
-
-        .password-requirement.valid {
-            color: #059669;
-        }
-
-        .password-requirement.invalid {
-            color: #dc2626;
-        }
-
-        .password-requirement.valid::before {
-            content: "✓";
-            margin-right: 5px;
-        }
-
-        .password-requirement.invalid::before {
-            content: "✗";
-            margin-right: 5px;
-        }
-
-        .back-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            color: white;
-            text-decoration: none;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            padding: 8px 15px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .user-info:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        /* Google Translate mejorado */
-        /* Google Translate en la esquina */
-        /* ===== MEJORAR EL SELECTOR DE GOOGLE TRANSLATE ===== */
-
-        /* Contenedor principal */
-        .translate-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-
+        /* ===== ESTILOS PARA GOOGLE TRANSLATE ===== */
         /* Caja del widget */
         #google_translate_element {
             background: rgba(255, 255, 255, 0.95);
@@ -322,11 +226,6 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
 
         /* Responsive */
         @media (max-width: 768px) {
-            .translate-container {
-                top: 10px;
-                right: 10px;
-            }
-            
             #google_translate_element {
                 padding: 6px 10px;
             }
@@ -342,10 +241,101 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
             }
         }
         
+        .VIpgJd-ZVi9od-ORHb-OEVmcd {
+            left: 0;
+            display: none !important;
+            top: 0;
+        }
+        
         .goog-te-gadget img {
             vertical-align: middle;
             border: none;
             display: none;
+        }
+
+        /* Ayuda de contraseña */
+        .password-help {
+            margin-top: 8px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #e2e8f0;
+        }
+
+        .password-requirement {
+            font-size: 12px;
+            margin: 3px 0;
+            transition: all 0.3s ease;
+        }
+
+        .password-requirement.valid {
+            color: #059669;
+        }
+
+        .password-requirement.invalid {
+            color: #dc2626;
+        }
+
+        .password-requirement.valid::before {
+            content: "✓";
+            margin-right: 5px;
+        }
+
+        .password-requirement.invalid::before {
+            content: "✗";
+            margin-right: 5px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px 15px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.3);
         }
 
         /* Main Content mejorado */
@@ -597,7 +587,7 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
             border-radius: 25px;
             padding: 40px;
-            max-width: 800px; /* MÁS GRANDE */
+            max-width: 800px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
@@ -628,7 +618,7 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         }
 
         .modal-title {
-            font-size: 32px; /* MÁS GRANDE */
+            font-size: 32px;
             color: #2d3748;
             font-weight: 700;
             display: flex;
@@ -660,8 +650,8 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* MÁS GRANDE */
-            gap: 25px; /* MÁS ESPACIO */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
             margin-bottom: 35px;
         }
 
@@ -674,8 +664,9 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         .form-group label {
             font-weight: 600;
             color: #2d3748;
-            font-size: 16px; /* MÁS GRANDE */
+            font-size: 16px;
         }
+
         /* Contenedor de contraseña con botón */
         .password-input-container {
             position: relative;
@@ -684,7 +675,7 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         }
 
         .password-input-container input {
-            padding-right: 50px !important; /* Espacio para el botón */
+            padding-right: 50px !important;
         }
 
         .password-toggle {
@@ -708,12 +699,13 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         .password-toggle:active {
             transform: scale(0.95);
         }
+
         .form-group input,
         .form-group select {
-            padding: 16px 20px; /* MÁS PADDING */
+            padding: 16px 20px;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
-            font-size: 16px; /* MÁS GRANDE */
+            font-size: 16px;
             transition: all 0.3s ease;
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
@@ -729,7 +721,7 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
 
         .form-actions {
             display: flex;
-            gap: 20px; /* MÁS ESPACIO */
+            gap: 20px;
             justify-content: flex-end;
             padding-top: 20px;
             border-top: 1px solid rgba(0, 0, 0, 0.1);
@@ -739,7 +731,7 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
             background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
             color: #4a5568;
             border: none;
-            padding: 16px 32px; /* MÁS GRANDE */
+            padding: 16px 32px;
             border-radius: 25px;
             cursor: pointer;
             font-weight: 600;
@@ -756,7 +748,7 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
             background: var(--admin-gradient);
             color: white;
             border: none;
-            padding: 16px 32px; /* MÁS GRANDE */
+            padding: 16px 32px;
             border-radius: 25px;
             cursor: pointer;
             font-weight: 600;
@@ -1015,525 +1007,92 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         </div>
     </div>
 
-    
     <!-- Modal mejorado y más grande -->
     <div class="modal" id="userModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title" id="userModalTitle">
-                <span>👤</span>
-                Nuevo Usuario
-            </h2>
-            <button class="close-btn" onclick="closeUserModal()">&times;</button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="userModalTitle">
+                    <span>👤</span>
+                    Nuevo Usuario
+                </h2>
+                <button class="close-btn" onclick="closeUserModal()">&times;</button>
+            </div>
+
+            <form id="userForm">
+                <input type="hidden" id="userId">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="username">👤 Nombre de Usuario *</label>
+                        <input type="text" id="username" name="username" required placeholder="usuario123" maxlength="50">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">✉️ Correo Electrónico *</label>
+                        <input type="email" id="email" name="email" required placeholder="usuario@ejemplo.com" maxlength="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="full_name">🏷️ Nombre Completo *</label>
+                        <input type="text" id="full_name" name="full_name" required placeholder="Juan Pérez García" maxlength="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="role">🎭 Rol del Usuario *</label>
+                        <select id="role" name="role" required>
+                            <option value="">Seleccionar rol</option>
+                            <option value="agent">✈️ Agente de Viajes</option>
+                            <option value="admin">👑 Administrador</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="passwordGroup">
+                        <label for="password">🔒 Contraseña *</label>
+                        <div class="password-input-container">
+                            <input type="password" id="password" name="password" placeholder="8+ caracteres, mayúscula, minúscula, número y carácter especial" minlength="8">
+                            <button type="button" class="password-toggle" id="passwordToggle" onclick="togglePassword()">
+                                👁️
+                            </button>
+                        </div>
+                        <div id="passwordHelp" class="password-help">
+                                <div class="password-requirement" id="req-length">✗ Mínimo 8 caracteres</div>
+                                <div class="password-requirement" id="req-upper">✗ Una letra mayúscula (A-Z)</div>
+                                <div class="password-requirement" id="req-lower">✗ Una letra minúscula (a-z)</div>
+                                <div class="password-requirement" id="req-number">✗ Un número (0-9)</div>
+                                <div class="password-requirement" id="req-special">✗ Un carácter especial (!@#$%^&*)</div>
+                            </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="active">📊 Estado del Usuario</label>
+                        <select id="active" name="active">
+                            <option value="1">✅ Activo</option>
+                            <option value="0">❌ Inactivo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeUserModal()">
+                        ❌ Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        💾 Guardar Usuario
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <form id="userForm">
-            <input type="hidden" id="userId">
-
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="username">👤 Nombre de Usuario *</label>
-                    <input type="text" id="username" name="username" required placeholder="usuario123" maxlength="50">
-                </div>
-
-                <div class="form-group">
-                    <label for="email">✉️ Correo Electrónico *</label>
-                    <input type="email" id="email" name="email" required placeholder="usuario@ejemplo.com" maxlength="100">
-                </div>
-
-                <div class="form-group">
-                    <label for="full_name">🏷️ Nombre Completo *</label>
-                    <input type="text" id="full_name" name="full_name" required placeholder="Juan Pérez García" maxlength="100">
-                </div>
-
-                <div class="form-group">
-                    <label for="role">🎭 Rol del Usuario *</label>
-                    <select id="role" name="role" required>
-                        <option value="">Seleccionar rol</option>
-                        <option value="agent">✈️ Agente de Viajes</option>
-                        <option value="admin">👑 Administrador</option>
-                    </select>
-                </div>
-
-                <div class="form-group" id="passwordGroup">
-                    <label for="password">🔒 Contraseña *</label>
-                    <div class="password-input-container">
-                        <input type="password" id="password" name="password" placeholder="8+ caracteres, mayúscula, minúscula, número y carácter especial" minlength="8">
-                        <button type="button" class="password-toggle" id="passwordToggle" onclick="togglePassword()">
-                            👁️
-                        </button>
-                    </div>
-                    <div id="passwordHelp" class="password-help">
-                            <div class="password-requirement" id="req-length">✗ Mínimo 8 caracteres</div>
-                            <div class="password-requirement" id="req-upper">✗ Una letra mayúscula (A-Z)</div>
-                            <div class="password-requirement" id="req-lower">✗ Una letra minúscula (a-z)</div>
-                            <div class="password-requirement" id="req-number">✗ Un número (0-9)</div>
-                            <div class="password-requirement" id="req-special">✗ Un carácter especial (!@#$%^&*)</div>
-                        </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="active">📊 Estado del Usuario</label>
-                    <select id="active" name="active">
-                        <option value="1">✅ Activo</option>
-                        <option value="0">❌ Inactivo</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button type="button" class="btn-secondary" onclick="closeUserModal()">
-                    ❌ Cancelar
-                </button>
-                <button type="submit" class="btn-primary" id="submitBtn">
-                    💾 Guardar Usuario
-                </button>
-            </div>
-        </form>
     </div>
-</div>
 
-<!-- Scripts mejorados -->
-<script>
-    const APP_URL = '<?= APP_URL ?>';
-    let users = [];
-    let isLoading = false;
-    let sidebarOpen = false;
+    <!-- Scripts mejorados -->
+    <!-- Scripts corregidos - SIN DUPLICACIÓN -->
+    <script>
+        const APP_URL = '<?= APP_URL ?>';
+        let users = [];
+        let isLoading = false;
+        let sidebarOpen = false;
 
-    // Inicialización
-    document.addEventListener('DOMContentLoaded', function() {
-        loadStatistics();
-        loadUsers();
-        initializeGoogleTranslate();
-    });
-
-    // Validación de contraseña en tiempo real
-        document.getElementById('password').addEventListener('input', function(e) {
-            validatePasswordRealTime(e.target.value);
-        });
-
-        function validatePasswordRealTime(password) {
-            const requirements = {
-                'req-length': password.length >= 8,
-                'req-upper': /[A-Z]/.test(password),
-                'req-lower': /[a-z]/.test(password),
-                'req-number': /[0-9]/.test(password),
-                'req-special': /[!@#$%^&*(),.?":{}|<>]/.test(password)
-            };
-            
-            Object.keys(requirements).forEach(reqId => {
-                const element = document.getElementById(reqId);
-                if (element) {
-                    element.className = requirements[reqId] ? 'password-requirement valid' : 'password-requirement invalid';
-                }
-            });
-        }
-
-    // Funciones de sidebar
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('overlay');
-        const mainContent = document.getElementById('mainContent');
-        
-        sidebarOpen = !sidebarOpen;
-        
-        if (sidebarOpen) {
-            sidebar.classList.add('open');
-            overlay.classList.add('show');
-            if (window.innerWidth > 768) {
-                mainContent.classList.add('sidebar-open');
-            }
-        } else {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('show');
-            mainContent.classList.remove('sidebar-open');
-        }
-    }
-
-    function closeSidebar() {
-        if (sidebarOpen) {
-            toggleSidebar();
-        }
-    }
-
-    function toggleUserMenu() {
-        if (confirm('¿Desea cerrar sesión?')) {
-            window.location.href = '<?= APP_URL ?>/auth/logout';
-        }
-    }
-
-    // Funciones de API
-    async function apiRequest(endpoint, options = {}) {
-        try {
-            const response = await fetch(`${APP_URL}${endpoint}`, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                ...options
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            
-            if (!data.success) {
-                throw new Error(data.error || 'Error en la respuesta del servidor');
-            }
-
-            return data;
-        } catch (error) {
-            console.error('API Error:', error);
-            throw error;
-        }
-    }
-
-    // Cargar estadísticas con animación
-    async function loadStatistics() {
-        try {
-            const response = await apiRequest('/admin/api?action=statistics');
-            const stats = response.data;
-
-            // Animar contadores
-            animateCounter('totalUsers', stats.totalUsers);
-            animateCounter('totalPrograms', stats.totalPrograms);
-            animateCounter('totalResources', stats.totalResources);
-            animateCounter('activeSessions', stats.activeSessions);
-
-            // Ocultar loading
-            document.querySelectorAll('.stat-loading').forEach(el => el.style.display = 'none');
-        } catch (error) {
-            console.error('Error al cargar estadísticas:', error);
-            
-            // Mostrar valores por defecto en caso de error
-            const totalUsersEl = document.getElementById('totalUsers');
-            const totalProgramsEl = document.getElementById('totalPrograms');
-            const totalResourcesEl = document.getElementById('totalResources');
-            const activeSessionsEl = document.getElementById('activeSessions');
-
-            if (totalUsersEl) totalUsersEl.textContent = stats.totalUsers;
-            if (totalProgramsEl) totalProgramsEl.textContent = stats.totalPrograms;
-            if (totalResourcesEl) totalResourcesEl.textContent = stats.totalResources;
-            if (activeSessionsEl) activeSessionsEl.textContent = stats.activeSessions;
-            
-            document.querySelectorAll('.stat-loading').forEach(el => el.style.display = 'none');
-        }
-    }
-
-    // Animación de contadores
-    function animateCounter(elementId, targetValue) {
-        const element = document.getElementById(elementId);
-        const startValue = 0;
-        const duration = 1000;
-        const startTime = performance.now();
-
-        function updateCounter(currentTime) {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            
-            const currentValue = Math.floor(startValue + (targetValue - startValue) * progress);
-            element.textContent = currentValue;
-
-            if (progress < 1) {
-                requestAnimationFrame(updateCounter);
-            }
-        }
-
-        requestAnimationFrame(updateCounter);
-    }
-
-    // Cargar usuarios
-    async function loadUsers() {
-        const loading = document.getElementById('usersLoading');
-        const table = document.getElementById('usersTable');
-        const errorDiv = document.getElementById('usersError');
-        
-        loading.style.display = 'block';
-        table.style.display = 'none';
-        errorDiv.style.display = 'none';
-        
-        try {
-            const response = await apiRequest('/admin/api?action=users');
-            users = response.data;
-            renderUsers();
-            
-            loading.style.display = 'none';
-            table.style.display = 'table';
-        } catch (error) {
-            console.error('Error al cargar usuarios:', error);
-            
-            loading.style.display = 'none';
-            errorDiv.textContent = `Error al cargar usuarios: ${error.message}`;
-            errorDiv.style.display = 'block';
-        }
-    }
-
-    // Renderizar usuarios en tabla
-    function renderUsers() {
-        const tbody = document.getElementById('usersTableBody');
-        tbody.innerHTML = users.map(user => createUserRow(user)).join('');
-    }
-
-    // Crear fila de usuario mejorada
-    function createUserRow(user) {
-        const roleClass = user.role === 'admin' ? 'role-admin' : 'role-agent';
-        const roleText = user.role === 'admin' ? '👑 Administrador' : '✈️ Agente';
-        const statusClass = user.active ? 'status-active' : 'status-inactive';
-        const statusText = user.active ? '✅ Activo' : '❌ Inactivo';
-        const initials = user.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-        const lastLogin = user.last_login_formatted || 'Nunca';
-        const createdAt = user.created_at_formatted || 'No disponible';
-
-        // Lógica dinámica para botones según el estado del usuario
-        let actionButtons = `
-            <button class="action-btn btn-edit" onclick="editUser(${user.id})" title="Editar usuario">
-                ✏️ Editar
-            </button>
-        `;
-
-        // Solo mostrar botones de estado si no es el admin principal
-        if (user.id !== 1) {
-            if (user.active) {
-                actionButtons += `
-                    <button class="action-btn btn-toggle" onclick="toggleUserStatus(${user.id})" title="Desactivar usuario">
-                        ⏸️ Desactivar
-                    </button>
-                `;
-            } else {
-                actionButtons += `
-                    <button class="action-btn btn-toggle inactive" onclick="toggleUserStatus(${user.id})" title="Activar usuario">
-                        ▶️ Activar
-                    </button>
-                `;
-            }
-        } else {
-            actionButtons += `
-                <button class="action-btn btn-toggle" style="opacity: 0.5; cursor: not-allowed;" title="No se puede desactivar el administrador principal">
-                    🔒 Protegido
-                </button>
-            `;
-        }
-
-        return `
-            <tr>
-                <td>
-                    <div class="user-info">
-                        <div class="table-user-avatar">${initials}</div>
-                        <div class="user-details">
-                            <h4>${escapeHtml(user.full_name)}</h4>
-                            <p>@${escapeHtml(user.username)}</p>
-                        </div>
-                    </div>
-                </td>
-                <td>${escapeHtml(user.email)}</td>
-                <td><span class="role-badge ${roleClass}">${roleText}</span></td>
-                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                <td>📅 ${createdAt}</td>
-                <td>🕒 ${lastLogin}</td>
-                <td>
-                    <div class="action-buttons">
-                        ${actionButtons}
-                    </div>
-                </td>
-            </tr>
-        `;
-    }
-
-    // Funciones del modal de usuario
-    function openUserModal(mode, id = null) {
-        const modal = document.getElementById('userModal');
-        const title = document.getElementById('userModalTitle');
-        const passwordGroup = document.getElementById('passwordGroup');
-        const passwordField = document.getElementById('password');
-
-        if (mode === 'create') {
-            title.innerHTML = '<span>👤</span> Nuevo Usuario';
-            document.getElementById('userForm').reset();
-            document.getElementById('userId').value = '';
-            passwordField.required = true;
-            passwordGroup.style.display = 'block';
-            passwordGroup.querySelector('label').innerHTML = '🔒 Contraseña *';
-        } else if (mode === 'edit' && id) {
-            title.innerHTML = '<span>✏️</span> Editar Usuario';
-            loadUserData(id);
-            passwordField.required = false;
-            passwordGroup.style.display = 'block';
-            passwordGroup.querySelector('label').innerHTML = '🔒 Nueva Contraseña (opcional)';
-        }
-
-        modal.classList.add('show');
-    }
-
-    function closeUserModal() {
-        document.getElementById('userModal').classList.remove('show');
-    }
-
-    function loadUserData(id) {
-        const user = users.find(u => u.id == id);
-        if (user) {
-            console.log('Cargando usuario:', user);
-            
-            document.getElementById('userId').value = user.id;
-            document.getElementById('username').value = user.username || '';
-            document.getElementById('email').value = user.email || '';
-            document.getElementById('full_name').value = user.full_name || '';
-            document.getElementById('role').value = user.role || '';
-            document.getElementById('active').value = user.active ? '1' : '0';
-            document.getElementById('password').value = '';
-        } else {
-            console.error('Usuario no encontrado:', id);
-            showToast('Usuario no encontrado', 'error');
-        }
-    }
-
-    function editUser(id) {
-        console.log('Editando usuario ID:', id, typeof id);
-        openUserModal('edit', id);
-    }
-
-    // Submit del formulario de usuario
-    document.getElementById('userForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        if (isLoading) return;
-
-        const submitBtn = document.getElementById('submitBtn');
-        const originalText = submitBtn.innerHTML;
-        
-        try {
-            isLoading = true;
-            submitBtn.innerHTML = '⏳ Guardando...';
-            submitBtn.disabled = true;
-
-            const formData = new FormData(this);
-            const id = document.getElementById('userId').value;
-
-            if (id) {
-                formData.append('action', 'update_user');
-                formData.append('id', id);
-            } else {
-                formData.append('action', 'create_user');
-            }
-
-            console.log('Enviando datos:', Object.fromEntries(formData.entries()));
-
-            const response = await fetch(`${APP_URL}/admin/api`, {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-
-            if (!data.success) {
-                throw new Error(data.error || 'Error al guardar usuario');
-            }
-
-            showToast(data.message, 'success');
-            closeUserModal();
-            await loadUsers();
-            await loadStatistics();
-
-        } catch (error) {
-            console.error('Error al guardar usuario:', error);
-            showToast(`Error al guardar usuario: ${error.message}`, 'error');
-        } finally {
-            isLoading = false;
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        }
-    });
-
-  
-    // Toggle status del usuario - VERSIÓN CORREGIDA
-    async function toggleUserStatus(id) {
-        console.log('Toggleando usuario ID:', id);
-        
-        const user = users.find(u => u.id == id); // Usar == en lugar de ===
-        if (!user) {
-            console.error('Usuario no encontrado con ID:', id);
-            showToast('Usuario no encontrado', 'error');
-            return;
-        }
-
-        const action = user.active ? 'desactivar' : 'activar';
-        if (!confirm(`¿Estás seguro de que quieres ${action} este usuario?`)) {
-            return;
-        }
-
-        try {
-            console.log('Enviando toggle para usuario:', user.username, 'Estado actual:', user.active);
-            
-            const formData = new FormData();
-            formData.append('action', 'toggle_user');
-            formData.append('id', id);
-
-            console.log('FormData enviada:', Object.fromEntries(formData.entries()));
-
-            const response = await fetch(`${APP_URL}/admin/api`, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            console.log('Respuesta de la API:', data);
-
-            if (!data.success) {
-                throw new Error(data.error || 'Error al cambiar estado del usuario');
-            }
-
-            showToast(data.message, 'success');
-            await loadUsers(); // Recargar la lista de usuarios
-            await loadStatistics(); // Actualizar estadísticas
-
-        } catch (error) {
-            console.error('Error al cambiar estado:', error);
-            showToast(`Error: ${error.message}`, 'error');
-        }
-    }
-
-    // Escape HTML para prevenir XSS
-    function escapeHtml(text) {
-        const map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-    }
-
-    // Mostrar notificaciones toast mejoradas
-    function showToast(message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
-        
-        const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
-        toast.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="font-size: 20px;">${icon}</span>
-                <span>${message}</span>
-            </div>
-        `;
-        
-        document.body.appendChild(toast);
-        
-        setTimeout(() => toast.classList.add('show'), 100);
-        
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => document.body.removeChild(toast), 300);
-        }, 4000);
-    }
-
-    // Google Translate mejorado
-    function initializeGoogleTranslate() {
+        // ===== FUNCIÓN ÚNICA DE GOOGLE TRANSLATE =====
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({
                 pageLanguage: '<?= $defaultLanguage ?>',
@@ -1564,13 +1123,7 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
             }
         }
 
-        if (!window.googleTranslateElementInit) {
-            window.googleTranslateElementInit = googleTranslateElementInit;
-            const script = document.createElement('script');
-            script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-            document.head.appendChild(script);
-        }
-
+        // Escuchar cambios de idioma
         setTimeout(function() {
             const select = document.querySelector('.goog-te-combo');
             if (select) {
@@ -1579,47 +1132,481 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
                 });
             }
         }, 2000);
-    }
 
-    // Función para mostrar/ocultar contraseña
-    function togglePassword() {
-        const passwordField = document.getElementById('password');
-        const toggleButton = document.getElementById('passwordToggle');
-        
-        if (passwordField.type === 'password') {
-            passwordField.type = 'text';
-            toggleButton.innerHTML = '🙈'; // Ojo cerrado
-            toggleButton.title = 'Ocultar contraseña';
-        } else {
-            passwordField.type = 'password';
-            toggleButton.innerHTML = '👁️'; // Ojo abierto
-            toggleButton.title = 'Mostrar contraseña';
-        }
-    }
-    
-    // Cerrar modal al hacer clic fuera
-    document.getElementById('userModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeUserModal();
-        }
-    });
+        // ===== INICIALIZACIÓN PRINCIPAL =====
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStatistics();
+            loadUsers();
+            // NO llamar initializeGoogleTranslate() aquí - se llama automáticamente
+        });
 
-    // Event listeners responsive
-    document.addEventListener('DOMContentLoaded', function() {
-        window.addEventListener('resize', function() {
-            if (window.innerWidth <= 768 && sidebarOpen) {
-                document.getElementById('mainContent').classList.remove('sidebar-open');
-            } else if (window.innerWidth > 768 && sidebarOpen) {
-                document.getElementById('mainContent').classList.add('sidebar-open');
+        // Validación de contraseña en tiempo real
+        document.getElementById('password').addEventListener('input', function(e) {
+            validatePasswordRealTime(e.target.value);
+        });
+
+        function validatePasswordRealTime(password) {
+            const requirements = {
+                'req-length': password.length >= 8,
+                'req-upper': /[A-Z]/.test(password),
+                'req-lower': /[a-z]/.test(password),
+                'req-number': /[0-9]/.test(password),
+                'req-special': /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+            
+            Object.keys(requirements).forEach(reqId => {
+                const element = document.getElementById(reqId);
+                if (element) {
+                    element.className = requirements[reqId] ? 'password-requirement valid' : 'password-requirement invalid';
+                }
+            });
+        }
+
+        // Funciones de sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const mainContent = document.getElementById('mainContent');
+            
+            sidebarOpen = !sidebarOpen;
+            
+            if (sidebarOpen) {
+                sidebar.classList.add('open');
+                overlay.classList.add('show');
+                if (window.innerWidth > 768) {
+                    mainContent.classList.add('sidebar-open');
+                }
+            } else {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('show');
+                mainContent.classList.remove('sidebar-open');
+            }
+        }
+
+        function closeSidebar() {
+            if (sidebarOpen) {
+                toggleSidebar();
+            }
+        }
+
+        function toggleUserMenu() {
+            if (confirm('¿Desea cerrar sesión?')) {
+                window.location.href = '<?= APP_URL ?>/auth/logout';
+            }
+        }
+
+        // Funciones de API
+        async function apiRequest(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${APP_URL}${endpoint}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    ...options
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.error || 'Error en la respuesta del servidor');
+                }
+
+                return data;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        // Cargar estadísticas con animación
+        async function loadStatistics() {
+            try {
+                const response = await apiRequest('/admin/api?action=statistics');
+                const stats = response.data;
+
+                // Animar contadores
+                animateCounter('totalUsers', stats.totalUsers);
+                animateCounter('totalPrograms', stats.totalPrograms);
+                animateCounter('totalResources', stats.totalResources);
+                animateCounter('activeSessions', stats.activeSessions);
+
+                // Ocultar loading
+                document.querySelectorAll('.stat-loading').forEach(el => el.style.display = 'none');
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+                
+                // Mostrar valores por defecto en caso de error
+                const totalUsersEl = document.getElementById('totalUsers');
+                const totalProgramsEl = document.getElementById('totalPrograms');
+                const totalResourcesEl = document.getElementById('totalResources');
+                const activeSessionsEl = document.getElementById('activeSessions');
+
+                if (totalUsersEl) totalUsersEl.textContent = '0';
+                if (totalProgramsEl) totalProgramsEl.textContent = '0';
+                if (totalResourcesEl) totalResourcesEl.textContent = '0';
+                if (activeSessionsEl) activeSessionsEl.textContent = '0';
+                
+                document.querySelectorAll('.stat-loading').forEach(el => el.style.display = 'none');
+            }
+        }
+
+        // Animación de contadores
+        function animateCounter(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            const startValue = 0;
+            const duration = 1000;
+            const startTime = performance.now();
+
+            function updateCounter(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const currentValue = Math.floor(startValue + (targetValue - startValue) * progress);
+                element.textContent = currentValue;
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                }
+            }
+
+            requestAnimationFrame(updateCounter);
+        }
+
+        // Cargar usuarios
+        async function loadUsers() {
+            const loading = document.getElementById('usersLoading');
+            const table = document.getElementById('usersTable');
+            const errorDiv = document.getElementById('usersError');
+            
+            loading.style.display = 'block';
+            table.style.display = 'none';
+            errorDiv.style.display = 'none';
+            
+            try {
+                const response = await apiRequest('/admin/api?action=users');
+                users = response.data;
+                renderUsers();
+                
+                loading.style.display = 'none';
+                table.style.display = 'table';
+            } catch (error) {
+                console.error('Error al cargar usuarios:', error);
+                
+                loading.style.display = 'none';
+                errorDiv.textContent = `Error al cargar usuarios: ${error.message}`;
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        // Renderizar usuarios en tabla
+        function renderUsers() {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = users.map(user => createUserRow(user)).join('');
+        }
+
+        // Crear fila de usuario mejorada
+        function createUserRow(user) {
+            const roleClass = user.role === 'admin' ? 'role-admin' : 'role-agent';
+            const roleText = user.role === 'admin' ? '👑 Administrador' : '✈️ Agente';
+            const statusClass = user.active ? 'status-active' : 'status-inactive';
+            const statusText = user.active ? '✅ Activo' : '❌ Inactivo';
+            const initials = user.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            const lastLogin = user.last_login_formatted || 'Nunca';
+            const createdAt = user.created_at_formatted || 'No disponible';
+
+            // Lógica dinámica para botones según el estado del usuario
+            let actionButtons = `
+                <button class="action-btn btn-edit" onclick="editUser(${user.id})" title="Editar usuario">
+                    ✏️ Editar
+                </button>
+            `;
+
+            // Solo mostrar botones de estado si no es el admin principal
+            if (user.id !== 1) {
+                if (user.active) {
+                    actionButtons += `
+                        <button class="action-btn btn-toggle" onclick="toggleUserStatus(${user.id})" title="Desactivar usuario">
+                            ⏸️ Desactivar
+                        </button>
+                    `;
+                } else {
+                    actionButtons += `
+                        <button class="action-btn btn-toggle inactive" onclick="toggleUserStatus(${user.id})" title="Activar usuario">
+                            ▶️ Activar
+                        </button>
+                    `;
+                }
+            } else {
+                actionButtons += `
+                    <button class="action-btn btn-toggle" style="opacity: 0.5; cursor: not-allowed;" title="No se puede desactivar el administrador principal">
+                        🔒 Protegido
+                    </button>
+                `;
+            }
+
+            return `
+                <tr>
+                    <td>
+                        <div class="user-info">
+                            <div class="table-user-avatar">${initials}</div>
+                            <div class="user-details">
+                                <h4>${escapeHtml(user.full_name)}</h4>
+                                <p>@${escapeHtml(user.username)}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${escapeHtml(user.email)}</td>
+                    <td><span class="role-badge ${roleClass}">${roleText}</span></td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>📅 ${createdAt}</td>
+                    <td>🕒 ${lastLogin}</td>
+                    <td>
+                        <div class="action-buttons">
+                            ${actionButtons}
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Funciones del modal de usuario
+        function openUserModal(mode, id = null) {
+            const modal = document.getElementById('userModal');
+            const title = document.getElementById('userModalTitle');
+            const passwordGroup = document.getElementById('passwordGroup');
+            const passwordField = document.getElementById('password');
+
+            if (mode === 'create') {
+                title.innerHTML = '<span>👤</span> Nuevo Usuario';
+                document.getElementById('userForm').reset();
+                document.getElementById('userId').value = '';
+                passwordField.required = true;
+                passwordGroup.style.display = 'block';
+                passwordGroup.querySelector('label').innerHTML = '🔒 Contraseña *';
+            } else if (mode === 'edit' && id) {
+                title.innerHTML = '<span>✏️</span> Editar Usuario';
+                loadUserData(id);
+                passwordField.required = false;
+                passwordGroup.style.display = 'block';
+                passwordGroup.querySelector('label').innerHTML = '🔒 Nueva Contraseña (opcional)';
+            }
+
+            modal.classList.add('show');
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').classList.remove('show');
+        }
+
+        function loadUserData(id) {
+            const user = users.find(u => u.id == id);
+            if (user) {
+                console.log('Cargando usuario:', user);
+                
+                document.getElementById('userId').value = user.id;
+                document.getElementById('username').value = user.username || '';
+                document.getElementById('email').value = user.email || '';
+                document.getElementById('full_name').value = user.full_name || '';
+                document.getElementById('role').value = user.role || '';
+                document.getElementById('active').value = user.active ? '1' : '0';
+                document.getElementById('password').value = '';
+            } else {
+                console.error('Usuario no encontrado:', id);
+                showToast('Usuario no encontrado', 'error');
+            }
+        }
+
+        function editUser(id) {
+            console.log('Editando usuario ID:', id, typeof id);
+            openUserModal('edit', id);
+        }
+
+        // Submit del formulario de usuario
+        document.getElementById('userForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            if (isLoading) return;
+
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            
+            try {
+                isLoading = true;
+                submitBtn.innerHTML = '⏳ Guardando...';
+                submitBtn.disabled = true;
+
+                const formData = new FormData(this);
+                const id = document.getElementById('userId').value;
+
+                if (id) {
+                    formData.append('action', 'update_user');
+                    formData.append('id', id);
+                } else {
+                    formData.append('action', 'create_user');
+                }
+
+                console.log('Enviando datos:', Object.fromEntries(formData.entries()));
+
+                const response = await fetch(`${APP_URL}/admin/api`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Error al guardar usuario');
+                }
+
+                showToast(data.message, 'success');
+                closeUserModal();
+                await loadUsers();
+                await loadStatistics();
+
+            } catch (error) {
+                console.error('Error al guardar usuario:', error);
+                showToast(`Error al guardar usuario: ${error.message}`, 'error');
+            } finally {
+                isLoading = false;
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
             }
         });
-    });
 
-    // Actualizar estadísticas cada 5 minutos
-    setInterval(function() {
-        loadStatistics();
-    }, 300000);
-</script>
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        // Toggle status del usuario
+        async function toggleUserStatus(id) {
+            console.log('Toggleando usuario ID:', id);
+            
+            const user = users.find(u => u.id == id);
+            if (!user) {
+                console.error('Usuario no encontrado con ID:', id);
+                showToast('Usuario no encontrado', 'error');
+                return;
+            }
+
+            const action = user.active ? 'desactivar' : 'activar';
+            if (!confirm(`¿Estás seguro de que quieres ${action} este usuario?`)) {
+                return;
+            }
+
+            try {
+                console.log('Enviando toggle para usuario:', user.username, 'Estado actual:', user.active);
+                
+                const formData = new FormData();
+                formData.append('action', 'toggle_user');
+                formData.append('id', id);
+
+                console.log('FormData enviada:', Object.fromEntries(formData.entries()));
+
+                const response = await fetch(`${APP_URL}/admin/api`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Respuesta de la API:', data);
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Error al cambiar estado del usuario');
+                }
+
+                showToast(data.message, 'success');
+                await loadUsers();
+                await loadStatistics();
+
+            } catch (error) {
+                console.error('Error al cambiar estado:', error);
+                showToast(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Escape HTML para prevenir XSS
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        // Mostrar notificaciones toast mejoradas
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+            toast.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">${icon}</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 100);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 4000);
+        }
+
+        // Función para mostrar/ocultar contraseña
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const toggleButton = document.getElementById('passwordToggle');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleButton.innerHTML = '🙈';
+                toggleButton.title = 'Ocultar contraseña';
+            } else {
+                passwordField.type = 'password';
+                toggleButton.innerHTML = '👁️';
+                toggleButton.title = 'Mostrar contraseña';
+            }
+        }
+        
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('userModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeUserModal();
+            }
+        });
+
+        // Event listeners responsive
+        document.addEventListener('DOMContentLoaded', function() {
+            window.addEventListener('resize', function() {
+                if (window.innerWidth <= 768 && sidebarOpen) {
+                    document.getElementById('mainContent').classList.remove('sidebar-open');
+                } else if (window.innerWidth > 768 && sidebarOpen) {
+                    document.getElementById('mainContent').classList.add('sidebar-open');
+                }
+            });
+        });
+
+        // Actualizar estadísticas cada 5 minutos
+        setInterval(function() {
+            loadStatistics();
+        }, 300000);
+    </script>
+
+    <!-- Google Translate Script - UNA SOLA VEZ -->
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
