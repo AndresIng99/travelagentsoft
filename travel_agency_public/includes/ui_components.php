@@ -252,6 +252,167 @@ class UIComponents {
     public static function getComponentStyles() {
         return '
         <style>
+        /* ===== SISTEMA DE MODALES ESTÉTICOS ===== */
+        .confirm-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .confirm-modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .confirm-modal {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            max-width: 450px;
+            width: 90%;
+            overflow: hidden;
+            transform: scale(0.8) translateY(50px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .confirm-modal-overlay.show .confirm-modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .confirm-modal-header {
+            background: var(--primary-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+            color: white;
+            padding: 25px 30px 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .confirm-modal-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+            animation: pulse 2s infinite;
+        }
+
+        .confirm-modal-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .confirm-modal-body {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .confirm-modal-message {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #374151;
+            margin-bottom: 25px;
+        }
+
+        .confirm-modal-details {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #6b7280;
+            border-left: 4px solid var(--primary-color, #667eea);
+        }
+
+        .confirm-modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .confirm-modal-btn {
+            border: none;
+            border-radius: 12px;
+            padding: 14px 28px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .confirm-modal-btn-confirm {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .confirm-modal-btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+        }
+
+        .confirm-modal-btn-cancel {
+            background: #f3f4f6;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+        }
+
+        .confirm-modal-btn-cancel:hover {
+            background: #e5e7eb;
+            transform: translateY(-1px);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .confirm-modal {
+                max-width: 95%;
+                margin: 20px;
+            }
+            
+            .confirm-modal-header {
+                padding: 20px 25px 15px;
+            }
+            
+            .confirm-modal-icon {
+                font-size: 40px;
+                margin-bottom: 10px;
+            }
+            
+            .confirm-modal-title {
+                font-size: 20px;
+            }
+            
+            .confirm-modal-body {
+                padding: 25px 20px;
+            }
+            
+            .confirm-modal-actions {
+                flex-direction: column;
+            }
+            
+            .confirm-modal-btn {
+                min-width: 100%;
+            }
+        }
         /* Enhanced Sidebar Styles */
         .enhanced-sidebar {
             position: fixed;
@@ -482,7 +643,126 @@ class UIComponents {
                 padding: 12px 15px;
             }
         }
-        </style>';
+        </style>
+
+        <script>
+        // ===== SISTEMA DE MODALES DE CONFIRMACIÓN ESTÉTICOS =====
+        
+        function showConfirmModal(options = {}) {
+            return new Promise((resolve) => {
+                const config = {
+                    title: options.title || "¿Confirmar acción?",
+                    message: options.message || "¿Estás seguro de que quieres continuar?",
+                    details: options.details || null,
+                    icon: options.icon || "⚠️",
+                    confirmText: options.confirmText || "Confirmar",
+                    cancelText: options.cancelText || "Cancelar",
+                    confirmButtonStyle: options.confirmButtonStyle || "danger"
+                };
+
+                let modal = document.getElementById("globalConfirmModal");
+                if (!modal) {
+                    modal = createConfirmModal();
+                    document.body.appendChild(modal);
+                }
+
+                updateModalContent(modal, config);
+                modal.classList.add("show");
+                document.body.style.overflow = "hidden";
+
+                const confirmBtn = modal.querySelector(".confirm-modal-btn-confirm");
+                const cancelBtn = modal.querySelector(".confirm-modal-btn-cancel");
+
+                confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+                cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+
+                const newConfirmBtn = modal.querySelector(".confirm-modal-btn-confirm");
+                const newCancelBtn = modal.querySelector(".confirm-modal-btn-cancel");
+
+                newConfirmBtn.addEventListener("click", () => {
+                    hideConfirmModal(modal);
+                    resolve(true);
+                });
+
+                newCancelBtn.addEventListener("click", () => {
+                    hideConfirmModal(modal);
+                    resolve(false);
+                });
+
+                const escHandler = (e) => {
+                    if (e.key === "Escape") {
+                        hideConfirmModal(modal);
+                        resolve(false);
+                        document.removeEventListener("keydown", escHandler);
+                    }
+                };
+                document.addEventListener("keydown", escHandler);
+
+                modal.addEventListener("click", (e) => {
+                    if (e.target === modal) {
+                        hideConfirmModal(modal);
+                        resolve(false);
+                    }
+                });
+            });
+        }
+
+        function createConfirmModal() {
+            const modal = document.createElement("div");
+            modal.id = "globalConfirmModal";
+            modal.className = "confirm-modal-overlay";
+            
+            modal.innerHTML = `
+                <div class="confirm-modal">
+                    <div class="confirm-modal-header">
+                        <span class="confirm-modal-icon"></span>
+                        <h3 class="confirm-modal-title"></h3>
+                    </div>
+                    <div class="confirm-modal-body">
+                        <div class="confirm-modal-message"></div>
+                        <div class="confirm-modal-details" style="display: none;"></div>
+                        <div class="confirm-modal-actions">
+                            <button class="confirm-modal-btn confirm-modal-btn-cancel">Cancelar</button>
+                            <button class="confirm-modal-btn confirm-modal-btn-confirm">Confirmar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return modal;
+        }
+
+        function updateModalContent(modal, config) {
+            modal.querySelector(".confirm-modal-icon").textContent = config.icon;
+            modal.querySelector(".confirm-modal-title").textContent = config.title;
+            modal.querySelector(".confirm-modal-message").textContent = config.message;
+            
+            const detailsEl = modal.querySelector(".confirm-modal-details");
+            if (config.details) {
+                detailsEl.textContent = config.details;
+                detailsEl.style.display = "block";
+            } else {
+                detailsEl.style.display = "none";
+            }
+            
+            const confirmBtn = modal.querySelector(".confirm-modal-btn-confirm");
+            const cancelBtn = modal.querySelector(".confirm-modal-btn-cancel");
+            
+            confirmBtn.textContent = config.confirmText;
+            cancelBtn.textContent = config.cancelText;
+        }
+
+        function hideConfirmModal(modal) {
+            modal.classList.remove("show");
+            document.body.style.overflow = "";
+            
+            setTimeout(() => {
+                if (modal.parentNode) {
+                    modal.parentNode.removeChild(modal);
+                }
+            }, 300);
+        }
+        </script>';
     }
     
     /**
