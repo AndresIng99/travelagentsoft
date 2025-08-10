@@ -130,15 +130,186 @@ try {
         }
 
         /* Google Translate mejorado */
-        #google_translate_element {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 8px 15px;
-            border-radius: 25px;
-            backdrop-filter: blur(10px);
+        /* Google Translate en la esquina */
+        /* ===== MEJORAR EL SELECTOR DE GOOGLE TRANSLATE ===== */
+
+        /* Contenedor principal */
+        .translate-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
         }
 
-        .goog-te-banner-frame.skiptranslate { display: none !important; }
-        body { top: 0px !important; }
+        /* Caja del widget */
+        #google_translate_element {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            padding: 8px 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        #google_translate_element:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Ocultar el icono de Google */
+        .goog-te-gadget-icon {
+            display: none !important;
+        }
+
+        /* Contenedor del gadget */
+        .goog-te-gadget-simple {
+            background: transparent !important;
+            border: none !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        /* El enlace principal */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed {
+            background: transparent !important;
+            border: none !important;
+            color: #2d3748 !important;
+            text-decoration: none !important;
+            font-family: inherit !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            padding: 4px 8px !important;
+            border-radius: 6px !important;
+            transition: all 0.2s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+        }
+
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed:hover {
+            background: rgba(102, 126, 234, 0.1) !important;
+            color: #667eea !important;
+        }
+
+        /* El texto "Seleccionar idioma" */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed span:first-child {
+            color: inherit !important;
+            font-weight: inherit !important;
+        }
+
+        /* Ocultar las imágenes separadoras */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed img {
+            display: none !important;
+        }
+
+        /* Ocultar el separador */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed span[style*="border-left"] {
+            display: none !important;
+        }
+
+        /* Mejorar la flecha */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed span[aria-hidden="true"] {
+            color: #6b7280 !important;
+            font-size: 12px !important;
+            margin-left: 4px !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .VIpgJd-ZVi9od-ORHb-OEVmcd {
+            left: 0;
+            display: none !important;
+            top: 0;
+        }
+
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed:hover span[aria-hidden="true"] {
+            color: #667eea !important;
+            transform: translateY(1px) !important;
+        }
+
+        /* Menú desplegable cuando aparece */
+        .goog-te-menu-frame {
+            border: none !important;
+            border-radius: 10px !important;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15) !important;
+            backdrop-filter: blur(10px) !important;
+            overflow: hidden !important;
+            margin-top: 4px !important;
+        }
+
+        .goog-te-menu2 {
+            background: rgba(255, 255, 255, 0.98) !important;
+            border: none !important;
+            padding: 8px 0 !important;
+        }
+
+        /* Items de la lista */
+        .goog-te-menu2-item {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            color: #374151 !important;
+            padding: 10px 16px !important;
+            transition: all 0.15s ease !important;
+            cursor: pointer !important;
+            border: none !important;
+            margin: 0 6px !important;
+            border-radius: 6px !important;
+        }
+
+        .goog-te-menu2-item:hover {
+            background: rgba(102, 126, 234, 0.1) !important;
+            color: #667eea !important;
+            transform: translateX(2px) !important;
+        }
+
+        .goog-te-menu2-item:active {
+            transform: translateX(2px) scale(0.98) !important;
+        }
+
+        .goog-te-menu2-item-selected {
+            background: #667eea !important;
+            color: white !important;
+            font-weight: 600 !important;
+        }
+
+        /* Ocultar banner azul */
+        .goog-te-banner-frame.skiptranslate { 
+            display: none !important; 
+        }
+
+        body { 
+            top: 0px !important; 
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .translate-container {
+                top: 10px;
+                right: 10px;
+            }
+            
+            #google_translate_element {
+                padding: 6px 10px;
+            }
+            
+            .VIpgJd-ZVi9od-xl07Ob-lTBxed {
+                font-size: 12px !important;
+                padding: 3px 6px !important;
+            }
+            
+            .goog-te-menu2-item {
+                font-size: 12px !important;
+                padding: 8px 14px !important;
+            }
+        }
+        
+        .goog-te-gadget img {
+            vertical-align: middle;
+            border: none;
+            display: none;
+        }
 
         /* Main Content mejorado */
         .main-content {
@@ -453,7 +624,7 @@ try {
             <div class="role-badge">
                 <?= $user['role'] === 'admin' ? '👑 Administrador del Sistema' : '✈️ Agente de Viajes' ?>
             </div>
-            <h1 class="welcome-title">¡Bienvenido<?= $user['role'] === 'admin' ? '' : 'a' ?>, <?= htmlspecialchars($user['name']) ?>!</h1>
+            <h1 class="welcome-title">¡Bienvenido<?= $user['role'] === 'admin' ? '' : '' ?>, <?= htmlspecialchars($user['name']) ?>!</h1>
             <p class="welcome-subtitle">
                 <?php if ($user['role'] === 'admin'): ?>
                     Administra el sistema completo, gestiona usuarios, supervisa todas las operaciones y configura la plataforma desde este panel de control avanzado.
@@ -485,7 +656,7 @@ try {
                 <p class="action-description">Supervisa y administra todos los recursos globales: días, alojamientos, actividades y transportes de todos los agentes.</p>
             </div>
 
-            <div class="action-card animate-in" onclick="goTo('/programa')" style="animation-delay: 0.4s;">
+            <div class="action-card animate-in" onclick="goTo('/itinerarios')" style="animation-delay: 0.4s;">
                 <div class="action-icon">✈️</div>
                 <h3 class="action-title">Supervisar Programas</h3>
                 <p class="action-description">Revisa y supervisa todos los programas de viaje y solicitudes creadas por los agentes del sistema.</p>
@@ -575,9 +746,11 @@ try {
                 <div class="stat-item">
                     <div class="stat-number"><?php 
                         try {
-                            $count = $db->fetch("SELECT COUNT(*) as total FROM itinerarios WHERE user_id = ? AND activo = 1", [$user['id']]);
-                            echo $count['total'] ?? 0;
+                            $userId = (int)$user['id'];
+                            $count = $db->fetch("SELECT COUNT(*) as total FROM programa_solicitudes WHERE user_id = ?", [$userId]);
+                            echo (int)($count['total'] ?? 0);
                         } catch(Exception $e) {
+                            error_log("Error contando programas para user_id " . $user['id'] . ": " . $e->getMessage());
                             echo "0";
                         }
                     ?></div>
@@ -608,9 +781,11 @@ try {
                 <div class="stat-item">
                     <div class="stat-number"><?php 
                         try {
-                            $count = $db->fetch("SELECT COUNT(*) as total FROM biblioteca_actividades WHERE user_id = ? AND activo = 1", [$user['id']]);
-                            echo $count['total'] ?? 0;
+                            $userId = (int)$user['id'];
+                            $count = $db->fetch("SELECT COUNT(*) as total FROM biblioteca_actividades WHERE user_id = ? AND activo = 1", [$userId]);
+                            echo (int)($count['total'] ?? 0);
                         } catch(Exception $e) {
+                            error_log("Error contando actividades para user_id " . $user['id'] . ": " . $e->getMessage());
                             echo "0";
                         }
                     ?></div>

@@ -6,6 +6,20 @@
 require_once 'config/app.php';
 require_once 'config/config_functions.php';
 
+// Verificar acceso público
+$is_public = isset($_GET['public']) && $_GET['public'] == '1';
+
+if (!$is_public) {
+    // Acceso normal - verificar login
+    if (!App::isLoggedIn()) {
+        header('Location: ' . APP_URL . '/login');
+        exit;
+    }
+} else {
+    // Acceso público - limpiar sesión temporal
+    unset($_SESSION['temp_public_access']);
+}
+
 // Obtener ID del programa
 $programa_id = $_GET['id'] ?? null;
 
@@ -44,10 +58,10 @@ try {
     }
     
     // Obtener días del programa
-  $dias = $db->fetchAll(
-    "SELECT *, COALESCE(duracion_estancia, 1) as duracion_estancia FROM programa_dias WHERE solicitud_id = ? ORDER BY dia_numero ASC", 
-    [$programa_id]
-);
+    $dias = $db->fetchAll(
+        "SELECT *, COALESCE(duracion_estancia, 1) as duracion_estancia FROM programa_dias WHERE solicitud_id = ? ORDER BY dia_numero ASC", 
+        [$programa_id]
+    );
     
     // Obtener servicios para cada día con todas las alternativas
     foreach ($dias as &$dia) {
@@ -236,22 +250,36 @@ function formatAccommodationType($tipo) {
 $titulo_programa = $programa['titulo_programa'] ?: 'Viaje a ' . $programa['destino'];
 $nombre_viajero = trim($programa['nombre_viajero'] . ' ' . $programa['apellido_viajero']);
 $imagen_portada = $programa['foto_portada'] ?: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&h=600&fit=crop';
-$num_dias = count($dias);
+$num_dias = $duracion_dias; 
 $num_pasajeros = $programa['numero_pasajeros'];
 
 // Calcular duración
-$duracion_dias = 'N/A';
-if ($programa['fecha_llegada'] && $programa['fecha_salida']) {
-    $fecha_inicio = new DateTime($programa['fecha_llegada']);
-    $fecha_fin = new DateTime($programa['fecha_salida']);
-    $diferencia = $fecha_inicio->diff($fecha_fin);
-    $duracion_dias = $diferencia->days + 1; // +1 porque si llegas un día y sales el siguiente, son 2 días
+// Calcular duración real basada en los días del programa
+$duracion_dias = 0;
+foreach ($dias as $dia) {
+    $duracion_estancia = intval($dia['duracion_estancia']) ?: 1;
+    $duracion_dias += $duracion_estancia;
 }
 
-$fecha_inicio_formatted = $programa['fecha_llegada'] ? 
-    date('d M Y', strtotime($programa['fecha_llegada'])) : '';
-$fecha_fin_formatted = $programa['fecha_salida'] ? 
-    date('d M Y', strtotime($programa['fecha_salida'])) : '';
+// Si no hay días en el programa, usar el conteo de días
+if ($duracion_dias == 0) {
+    $duracion_dias = count($dias);
+}
+
+// Calcular fechas basado en fecha de llegada + días del programa
+$fecha_inicio_formatted = '';
+$fecha_fin_formatted = '';
+
+if ($programa['fecha_llegada']) {
+    $fecha_inicio = new DateTime($programa['fecha_llegada']);
+    $fecha_inicio_formatted = $fecha_inicio->format('d M Y');
+    
+    // Calcular fecha de salida: fecha_llegada + duración_días - 1
+    $fecha_fin = clone $fecha_inicio;
+    $fecha_fin->add(new DateInterval('P' . ($duracion_dias - 1) . 'D'));
+    $fecha_fin_formatted = $fecha_fin->format('d M Y');
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -260,6 +288,17 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($titulo_programa) ?> - <?= $company_name ?></title>
+    <!-- Google Translate -->
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: '<?= $programa['idioma_predeterminado'] ?? 'es' ?>',
+            includedLanguages: 'en,fr,pt,it,de,es',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false
+        }, 'google_translate_element');
+    }
+</script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet">
@@ -275,7 +314,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             font-family: 'Inter', sans-serif;
             line-height: 1.6;
             color: #2c3e50;
-            background: #fafbfc;
+            background: #ffffff;
         }
         
         /* ========================================
@@ -348,11 +387,14 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             margin-bottom: 5px;
         }
         
-        .hero-stat-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
+        .hero-stat-title {
+            display: block;
+            font-size: 12px;
+            color: rgba(255,255,255,0.8);
             text-transform: uppercase;
             letter-spacing: 1px;
+            margin-bottom: 4px;
+            font-weight: 600;
         }
         
         .scroll-indicator {
@@ -395,7 +437,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 20px;
+            padding: 0 95px;
         }
         
         .navbar-brand {
@@ -430,6 +472,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             max-width: 1200px;
             margin: 0 auto;
             padding: 80px 20px;
+            background: #ffffff;
         }
         
         .section {
@@ -455,7 +498,152 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             max-width: 600px;
             margin: 0 auto;
         }
-        
+        /* ===== SELECTOR DE IDIOMA ELEGANTE ===== */
+.translate-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+#google_translate_element {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    padding: 10px 15px;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    transition: all 0.3s ease;
+}
+
+#google_translate_element:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+}
+
+.goog-te-gadget-icon {
+    display: none !important;
+}
+
+.goog-te-gadget-simple {
+    background: transparent !important;
+    border: none !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+.VIpgJd-ZVi9od-xl07Ob-lTBxed {
+    background: transparent !important;
+    border: none !important;
+    color: #2c3e50 !important;
+    text-decoration: none !important;
+    font-family: inherit !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.VIpgJd-ZVi9od-xl07Ob-lTBxed:hover {
+    background: rgba(52, 152, 219, 0.1) !important;
+    color: #3498db !important;
+}
+
+.VIpgJd-ZVi9od-xl07Ob-lTBxed img {
+    display: none !important;
+}
+
+.VIpgJd-ZVi9od-xl07Ob-lTBxed span[style*="border-left"] {
+    display: none !important;
+}
+
+.VIpgJd-ZVi9od-xl07Ob-lTBxed span[aria-hidden="true"] {
+    color: #6b7280 !important;
+    font-size: 12px !important;
+    margin-left: 6px !important;
+    transition: all 0.2s ease !important;
+}
+
+.VIpgJd-ZVi9od-xl07Ob-lTBxed:hover span[aria-hidden="true"] {
+    color: #3498db !important;
+    transform: translateY(1px) !important;
+}
+
+.VIpgJd-ZVi9od-ORHb-OEVmcd {
+            left: 0;
+            display: none !important;
+            top: 0;
+        }
+
+.goog-te-menu-frame {
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15) !important;
+    backdrop-filter: blur(10px) !important;
+    overflow: hidden !important;
+    margin-top: 5px !important;
+}
+
+.goog-te-menu2 {
+    background: rgba(255, 255, 255, 0.98) !important;
+    border: none !important;
+    padding: 8px 0 !important;
+}
+
+.goog-te-menu2-item {
+    font-family: 'Inter', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #374151 !important;
+    padding: 12px 18px !important;
+    transition: all 0.15s ease !important;
+    cursor: pointer !important;
+    border: none !important;
+    margin: 0 8px !important;
+    border-radius: 8px !important;
+}
+
+.goog-te-menu2-item:hover {
+    background: rgba(52, 152, 219, 0.1) !important;
+    color: #3498db !important;
+    transform: translateX(3px) !important;
+}
+
+.goog-te-menu2-item-selected {
+    background: #3498db !important;
+    color: white !important;
+    font-weight: 600 !important;
+}
+
+.goog-te-banner-frame.skiptranslate { 
+    display: none !important; 
+}
+
+body { 
+    top: 0px !important; 
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .translate-container {
+        top: 15px;
+        right: 15px;
+    }
+    
+    #google_translate_element {
+        padding: 8px 12px;
+    }
+    
+    .VIpgJd-ZVi9od-xl07Ob-lTBxed {
+        font-size: 13px !important;
+        padding: 5px 10px !important;
+    }
+}
         /* ========================================
            OVERVIEW SECTION
            ======================================== */
@@ -467,10 +655,11 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
         }
         
         .overview-content {
-            background: white;
+            background: #ffffff;
             padding: 40px;
             border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
         }
         
         .overview-details {
@@ -487,6 +676,12 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             padding: 20px;
             background: #f8f9fa;
             border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .detail-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
         }
         
         .detail-icon {
@@ -513,7 +708,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
         }
         
         .overview-summary {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            background: #f8f9fa;
             padding: 30px;
             border-radius: 15px;
             border-left: 5px solid #3498db;
@@ -529,163 +724,17 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             color: #5a6c7d;
             line-height: 1.8;
         }
-        /* Estilos para días con estancia múltiple en timeline */
-.day-card.multi-day {
-    position: relative;
-}
-
-.day-card.multi-day::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #10b981 0%, #059669 50%, #10b981 100%);
-    background-size: 200% 100%;
-    animation: shimmer 3s ease-in-out infinite;
-    border-radius: 15px 15px 0 0;
-}
-
-@keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-}
-
-.day-number.multi-day-number {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: white;
-    font-size: 1.1rem;
-    min-width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-    position: relative;
-}
-
-.day-number.multi-day-number::after {
-    content: '';
-    position: absolute;
-    top: -3px;
-    left: -3px;
-    right: -3px;
-    bottom: -3px;
-    border: 2px solid rgba(16, 185, 129, 0.3);
-    border-radius: 50%;
-    animation: pulse-ring 2s ease-in-out infinite;
-}
-
-@keyframes pulse-ring {
-    0% { transform: scale(1); opacity: 1; }
-    100% { transform: scale(1.1); opacity: 0; }
-}
-
-.duration-badge-timeline {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-    box-shadow: 0 3px 10px rgba(245, 158, 11, 0.4);
-    animation: bounce-in 0.6s ease-out;
-}
-
-@keyframes bounce-in {
-    0% { transform: scale(0) rotate(180deg); opacity: 0; }
-    50% { transform: scale(1.2) rotate(90deg); opacity: 1; }
-    100% { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-
-.duration-badge-timeline::before {
-    content: '📅';
-    margin-right: 4px;
-}
-
-.duration-indicator {
-    display: inline-flex;
-    align-items: center;
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    color: white;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-left: 10px;
-    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
-}
-
-.duration-indicator::before {
-    content: '⏱️';
-    margin-right: 4px;
-}
-
-/* Efecto especial para el contenido de días múltiples */
-.day-card.multi-day .day-content {
-    position: relative;
-}
-
-.day-card.multi-day .day-content::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -20px;
-    width: 2px;
-    height: 100%;
-    background: linear-gradient(to bottom, #10b981, transparent);
-    opacity: 0.3;
-}
-
-/* Mejorar la apariencia general del day-title */
-.day-title {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    line-height: 1.3;
-}
-
-/* Responsive para móviles */
-@media (max-width: 768px) {
-    .day-number.multi-day-number {
-        min-width: 60px;
-        height: 60px;
-        font-size: 0.9rem;
-    }
-    
-    .duration-badge-timeline {
-        top: 15px;
-        right: 15px;
-        padding: 4px 8px;
-        font-size: 11px;
-    }
-    
-    .duration-indicator {
-        font-size: 0.7rem;
-        padding: 3px 8px;
-        margin-left: 6px;
-    }
-    
-    .day-title {
-        font-size: 1.1rem;
-    }
-}
+        
         /* ========================================
            MAP SECTION
            ======================================== */
         .map-container {
-            background: white;
+            background: #ffffff;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
             height: 500px;
+            border: 1px solid #e9ecef;
         }
         
         #map {
@@ -693,36 +742,8 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             width: 100%;
         }
         
-        .map-legend {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-        }
-        
-        .legend-icon {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-        }
-        
-        .legend-icon.actividad { background: #e74c3c; }
-        .legend-icon.alojamiento { background: #f39c12; }
-        .legend-icon.transporte { background: #3498db; }
-        
         /* ========================================
-           ITINERARY SECTION
+           ITINERARY SECTION - DISEÑO LIMPIO
            ======================================== */
         .itinerary-timeline {
             position: relative;
@@ -731,63 +752,210 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
         .itinerary-timeline::before {
             content: '';
             position: absolute;
-            left: 50px;
+            left: 60px;
             top: 0;
             bottom: 0;
-            width: 4px;
-            background: linear-gradient(180deg, #3498db, #2980b9);
-            border-radius: 2px;
+            width: 2px;
+            background: #e9ecef;
+            border-radius: 1px;
         }
         
         .day-card {
             position: relative;
-            margin-bottom: 60px;
-            padding-left: 120px;
+            margin-bottom: 40px;
+            padding-left: 140px;
             animation: fadeInUp 0.6s ease-out;
         }
         
+        /* Day Number - Diseño uniforme para todos */
         .day-number {
             position: absolute;
             left: 0;
             top: 20px;
             width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            border-radius: 50%;
+            height: 80px;
+            background: #ffffff;
+            border: 2px solid #3498db;
+            border-radius: 15px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.5rem;
+            color: #2c3e50;
             font-weight: 700;
-            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
         }
         
+        .day-number:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+        }
+        
+        .day-number-main {
+            font-size: 1.4rem;
+            line-height: 1;
+            color: #2c3e50;
+        }
+        
+        .day-number-label {
+            font-size: 0.7rem;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+        
+        /* Badge minimalista para duración */
+        .duration-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #3498db;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            border: 2px solid white;
+        }
+
+        @media print {
+    * {
+        -webkit-print-color-adjust: exact !important;
+        color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    
+    .navbar, 
+    .scroll-indicator, 
+    .pricing-actions, 
+    .footer-actions,
+    .alternatives-header {
+        display: none !important;
+    }
+    
+    .hero-section {
+        height: 250px !important;
+        background-attachment: scroll !important;
+        page-break-after: always;
+    }
+    
+    .day-card {
+        page-break-inside: avoid;
+        margin-bottom: 30px !important;
+        break-inside: avoid;
+    }
+    
+    .day-content {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    .pricing-section {
+        page-break-before: always;
+    }
+    
+    .accordion-content,
+    .alternatives-list {
+        max-height: none !important;
+        overflow: visible !important;
+        padding: 20px !important;
+        display: block !important;
+    }
+    
+    .map-container {
+        height: 200px !important;
+        background: #f8f9fa !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .map-container::after {
+        content: "📍 Ver mapa interactivo en la versión digital";
+        color: #6c757d;
+        font-size: 14px;
+    }
+    
+    #map {
+        display: none !important;
+    }
+    
+    body {
+        font-size: 11px !important;
+        background: #ffffff !important;
+        line-height: 1.4 !important;
+    }
+    
+    .section-title {
+        font-size: 1.8rem !important;
+        color: #2c3e50 !important;
+    }
+    
+    .day-title {
+        font-size: 1.3rem !important;
+        color: #2c3e50 !important;
+    }
+    
+    .service-icon {
+        background: #3498db !important;
+        -webkit-print-color-adjust: exact !important;
+    }
+    
+    .duration-badge,
+    .extended-stay-badge,
+    .duration-indicator {
+        background: #6c757d !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact !important;
+    }
+    
+    @page {
+        margin: 1.5cm;
+        size: A4;
+    }
+}
+
+.print-mode .accordion-content,
+.print-mode .alternatives-list {
+    max-height: none !important;
+    display: block !important;
+}
+        
+        /* ========================================
+           DAY CONTENT - DISEÑO LIMPIO
+           ======================================== */
         .day-content {
-            background: white;
+            background: #ffffff;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
         }
         
         .day-content:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 50px rgba(0,0,0,0.12);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
         }
         
         .day-header {
             padding: 30px;
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            border-bottom: 1px solid #dee2e6;
+            background: #ffffff;
+            border-bottom: 1px solid #e9ecef;
         }
         
         .day-title {
             font-family: 'Playfair Display', serif;
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 600;
             color: #2c3e50;
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .day-location {
@@ -798,42 +966,196 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             font-weight: 500;
         }
         
-        .day-images {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 2px;
-            height: 300px;
+        /* Duration indicator minimalista */
+        .duration-indicator {
+            display: inline-flex;
+            align-items: center;
+            background: #f8f9fa;
+            color: #6c757d;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid #e9ecef;
         }
         
-        .day-image {
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            overflow: hidden;
+        .stay-duration-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f8f9fa;
+            color: #6c757d;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid #e9ecef;
+            margin-left: 10px;
         }
         
-        .day-image:first-child {
-            grid-row: span 2;
-        }
+        /* ========================================
+           DAY IMAGES
+           ======================================== */
+         
         
-        .day-image::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.3);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .day-image:hover::before {
-            opacity: 1;
-        }
-        
+        /* ========================================
+   DAY IMAGES - MEJORADAS
+   ======================================== */
+
+   /* ========================================
+   DAY IMAGES - VERSIÓN SIMPLE Y FUNCIONAL
+   ======================================== */
+.day-images {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3px;
+    height: 300px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 20px 0;
+}
+
+.day-image {
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.day-image:first-child {
+    grid-row: span 2;
+}
+
+.day-image:hover {
+    transform: scale(1.02);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
+
+.day-image::before {
+    content: '🔍 Ver imagen';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.day-image:hover::before {
+    opacity: 1;
+}
+
+/* Modal simple para imágenes */
+.simple-image-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 20px;
+}
+
+.simple-image-modal.show {
+    display: flex;
+}
+
+.simple-modal-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90%;
+    text-align: center;
+}
+
+.simple-modal-content img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.simple-modal-close {
+    position: absolute;
+    top: -15px;
+    right: -15px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.simple-modal-close:hover {
+    background: #c0392b;
+}
+
+@media (max-width: 768px) {
+    .day-images {
+        grid-template-columns: 1fr;
+        height: 200px;
+    }
+    
+    .day-image:first-child {
+        grid-row: span 1;
+    }
+    
+    .simple-modal-close {
+        top: 10px;
+        right: 10px;
+    }
+}
+        /* ========================================
+           DAY SERVICES
+           ======================================== */
         .day-services {
             padding: 30px;
+        }
+        
+        .day-description {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .day-description p {
+            margin: 0;
+            color: #5a6c7d;
+            line-height: 1.7;
+        }
+        
+        .stay-info-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 14px;
         }
         
         .services-grid {
@@ -842,19 +1164,19 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
         }
         
         /* ========================================
-           SERVICIOS CON ALTERNATIVAS
+           SERVICIOS - DISEÑO LIMPIO
            ======================================== */
         .service-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             border: 1px solid #e9ecef;
             border-radius: 15px;
             overflow: hidden;
-            background: white;
+            background: #ffffff;
             transition: all 0.3s ease;
         }
         
         .service-group:hover {
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
             border-color: #3498db;
         }
         
@@ -863,42 +1185,30 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             gap: 20px;
             padding: 20px;
             transition: all 0.3s ease;
+            align-items: flex-start;
         }
         
         .service-item.principal {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            background: #ffffff;
             border-left: 4px solid #3498db;
-            position: relative;
-        }
-        
-        .service-item.principal::before {
-            content: '';
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 20px;
-            height: 20px;
-            background: #ffc107;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         
         .service-item:hover {
-            transform: translateX(5px);
+            background: #f8f9fa;
         }
         
+        /* Service icons organizados sin solapamiento */
         .service-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             flex-shrink: 0;
+            margin-top: 5px;
         }
         
         .service-icon.actividad {
@@ -915,6 +1225,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
         
         .service-details {
             flex: 1;
+            min-width: 0;
         }
         
         .service-details h4 {
@@ -925,12 +1236,14 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
         
         .service-details p {
             color: #7f8c8d;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-size: 0.95rem;
+            line-height: 1.5;
         }
         
         .service-meta {
@@ -948,27 +1261,106 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             gap: 5px;
         }
         
-        /* Alternativas */
+        .service-image {
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+            margin-top: 5px;
+        }
+        
+        /* Extended stay badge minimalista */
+        .extended-stay-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #f8f9fa;
+            color: #6c757d;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid #e9ecef;
+            margin-left: 8px;
+        }
+        
+        /* ========================================
+           MEALS SECTION
+           ======================================== */
+        .day-meals {
+            margin-top: 20px;
+            padding: 20px;
+            background: #fff9f0;
+            border-radius: 12px;
+            border-left: 4px solid #f39c12;
+            border: 1px solid #fef5e7;
+        }
+        
+        .day-meals h4 {
+            margin-bottom: 15px;
+            color: #d35400;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .meals-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .meal-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: #ffffff;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #d35400;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #fef5e7;
+            transition: all 0.3s ease;
+        }
+        
+        .meal-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .meal-item i {
+            margin-right: 6px;
+            color: #27ae60;
+            font-size: 12px;
+        }
+        
+        /* ========================================
+           ALTERNATIVAS
+           ======================================== */
         .alternatives-header {
             padding: 12px 20px;
-            background: #f1f3f4;
+            background: #f8f9fa;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-weight: 600;
-            color: #5a6c7d;
+            font-weight: 500;
+            color: #6c757d;
             font-size: 0.9rem;
             border-top: 1px solid #e9ecef;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
         }
         
         .alternatives-header:hover {
-            background: #e8eaed;
+            background: #e9ecef;
+            color: #495057;
         }
         
         .alternatives-header i {
-            color: #17a2b8;
+            color: #6c757d;
         }
         
         .alternatives-toggle {
@@ -993,7 +1385,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
         .service-item.alternativa {
             background: #fafbfc;
             border-bottom: 1px solid #e9ecef;
-            border-left: 3px solid #17a2b8;
+            border-left: 3px solid #6c757d;
             position: relative;
         }
         
@@ -1002,21 +1394,21 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
         }
         
         .service-item.alternativa .service-icon {
-            background: linear-gradient(135deg, #17a2b8, #20c997) !important;
-            width: 50px;
-            height: 50px;
-            font-size: 1.1rem;
+            background: linear-gradient(135deg, #6c757d, #495057) !important;
+            width: 45px;
+            height: 45px;
+            font-size: 1rem;
         }
         
         .alternative-badge {
             position: absolute;
             top: 8px;
             right: 8px;
-            background: #17a2b8;
+            background: #6c757d;
             color: white;
-            font-size: 10px;
-            padding: 3px 8px;
-            border-radius: 12px;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 10px;
             font-weight: 600;
             text-transform: uppercase;
         }
@@ -1024,11 +1416,11 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
         .alternative-notes {
             margin-top: 8px;
             padding: 8px 12px;
-            background: rgba(23, 162, 184, 0.1);
-            border-left: 3px solid #17a2b8;
+            background: rgba(108, 117, 125, 0.1);
+            border-left: 3px solid #6c757d;
             border-radius: 4px;
             font-size: 0.85rem;
-            color: #0c5460;
+            color: #495057;
             font-style: italic;
         }
         
@@ -1066,11 +1458,11 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
         }
 
         .price-main-card {
-            background: white;
+            background: #ffffff;
             border-radius: 20px;
             padding: 40px;
             margin-bottom: 40px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
             border: 1px solid #e9ecef;
             text-align: center;
         }
@@ -1126,16 +1518,16 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
         }
 
         .pricing-accordion {
-            background: white;
+            background: #ffffff;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
             border: 1px solid #e9ecef;
             transition: all 0.3s ease;
         }
 
         .pricing-accordion:hover {
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
             transform: translateY(-2px);
         }
 
@@ -1145,16 +1537,16 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #fafbfc;
+            background: #ffffff;
             transition: background-color 0.3s ease;
         }
 
         .accordion-header:hover {
-            background: #f1f3f4;
+            background: #f8f9fa;
         }
 
         .accordion-header.active {
-            background: #e8f4f8;
+            background: #f0f7ff;
         }
 
         .accordion-title {
@@ -1183,7 +1575,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease, padding 0.3s ease;
-            background: white;
+            background: #ffffff;
         }
 
         .accordion-content.active {
@@ -1340,7 +1732,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
             color: white;
         }
         
@@ -1397,12 +1789,15 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             }
             
             .day-card {
-                padding-left: 80px;
+                padding-left: 120px;
             }
             
             .day-number {
-                width: 60px;
+                width: 80px;
                 height: 60px;
+            }
+            
+            .day-number-main {
                 font-size: 1.2rem;
             }
         }
@@ -1439,62 +1834,28 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             }
             
             .itinerary-timeline::before {
-                left: 30px;
+                left: 40px;
             }
             
             .day-card {
-                padding-left: 70px;
+                padding-left: 90px;
             }
             
             .day-number {
-                left: 0;
-                width: 50px;
+                width: 70px;
                 height: 50px;
+            }
+            
+            .day-number-main {
                 font-size: 1rem;
+            }
+            
+            .day-number-label {
+                font-size: 0.6rem;
             }
             
             .navbar-nav {
                 display: none;
-            }
-            
-            .pricing-content {
-                padding: 0 15px;
-            }
-            
-            .price-main-card {
-                padding: 25px 20px;
-            }
-            
-            .price-value {
-                font-size: 2.5rem;
-            }
-            
-            .accordion-header {
-                padding: 15px 20px;
-            }
-            
-            .accordion-title {
-                font-size: 1rem;
-            }
-            
-            .accordion-content.active {
-                padding: 0 20px 20px 20px;
-            }
-            
-            .pricing-actions {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .btn {
-                width: 100%;
-                max-width: 300px;
-                justify-content: center;
-            }
-            
-            .footer-actions {
-                flex-direction: column;
-                align-items: center;
             }
             
             .service-item {
@@ -1503,20 +1864,127 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             }
             
             .service-icon {
-                width: 50px;
-                height: 50px;
-                font-size: 1.1rem;
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+                margin-top: 0;
             }
             
             .service-meta {
                 flex-direction: column;
                 gap: 8px;
             }
+            
+            .day-title {
+                font-size: 1.4rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .extended-stay-badge,
+            .duration-indicator,
+            .stay-duration-note {
+                margin-left: 0;
+                margin-top: 5px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 60px 15px;
+            }
+            
+            .day-card {
+                padding-left: 80px;
+            }
+            
+            .day-number {
+                width: 60px;
+                height: 45px;
+            }
+            
+            .day-number-main {
+                font-size: 0.9rem;
+            }
+            
+            .day-number-label {
+                font-size: 0.55rem;
+            }
+            
+            .itinerary-timeline::before {
+                left: 30px;
+            }
+            
+            .day-header,
+            .day-services {
+                padding: 20px;
+            }
+            
+            .day-title {
+                font-size: 1.2rem;
+            }
+            
+            .service-item {
+                padding: 15px;
+            }
+        }
+        
+        /* ========================================
+           PRINT STYLES
+           ======================================== */
+        @media print {
+            .navbar, .scroll-indicator, .pricing-actions, .footer-actions {
+                display: none !important;
+            }
+            
+            .hero-section {
+                height: 200px !important;
+                background-attachment: scroll !important;
+            }
+            
+            .day-card {
+                page-break-inside: avoid;
+                margin-bottom: 20px !important;
+            }
+            
+            .pricing-section {
+                page-break-before: always;
+            }
+            
+            .accordion-content {
+                max-height: none !important;
+                padding: 0 25px 25px 25px !important;
+            }
+            
+            .alternatives-list {
+                max-height: none !important;
+            }
+            
+            body {
+                font-size: 12px !important;
+                background: #ffffff !important;
+            }
+            
+            .section-title {
+                font-size: 1.5rem !important;
+            }
+            
+            .day-title {
+                font-size: 1.2rem !important;
+            }
+            
+            .map-container {
+                display: none !important;
+            }
         }
     </style>
 </head>
 
 <body>
+    <div class="translate-container">
+        <div id="google_translate_element"></div>
+    </div>
     <!-- Navigation Bar -->
     <nav class="navbar" id="navbar">
         <div class="navbar-content">
@@ -1534,15 +2002,15 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
     <section class="hero-section">
         <div class="hero-content">
             <div class="hero-subtitle">Tu aventura perfecta</div>
-            <h1 class="hero-title"><?= htmlspecialchars($titulo_programa) ?></h1>
+            <h1 class="hero-title">Itinerario personalizado de <?= $duracion_dias ?> <?= $duracion_dias == 1 ? 'día' : 'días' ?></h1>
             <div class="hero-description">
                 Diseñado especialmente para <strong><?= htmlspecialchars($nombre_viajero) ?></strong>
             </div>
             
             <div class="hero-stats">
                 <div class="hero-stat">
-                    <span class="hero-stat-number"><?= $num_dias ?></span>
-                    <span class="hero-stat-label"><?= $num_dias == 1 ? 'Día' : 'Días' ?></span>
+                    <span class="hero-stat-number"><?= $duracion_dias ?></span>
+                    <span class="hero-stat-label"><?= $duracion_dias == 1 ? 'Día' : 'Días' ?></span>
                 </div>
                 <div class="hero-stat">
                     <span class="hero-stat-number"><?= $num_pasajeros ?></span>
@@ -1550,6 +2018,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                 </div>
                 <?php if ($fecha_inicio_formatted): ?>
                 <div class="hero-stat">
+                    <span class="hero-stat-title">Fecha de Salida</span>
                     <span class="hero-stat-number"><?= date('j', strtotime($programa['fecha_llegada'])) ?></span>
                     <span class="hero-stat-label"><?= date('M Y', strtotime($programa['fecha_llegada'])) ?></span>
                 </div>
@@ -1592,8 +2061,9 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                                 <i class="fas fa-calendar-alt"></i>
                             </div>
                             <div class="detail-info">
-                                <h4>Fechas</h4>
-                                <p><?= $fecha_inicio_formatted ?> - <?= $fecha_fin_formatted ?></p>
+                                <h4>Fechas del Viaje</h4>
+                                <p><strong>Salida:</strong> <?= $fecha_inicio_formatted ?><br>
+                                <strong>Regreso:</strong> <?= $fecha_fin_formatted ?></p>
                             </div>
                         </div>
                         
@@ -1613,7 +2083,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                             </div>
                             <div class="detail-info">
                                 <h4>Duración</h4>
-                                <p><?= $duracion_dias ?> <?= $duracion_dias == 1 ? 'día' : 'días' ?> increíbles</p>
+                                <p><?= $duracion_dias ?> <?= $duracion_dias == 1 ? 'día increíble' : 'días increíbles' ?></p>
                             </div>
                         </div>
                     </div>
@@ -1630,7 +2100,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                 
                 <div class="overview-content">
                     <h3 style="margin-bottom: 20px; color: #2c3e50;">Lo que incluye</h3>
-                    <div style="space-y: 15px;">
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
                         <?php 
                         $total_actividades = 0;
                         $total_alojamientos = 0;
@@ -1656,10 +2126,11 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                             </div>
                             <div class="detail-info">
                                 <h4>Duración</h4>
-                                <p><?= $num_dias ?> <?= $num_dias == 1 ? 'día' : 'días' ?> increíbles</p>
+                                <p><?= $duracion_dias ?> <?= $duracion_dias == 1 ? 'día' : 'días' ?> de aventura</p>
                             </div>
                         </div>
                         
+                        <?php if ($total_alojamientos > 0): ?>
                         <div class="detail-item">
                             <div class="detail-icon" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
                                 <i class="fas fa-bed"></i>
@@ -1669,7 +2140,9 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                                 <p>Hospedaje confortable y bien ubicado</p>
                             </div>
                         </div>
+                        <?php endif; ?>
                         
+                        <?php if ($total_transportes > 0): ?>
                         <div class="detail-item">
                             <div class="detail-icon" style="background: linear-gradient(135deg, #3498db, #2980b9);">
                                 <i class="fas fa-car"></i>
@@ -1679,6 +2152,19 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                                 <p>Traslados cómodos y seguros</p>
                             </div>
                         </div>
+                        <?php endif; ?>
+                        
+                        <?php if ($total_actividades > 0): ?>
+                        <div class="detail-item">
+                            <div class="detail-icon" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+                                <i class="fas fa-hiking"></i>
+                            </div>
+                            <div class="detail-info">
+                                <h4><?= $total_actividades ?> Actividades</h4>
+                                <p>Experiencias únicas e inolvidables</p>
+                            </div>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -1723,13 +2209,18 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                     
                     $duracionTexto = $duracion > 1 ? " ({$duracion} días)" : '';
                 ?>
-                <div class="day-card<?= $duracion > 1 ? ' multi-day' : '' ?>" style="animation-delay: <?= $index * 0.1 ?>s;">
-                    <div class="day-number<?= $duracion > 1 ? ' multi-day-number' : '' ?>">
-                        <?= $diaActual ?><?= $duracion > 1 ? "-{$diaFinal}" : '' ?>
+                <div class="day-card" style="animation-delay: <?= $index * 0.1 ?>s;">
+                    <div class="day-number">
+                        <div class="day-number-main">
+                            <?= $duracion === 1 ? $diaActual : "{$diaActual}-{$diaFinal}" ?>
+                        </div>
+                        <div class="day-number-label">
+                            <?= $duracion === 1 ? 'DÍA' : 'DÍAS' ?>
+                        </div>
+                        <?php if ($duracion > 1): ?>
+                            <div class="duration-badge"><?= $duracion ?>d</div>
+                        <?php endif; ?>
                     </div>
-                    <?php if ($duracion > 1): ?>
-                        <div class="duration-badge-timeline"><?= $duracion ?>d</div>
-                    <?php endif; ?>
                     
                     <div class="day-content">
                         <div class="day-header">
@@ -1754,37 +2245,42 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                         <?php if ($dia['imagen1'] || $dia['imagen2'] || $dia['imagen3']): ?>
                         <div class="day-images">
                             <?php if ($dia['imagen1']): ?>
-                            <div class="day-image" style="background-image: url('<?= htmlspecialchars($dia['imagen1']) ?>')"></div>
+                            <div class="day-image" 
+                                style="background-image: url('<?= htmlspecialchars($dia['imagen1']) ?>')"
+                                onclick="showImage('<?= htmlspecialchars($dia['imagen1']) ?>')"></div>
                             <?php endif; ?>
+                            
                             <?php if ($dia['imagen2']): ?>
-                            <div class="day-image" style="background-image: url('<?= htmlspecialchars($dia['imagen2']) ?>')"></div>
+                            <div class="day-image" 
+                                style="background-image: url('<?= htmlspecialchars($dia['imagen2']) ?>')"
+                                onclick="showImage('<?= htmlspecialchars($dia['imagen2']) ?>')"></div>
                             <?php endif; ?>
+                            
                             <?php if ($dia['imagen3']): ?>
-                            <div class="day-image" style="background-image: url('<?= htmlspecialchars($dia['imagen3']) ?>')"></div>
+                            <div class="day-image" 
+                                style="background-image: url('<?= htmlspecialchars($dia['imagen3']) ?>')"
+                                onclick="showImage('<?= htmlspecialchars($dia['imagen3']) ?>')"></div>
                             <?php endif; ?>
                         </div>
                         <?php endif; ?>
                         
                         <div class="day-services">
                             <?php if (!empty($dia['descripcion'])): ?>
-                            <div style="margin-bottom: 30px; padding: 20px; background: <?= $duracion > 1 ? 'linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%)' : '#f8f9fa' ?>; border-radius: 15px; border-left: 4px solid <?= $duracion > 1 ? '#10b981' : '#3498db' ?>;">
-                                <p style="margin: 0; color: #5a6c7d; line-height: 1.7;">
-                                    <?= nl2br(htmlspecialchars($dia['descripcion'])) ?>
-                                </p>
+                            <div class="day-description">
+                                <p><?= nl2br(htmlspecialchars($dia['descripcion'])) ?></p>
                                 <?php if ($duracion > 1): ?>
-                                <div style="margin-top: 15px; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; font-size: 14px; color: #059669;">
-                                    <i class="fas fa-info-circle"></i>
-                                    <strong>Nota:</strong> Estos servicios y actividades están disponibles durante toda tu estancia de <?= $duracion ?> días en <?= htmlspecialchars($dia['ubicacion']) ?>.
+                                <div class="stay-info-box">
+                                    <strong>Estancia Extendida:</strong> Estos servicios y actividades están disponibles durante toda tu estancia de <?= $duracion ?> días en <?= htmlspecialchars($dia['ubicacion']) ?>. Podrás disfrutar con total flexibilidad y sin prisas.
                                 </div>
                                 <?php endif; ?>
                             </div>
                             <?php endif; ?>
                             
                             <?php if (!empty($dia['servicios'])): ?>
-                            <h4 style="margin-bottom: 20px; color: #2c3e50; font-size: 1.3rem;">
-                                <i class="fas fa-list-ul"></i> Servicios del día
+                            <h4 style="margin-bottom: 20px; color: #2c3e50; font-size: 1.2rem; font-weight: 600;">
+                                <i class="fas fa-list-ul"></i> Servicios incluidos
                                 <?php if ($duracion > 1): ?>
-                                    <span style="font-size: 0.8rem; color: #059669; font-weight: normal;">
+                                    <span style="font-size: 0.8rem; color: #6c757d; font-weight: normal;">
                                         (Disponibles durante <?= $duracion ?> días)
                                     </span>
                                 <?php endif; ?>
@@ -1794,7 +2290,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                                 <?php foreach ($dia['servicios'] as $servicio_grupo): ?>
                                     <?php $servicio = $servicio_grupo['principal']; ?>
                                     <?php if ($servicio): ?>
-                                    <div class="service-group<?= $duracion > 1 ? ' extended-stay' : '' ?>">
+                                    <div class="service-group">
                                         <!-- Servicio Principal -->
                                         <div class="service-item principal">
                                             <div class="service-icon <?= $servicio['tipo_servicio'] ?>">
@@ -1803,7 +2299,6 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                                             
                                             <div class="service-details">
                                                 <h4>
-                                                    <i class="fas fa-star" style="color: #ffc107; font-size: 12px; margin-right: 4px;"></i>
                                                     <?= htmlspecialchars($servicio['nombre']) ?>
                                                     <?php if ($duracion > 1 && $servicio['tipo_servicio'] == 'alojamiento'): ?>
                                                         <span class="extended-stay-badge">
@@ -1849,7 +2344,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                                             </div>
                                             
                                             <?php if ($servicio['imagen']): ?>
-                                            <div style="width: 80px; height: 80px; border-radius: 10px; background-image: url('<?= htmlspecialchars($servicio['imagen']) ?>'); background-size: cover; background-position: center; flex-shrink: 0;"></div>
+                                            <div class="service-image" style="background-image: url('<?= htmlspecialchars($servicio['imagen']) ?>');"></div>
                                             <?php endif; ?>
                                         </div>
                                         
@@ -1871,12 +2366,12 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                                                 </div>
                                                 
                                                 <div class="service-details">
-                                                    <h4 style="color: #0c5460; margin-bottom: 5px;">
+                                                    <h4 style="color: #495057; margin-bottom: 5px;">
                                                         <?= htmlspecialchars($alternativa['nombre']) ?>
                                                     </h4>
                                                     
                                                     <?php if ($alternativa['descripcion']): ?>
-                                                    <p style="font-size: 0.9rem; color: #5a6c7d;">
+                                                    <p style="font-size: 0.9rem; color: #6c757d;">
                                                         <?= htmlspecialchars($alternativa['descripcion']) ?>
                                                     </p>
                                                     <?php endif; ?>
@@ -1899,7 +2394,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                                                 </div>
                                                 
                                                 <?php if ($alternativa['imagen']): ?>
-                                                <div style="width: 60px; height: 60px; border-radius: 8px; background-image: url('<?= htmlspecialchars($alternativa['imagen']) ?>'); background-size: cover; background-position: center; flex-shrink: 0;"></div>
+                                                <div class="service-image" style="width: 50px; height: 50px; background-image: url('<?= htmlspecialchars($alternativa['imagen']) ?>');"></div>
                                                 <?php endif; ?>
                                             </div>
                                             <?php endforeach; ?>
@@ -1914,6 +2409,36 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                                 <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 15px;"></i>
                                 <p>Los servicios para este día están siendo planificados</p>
                             </div>
+                            <?php endif; ?>
+                            
+                            <!-- Mostrar comidas si están incluidas -->
+                            <?php if (isset($dia['comidas_incluidas']) && $dia['comidas_incluidas'] == 1): ?>
+                                <div class="day-meals">
+                                    <h4>
+                                        <i class="fas fa-utensils"></i>
+                                        Comidas incluidas
+                                    </h4>
+                                    <div class="meals-list">
+                                        <?php if ($dia['desayuno'] == 1): ?>
+                                            <span class="meal-item">
+                                                <i class="fas fa-check"></i> 
+                                                Desayuno
+                                            </span>
+                                        <?php endif; ?>
+                                        <?php if ($dia['almuerzo'] == 1): ?>
+                                            <span class="meal-item">
+                                                <i class="fas fa-check"></i> 
+                                                Almuerzo
+                                            </span>
+                                        <?php endif; ?>
+                                        <?php if ($dia['cena'] == 1): ?>
+                                            <span class="meal-item">
+                                                <i class="fas fa-check"></i> 
+                                                Cena
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -2119,7 +2644,25 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
         <?php endif; ?>
     </div>
 
-    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <h3>¿Listo para tu aventura?</h3>
+            <p>Contáctanos para personalizar este itinerario según tus preferencias</p>
+            
+            <div class="footer-actions">
+                
+                <a href="#" class="btn btn-outline" onclick="downloadItinerary()">
+                    <i class="fas fa-download"></i>
+                    Descargar PDF
+                </a>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; <?= date('Y') ?> <?= htmlspecialchars($company_name) ?>. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
 
     <!-- JavaScript para funcionalidad -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -2183,22 +2726,22 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                         html: `
                             <div style="
                                 background-color: ${color};
-                                width: 35px;
-                                height: 35px;
+                                width: 30px;
+                                height: 30px;
                                 border-radius: 50%;
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;
                                 color: white;
                                 font-weight: bold;
-                                font-size: 14px;
-                                border: 3px solid white;
-                                box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+                                font-size: 12px;
+                                border: 2px solid white;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
                             ">${punto.dia}</div>
                         `,
                         className: 'custom-div-icon',
-                        iconSize: [35, 35],
-                        iconAnchor: [17, 17]
+                        iconSize: [30, 30],
+                        iconAnchor: [15, 15]
                     });
                     
                     const marker = L.marker([punto.lat, punto.lng], {
@@ -2206,26 +2749,26 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                     }).addTo(map);
                     
                     const popupContent = `
-                        <div style="text-align: center; min-width: 220px;">
-                            <h4 style="margin: 0 0 10px 0; color: ${color}; font-size: 1.1rem;">
+                        <div style="text-align: center; min-width: 200px;">
+                            <h4 style="margin: 0 0 8px 0; color: ${color}; font-size: 1rem;">
                                 ${punto.titulo}
                             </h4>
-                            <p style="margin: 0 0 8px 0; color: #666; text-transform: capitalize; font-size: 0.9rem;">
+                            <p style="margin: 0 0 6px 0; color: #666; font-size: 0.85rem;">
                                 <i class="fas fa-${punto.tipo === 'actividad' ? 'hiking' : (punto.tipo === 'alojamiento' ? 'bed' : 'car')}"></i>
-                                ${punto.tipo} - Día ${punto.dia}
+                                ${punto.tipo.charAt(0).toUpperCase() + punto.tipo.slice(1)} - Día ${punto.dia}
                             </p>
-                            <p style="margin: 0 0 10px 0; color: #888; font-size: 0.85rem;">
+                            <p style="margin: 0 0 8px 0; color: #888; font-size: 0.8rem;">
                                 <i class="fas fa-map-marker-alt"></i>
                                 ${punto.ubicacion}
                             </p>
                             ${punto.descripcion ? `
-                                <p style="margin: 10px 0 0 0; color: #555; font-size: 0.8rem; line-height: 1.3;">
-                                    ${punto.descripcion.substring(0, 80)}...
+                                <p style="margin: 8px 0 0 0; color: #555; font-size: 0.75rem; line-height: 1.3;">
+                                    ${punto.descripcion.substring(0, 60)}...
                                 </p>
                             ` : ''}
                             ${punto.imagen ? `
                                 <img src="${punto.imagen}" 
-                                     style="width: 100%; height: 100px; object-fit: cover; border-radius: 8px; margin-top: 10px;"
+                                     style="width: 100%; height: 80px; object-fit: cover; border-radius: 6px; margin-top: 8px;"
                                      alt="${punto.titulo}">
                             ` : ''}
                         </div>
@@ -2235,7 +2778,7 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                 });
                 
                 if (puntosMapa.length > 1) {
-                    const group = new L.featureGroup(map._layers);
+                    const group = new L.featureGroup(Object.values(map._layers).filter(layer => layer instanceof L.Marker));
                     map.fitBounds(group.getBounds().pad(0.1));
                 }
                 
@@ -2258,9 +2801,9 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                         
                         L.polyline(coordenadas, {
                             color: color,
-                            weight: 3,
-                            opacity: 0.7,
-                            dashArray: '8, 5'
+                            weight: 2,
+                            opacity: 0.6,
+                            dashArray: '5, 5'
                         }).addTo(map);
                     }
                 });
@@ -2276,17 +2819,21 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             const arrow = document.getElementById(`arrow-${sectionId}`);
             const header = arrow.closest('.accordion-header');
             
+            // Cerrar otros accordions abiertos
             document.querySelectorAll('.accordion-content.active').forEach(function(otherContent) {
                 if (otherContent.id !== `content-${sectionId}`) {
                     otherContent.classList.remove('active');
                     const otherId = otherContent.id.replace('content-', '');
                     const otherArrow = document.getElementById(`arrow-${otherId}`);
-                    const otherHeader = otherArrow.closest('.accordion-header');
-                    otherArrow.classList.remove('rotated');
-                    otherHeader.classList.remove('active');
+                    if (otherArrow) {
+                        const otherHeader = otherArrow.closest('.accordion-header');
+                        otherArrow.classList.remove('rotated');
+                        otherHeader.classList.remove('active');
+                    }
                 }
             });
             
+            // Toggle del accordion actual
             content.classList.toggle('active');
             arrow.classList.toggle('rotated');
             header.classList.toggle('active');
@@ -2299,19 +2846,103 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
             const alternativesList = document.getElementById(`alternatives-${servicioId}`);
             const toggle = document.getElementById(`toggle-${servicioId}`);
             
-            alternativesList.classList.toggle('expanded');
-            toggle.classList.toggle('rotated');
+            if (alternativesList && toggle) {
+                alternativesList.classList.toggle('expanded');
+                toggle.classList.toggle('rotated');
+                
+                // Añadir efecto visual smooth
+                if (alternativesList.classList.contains('expanded')) {
+                    alternativesList.style.maxHeight = alternativesList.scrollHeight + 'px';
+                } else {
+                    alternativesList.style.maxHeight = '0px';
+                }
+            }
         }
 
         // =====================================================
         // ACTION BUTTONS FUNCTIONALITY
         // =====================================================
         function requestQuote() {
-            alert('Funcionalidad de cotización - Implementar según necesidades');
+            // Crear modal personalizado para solicitar cotización
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    padding: 30px;
+                    border-radius: 15px;
+                    max-width: 400px;
+                    width: 90%;
+                    text-align: center;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                ">
+                    <div style="font-size: 2.5rem; margin-bottom: 15px;">✈️</div>
+                    <h3 style="margin-bottom: 10px; color: #2c3e50;">¡Solicita tu cotización!</h3>
+                    <p style="color: #7f8c8d; margin-bottom: 25px; font-size: 0.9rem;">
+                        Nos pondremos en contacto contigo para personalizar este increíble viaje
+                    </p>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button onclick="this.closest('[style*=\"position: fixed\"]').remove()" 
+                                style="padding: 10px 20px; background: #95a5a6; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 0.9rem;">
+                            Cerrar
+                        </button>
+                        <button onclick="window.location.href='mailto:info@agencia.com?subject=Cotización Itinerario'" 
+                                style="padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 0.9rem;">
+                            Enviar Email
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Cerrar modal al hacer click fuera
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
         }
 
         function downloadItinerary() {
-            window.print();
+            // Preparar para impresión
+            document.body.classList.add('print-mode');
+            
+            // Expandir todo el contenido
+            document.querySelectorAll('.accordion-content').forEach(content => {
+                content.style.maxHeight = 'none';
+                content.style.display = 'block';
+                content.classList.add('active');
+            });
+            
+            document.querySelectorAll('.alternatives-list').forEach(list => {
+                list.style.maxHeight = 'none';
+                list.style.display = 'block';
+                list.classList.add('expanded');
+            });
+            
+            // Pequeño delay para que se rendericen los cambios
+            setTimeout(() => {
+                window.print();
+                
+                // Restaurar después de la impresión
+                setTimeout(() => {
+                    document.body.classList.remove('print-mode');
+                }, 1000);
+            }, 500);
         }
 
         // =====================================================
@@ -2332,26 +2963,29 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
                 });
             }, observerOptions);
 
-            document.querySelectorAll('.day-card, .service-group, .detail-item').forEach(function(el) {
+            // Observar elementos con animaciones
+            document.querySelectorAll('.day-card, .service-group, .detail-item, .pricing-accordion').forEach(function(el) {
                 observer.observe(el);
             });
         });
 
         // =====================================================
-        // PARALLAX EFFECT - REMOVED
+        // KEYBOARD ACCESSIBILITY
         // =====================================================
-        // Parallax effect removed to prevent image overlap with text
-        
-        // =====================================================
-        // SMOOTH SCROLL ENHANCEMENT
-        // =====================================================
-        window.addEventListener('scroll', function() {
-            // Only handle navbar visibility, no parallax effects
-            const navbar = document.getElementById('navbar');
-            if (window.scrollY > 100) {
-                navbar.classList.add('visible');
-            } else {
-                navbar.classList.remove('visible');
+        document.addEventListener('keydown', function(e) {
+            // ESC para cerrar modales
+            if (e.key === 'Escape') {
+                document.querySelectorAll('[style*="position: fixed"]').forEach(modal => {
+                    if (modal.style.zIndex === '10000') {
+                        modal.remove();
+                    }
+                });
+            }
+            
+            // Enter y Space para activar accordions
+            if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.accordion-header')) {
+                e.preventDefault();
+                e.target.closest('.accordion-header').click();
             }
         });
 
@@ -2359,75 +2993,275 @@ $fecha_fin_formatted = $programa['fecha_salida'] ?
         // PRINT FUNCTIONALITY
         // =====================================================
         window.addEventListener('beforeprint', function() {
+            // Expandir todos los accordions para impresión
             document.querySelectorAll('.accordion-content').forEach(function(content) {
                 content.style.maxHeight = 'none';
                 content.style.display = 'block';
+                content.classList.add('active');
             });
             
+            // Expandir todas las alternativas
             document.querySelectorAll('.alternatives-list').forEach(function(list) {
                 list.style.maxHeight = 'none';
                 list.style.display = 'block';
+                list.classList.add('expanded');
             });
         });
 
         window.addEventListener('afterprint', function() {
+            // Restaurar estado original después de impresión
             document.querySelectorAll('.accordion-content:not(.active)').forEach(function(content) {
                 content.style.maxHeight = '0';
                 content.style.display = 'none';
+                content.classList.remove('active');
             });
             
             document.querySelectorAll('.alternatives-list:not(.expanded)').forEach(function(list) {
                 list.style.maxHeight = '0';
                 list.style.display = 'none';
+                list.classList.remove('expanded');
             });
         });
+
+        // =====================================================
+        // PERFORMANCE OPTIMIZATIONS
+        // =====================================================
+        
+        // Throttle para eventos de scroll
+        function throttle(func, limit) {
+            let inThrottle;
+            return function() {
+                const args = arguments;
+                const context = this;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
+            }
+        }
+
+        // =====================================================
+        // INICIALIZACIÓN FINAL
+        // =====================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🌟 Itinerario cargado exitosamente');
+            
+            // Añadir clase para indicar que JS está cargado
+            document.body.classList.add('js-loaded');
+            
+            // Precarga de imágenes críticas
+            const criticalImages = document.querySelectorAll('.day-image');
+            criticalImages.forEach((img, index) => {
+                if (index < 3) { // Solo las primeras 3 imágenes
+                    const preloadImg = new Image();
+                    const bgImage = img.style.backgroundImage;
+                    if (bgImage) {
+                        preloadImg.src = bgImage.slice(5, -2); // Extraer URL de url("...")
+                    }
+                }
+            });
+        });
+
+        // =====================================================
+// IMAGE MODAL FUNCTIONALITY
+// =====================================================
+let currentImageIndex = 0;
+let currentDayId = null;
+
+function openImageModal(dayId, imageIndex = 0) {
+    currentDayId = dayId;
+    currentImageIndex = imageIndex;
+    
+    const modal = document.getElementById(`imageModal-${dayId}`);
+    const modalImage = document.getElementById(`modalImage-${dayId}`);
+    const counter = document.getElementById(`imageCounter-${dayId}`);
+    const images = window[`dayImages${dayId}`];
+    
+    if (images && images[imageIndex]) {
+        modalImage.src = images[imageIndex];
+        counter.textContent = `${imageIndex + 1} de ${images.length}`;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        
+        // Ocultar navegación si solo hay una imagen
+        const prevBtn = modal.querySelector('.image-modal-prev');
+        const nextBtn = modal.querySelector('.image-modal-next');
+        
+        if (images.length <= 1) {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+        } else {
+            prevBtn.style.display = 'flex';
+            nextBtn.style.display = 'flex';
+        }
+    }
+}
+
+// =====================================================
+// SIMPLE IMAGE MODAL FUNCTIONALITY
+// =====================================================
+function showImage(imageSrc) {
+    const modal = document.getElementById('simpleImageModal');
+    const modalImg = document.getElementById('modalImageSrc');
+    
+    modalImg.src = imageSrc;
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('simpleImageModal');
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+// Cerrar con ESC o click fuera
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeImageModal();
+    }
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target.id === 'simpleImageModal') {
+        closeImageModal();
+    }
+});
+function nextImage(dayId) {
+    const images = window[`dayImages${dayId}`];
+    if (images && currentImageIndex < images.length - 1) {
+        openImageModal(dayId, currentImageIndex + 1);
+    } else if (images) {
+        openImageModal(dayId, 0); // Volver al principio
+    }
+}
+
+function prevImage(dayId) {
+    const images = window[`dayImages${dayId}`];
+    if (images && currentImageIndex > 0) {
+        openImageModal(dayId, currentImageIndex - 1);
+    } else if (images) {
+        openImageModal(dayId, images.length - 1); // Ir al final
+    }
+}
+
+// Cerrar modal con ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && currentDayId) {
+        closeImageModal(currentDayId);
+    }
+    if (e.key === 'ArrowRight' && currentDayId) {
+        nextImage(currentDayId);
+    }
+    if (e.key === 'ArrowLeft' && currentDayId) {
+        prevImage(currentDayId);
+    }
+});
+
+// Cerrar modal haciendo click fuera de la imagen
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('image-modal')) {
+        if (currentDayId) {
+            closeImageModal(currentDayId);
+        }
+    }
+});
+
+        // CSS adicional para animaciones dinámicas
+        const additionalStyles = `
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            
+            @keyframes slideInUp {
+                from { transform: translateY(20px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+            
+            .js-loaded .day-card {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            
+            .day-card {
+                opacity: 0;
+                transform: translateY(20px);
+                transition: all 0.6s ease;
+            }
+            
+            /* Hover effects suaves */
+            .service-item:hover {
+                background: #f8f9fa;
+                transform: translateX(3px);
+            }
+            
+            .day-number:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+            }
+            
+            /* Mejoras para accesibilidad */
+            .accordion-header:focus,
+            .alternatives-header:focus {
+                outline: 2px solid #3498db;
+                outline-offset: 2px;
+            }
+            
+            /* Mejoras para el mapa */
+            .leaflet-popup-content {
+                font-family: 'Inter', sans-serif;
+            }
+            
+            .leaflet-popup-content-wrapper {
+                border-radius: 8px;
+            }
+        `;
+        
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = additionalStyles;
+        document.head.appendChild(styleSheet);
     </script>
+<!-- Modal simple para imágenes -->
+<div id="simpleImageModal" class="simple-image-modal">
+    <div class="simple-modal-content">
+        <button class="simple-modal-close" onclick="closeImageModal()">&times;</button>
+        <img id="modalImageSrc" src="" alt="Imagen ampliada">
+    </div>
+</div>
+<script>
+// JavaScript para Google Translate
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-aplicar idioma guardado
+    setTimeout(() => {
+        const savedLang = sessionStorage.getItem('language') || 
+                         localStorage.getItem('preferredLanguage') || 
+                         '<?= $programa['idioma_predeterminado'] ?? 'es' ?>';
+        
+        if (savedLang && savedLang !== '<?= $programa['idioma_predeterminado'] ?? 'es' ?>') {
+            const select = document.querySelector('.goog-te-combo');
+            if (select) {
+                select.value = savedLang;
+                select.dispatchEvent(new Event('change'));
+            }
+        }
+    }, 1000);
 
-    <!-- Estilos adicionales para impresión -->
-    <style media="print">
-        .navbar, .scroll-indicator, .pricing-actions, .footer-actions {
-            display: none !important;
+    // Guardar idioma seleccionado
+    setTimeout(function() {
+        const select = document.querySelector('.goog-te-combo');
+        if (select) {
+            select.addEventListener('change', function() {
+                if (this.value) {
+                    sessionStorage.setItem('language', this.value);
+                    localStorage.setItem('preferredLanguage', this.value);
+                }
+            });
         }
-        
-        .hero-section {
-            height: 300px !important;
-            background-attachment: scroll !important;
-        }
-        
-        .day-card {
-            page-break-inside: avoid;
-            margin-bottom: 30px !important;
-        }
-        
-        .pricing-section {
-            page-break-before: always;
-        }
-        
-        .accordion-content {
-            max-height: none !important;
-            padding: 0 25px 25px 25px !important;
-        }
-        
-        .alternatives-list {
-            max-height: none !important;
-        }
-        
-        body {
-            font-size: 12px !important;
-        }
-        
-        .section-title {
-            font-size: 1.8rem !important;
-        }
-        
-        .day-title {
-            font-size: 1.5rem !important;
-        }
-        
-        .map-container {
-            display: none !important;
-        }
-    </style>
-
+    }, 2000);
+});
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

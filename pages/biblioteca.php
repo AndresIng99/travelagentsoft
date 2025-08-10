@@ -166,16 +166,186 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         }
 
         /* Google Translate mejorado */
-        #google_translate_element {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 8px 15px;
-            border-radius: 25px;
-            backdrop-filter: blur(10px);
+        /* Google Translate en la esquina */
+        /* ===== MEJORAR EL SELECTOR DE GOOGLE TRANSLATE ===== */
+
+        /* Contenedor principal */
+        .translate-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
         }
 
-        .goog-te-banner-frame.skiptranslate { display: none !important; }
-        body { top: 0px !important; }
+        /* Caja del widget */
+        #google_translate_element {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            padding: 8px 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
 
+        #google_translate_element:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Ocultar el icono de Google */
+        .goog-te-gadget-icon {
+            display: none !important;
+        }
+
+        /* Contenedor del gadget */
+        .goog-te-gadget-simple {
+            background: transparent !important;
+            border: none !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        /* El enlace principal */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed {
+            background: transparent !important;
+            border: none !important;
+            color: #2d3748 !important;
+            text-decoration: none !important;
+            font-family: inherit !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            padding: 4px 8px !important;
+            border-radius: 6px !important;
+            transition: all 0.2s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+        }
+
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed:hover {
+            background: rgba(102, 126, 234, 0.1) !important;
+            color: #667eea !important;
+        }
+
+        /* El texto "Seleccionar idioma" */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed span:first-child {
+            color: inherit !important;
+            font-weight: inherit !important;
+        }
+
+        /* Ocultar las imágenes separadoras */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed img {
+            display: none !important;
+        }
+
+        /* Ocultar el separador */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed span[style*="border-left"] {
+            display: none !important;
+        }
+
+        /* Mejorar la flecha */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed span[aria-hidden="true"] {
+            color: #6b7280 !important;
+            font-size: 12px !important;
+            margin-left: 4px !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed:hover span[aria-hidden="true"] {
+            color: #667eea !important;
+            transform: translateY(1px) !important;
+        }
+
+        /* Menú desplegable cuando aparece */
+        .goog-te-menu-frame {
+            border: none !important;
+            border-radius: 10px !important;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15) !important;
+            backdrop-filter: blur(10px) !important;
+            overflow: hidden !important;
+            margin-top: 4px !important;
+        }
+
+        .goog-te-menu2 {
+            background: rgba(255, 255, 255, 0.98) !important;
+            border: none !important;
+            padding: 8px 0 !important;
+        }
+
+        /* Items de la lista */
+        .goog-te-menu2-item {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            color: #374151 !important;
+            padding: 10px 16px !important;
+            transition: all 0.15s ease !important;
+            cursor: pointer !important;
+            border: none !important;
+            margin: 0 6px !important;
+            border-radius: 6px !important;
+        }
+
+        .goog-te-menu2-item:hover {
+            background: rgba(102, 126, 234, 0.1) !important;
+            color: #667eea !important;
+            transform: translateX(2px) !important;
+        }
+
+        .goog-te-menu2-item:active {
+            transform: translateX(2px) scale(0.98) !important;
+        }
+
+        .goog-te-menu2-item-selected {
+            background: #667eea !important;
+            color: white !important;
+            font-weight: 600 !important;
+        }
+
+        /* Ocultar banner azul */
+        .goog-te-banner-frame.skiptranslate { 
+            display: none !important; 
+        }
+
+        body { 
+            top: 0px !important; 
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .translate-container {
+                top: 10px;
+                right: 10px;
+            }
+            
+            #google_translate_element {
+                padding: 6px 10px;
+            }
+            
+            .VIpgJd-ZVi9od-xl07Ob-lTBxed {
+                font-size: 12px !important;
+                padding: 3px 6px !important;
+            }
+            
+            .goog-te-menu2-item {
+                font-size: 12px !important;
+                padding: 8px 14px !important;
+            }
+        }
+
+        .VIpgJd-ZVi9od-ORHb-OEVmcd {
+            left: 0;
+            display: none !important;
+            top: 0;
+        }
+        
+        .goog-te-gadget img {
+            vertical-align: middle;
+            border: none;
+            display: none;
+        }
         /* Main Content mejorado */
         .main-content {
             margin-left: 0;
@@ -190,42 +360,45 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         }
 
         /* Tabs Container */
-        .tabs-container {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .tabs-nav {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 15px;
-        }
-
-        .tab-btn {
-            background: none;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            color: #4a5568;
-        }
+    
 
         .tab-btn.active {
             background: var(--primary-gradient);
             color: white;
         }
 
-        .tab-btn:hover:not(.active) {
-            background: #f7fafc;
-        }
+.tabs-nav {
+   display: flex;
+   gap: 0;
+   margin-bottom: 25px;
+   border-bottom: 2px solid #e2e8f0;
+   padding-bottom: 0;
+}
+
+.tab-btn {
+   background: none;
+   border: none;
+   padding: 12px 20px;
+   border-radius: 0;
+   cursor: pointer;
+   font-size:16px;
+   font-weight: 800;
+   transition: all 0.3s ease;
+   color: #4a5568;
+   flex: 1;
+   text-align: center;
+   border-bottom: 3px solid transparent;
+}
+
+.tab-btn.active {
+   background: var(--primary-gradient);
+   color: white;
+   border-bottom: 3px solid var(--primary-color);
+}
+
+.tab-btn:hover:not(.active) {
+   background: #f7fafc;
+}
 
         /* Search and Filters */
         .filters-section {
@@ -405,165 +578,541 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         }
 
         /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            overflow-y: auto;
-        }
+        /* =====================================
+   MEJORAS PARA MODALS DE BIBLIOTECA
+   ===================================== */
 
-        .modal.show {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+/* Modal Principal - Mejorar backdrop y animaciones */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    overflow-y: auto;
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
 
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 800px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 20px 20px 20px;
+    opacity: 1;
+    animation: modalFadeIn 0.3s ease-out;
+}
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 15px;
-        }
+/* Contenido del Modal - Diseño más moderno */
+.modal-content {
+    background: white;
+    border-radius: 24px;
+    padding: 0;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.25),
+        0 10px 20px rgba(0, 0, 0, 0.15);
+    transform: scale(0.9) translateY(20px);
+    animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-        .modal-title {
-            font-size: 24px;
-            color: #2d3748;
-        }
+/* Header del Modal - Más elegante */
+.modal-header {
+    background: linear-gradient(135deg, var(--primary-color, #667eea) 0%, var(--secondary-color, #764ba2) 100%);
+    color: white;
+    padding: 10px 40px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0;
+    border-bottom: none;
+    position: relative;
+    overflow: hidden;
+}
 
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #718096;
-            padding: 5px;
-        }
+.modal-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><pattern id="grain" width="100" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="5" r="0.5" fill="rgba(255,255,255,0.05)"/><circle cx="30" cy="15" r="0.3" fill="rgba(255,255,255,0.03)"/><circle cx="70" cy="8" r="0.4" fill="rgba(255,255,255,0.04)"/><circle cx="90" cy="12" r="0.2" fill="rgba(255,255,255,0.02)"/></pattern></defs><rect width="100" height="20" fill="url(%23grain)"/></svg>');
+    opacity: 0.6;
+}
 
-        .close-btn:hover {
-            color: var(--primary-color);
-        }
+.modal-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    letter-spacing: -0.5px;
+}
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
+/* Botón cerrar - Más elegante */
+.close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: 300;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
 
-        .form-group label {
-            font-weight: 500;
-            color: #4a5568;
-        }
+/* Contenido del formulario - Con scroll personalizado */
+.modal-content form {
+    padding: 40px;
+    max-height: calc(90vh - 120px);
+    overflow-y: auto;
+}
 
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 12px 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-        }
+/* Scrollbar personalizado para el modal */
+.modal-content form::-webkit-scrollbar {
+    width: 6px;
+}
 
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
+.modal-content form::-webkit-scrollbar-track {
+    background: #f8fafc;
+    border-radius: 3px;
+}
 
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
+.modal-content form::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, var(--primary-color, #667eea), var(--secondary-color, #764ba2));
+    border-radius: 3px;
+}
 
-        .images-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+.modal-content form::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, var(--secondary-color, #764ba2), var(--primary-color, #667eea));
+}
 
-        .image-upload {
-            border: 2px dashed #e2e8f0;
-            border-radius: 10px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: border-color 0.3s ease;
-        }
+/* Grid del formulario - Mejor espaciado */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+}
 
-        .image-upload:hover {
-            border-color: var(--primary-color);
-        }
+/* Grupos de formulario - Más modernos */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+}
 
-        .image-upload input {
-            display: none;
-        }
+.form-group label {
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 
-        /* Map Container */
-        .map-container {
-            height: 300px;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
+/* Campos de entrada - Diseño premium */
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 16px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    background: #fafbfc;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
 
-        #map {
-            width: 100%;
-            height: 100%;
-        }
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color, #667eea);
+    background: white;
+    box-shadow: 
+        0 0 0 4px rgba(102, 126, 234, 0.1),
+        0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
 
-        /* Form Actions */
-        .form-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-end;
-        }
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+    font-family: inherit;
+    line-height: 1.6;
+}
 
-        .btn-secondary {
-            background: #e2e8f0;
-            color: #4a5568;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 500;
-        }
+/* Grid de imágenes - Más atractivo */
+.images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
 
-        .btn-primary {
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 500;
-        }
+/* Upload de imágenes - Diseño mejorado */
+.image-upload {
+    border: 3px dashed #cbd5e0;
+    border-radius: 16px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #f8fafc 0%, #edf2f7 100%);
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.image-upload::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.image-upload:hover {
+    border-color: var(--primary-color, #667eea);
+    background: linear-gradient(135deg, #f0f4ff 0%, #e6f3ff 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+.image-upload:hover::before {
+    transform: translateX(100%);
+}
+
+.upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.upload-content > div:first-child {
+    font-size: 32px;
+    margin-bottom: 8px;
+    transition: transform 0.3s ease;
+}
+
+.image-upload:hover .upload-content > div:first-child {
+    transform: scale(1.2);
+}
+
+.upload-content > div:nth-child(2) {
+    font-weight: 600;
+    color: #4a5568;
+    font-size: 16px;
+}
+
+.upload-content > div:last-child {
+    font-size: 13px;
+    color: #718096;
+    font-style: italic;
+}
+
+/* Contenedor del mapa - Más elegante */
+.map-container {
+    height: 350px;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 30px;
+    border: 3px solid #e2e8f0;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.map-container::before {
+    content: '🗺️ Selecciona una ubicación en el mapa';
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4a5568;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    border-radius: 13px;
+}
+
+/* Acciones del formulario - Botones mejorados */
+.form-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: flex-end;
+    padding-top: 30px;
+    border-top: 2px solid #f7fafc;
+    margin-top: 40px;
+}
+
+.btn-secondary,
+.btn-primary {
+    padding: 16px 32px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    min-width: 120px;
+}
+
+.btn-secondary {
+    background: #e2e8f0;
+    color: #4a5568;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.btn-secondary:hover {
+    background: #cbd5e0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color, #667eea) 0%, var(--secondary-color, #764ba2) 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Estados de loading para botones */
+.btn-primary:disabled {
+    background: #a0aec0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Animaciones personalizadas */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+    to {
+        opacity: 1;
+        backdrop-filter: blur(8px);
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: scale(0.9) translateY(40px);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive - Adaptaciones móviles */
+@media (max-width: 768px) {
+    .modal.show {
+        padding: 10px;
+        align-items: flex-start;
+        padding-top: 40px;
+    }
+    
+    .modal-content {
+        max-width: 100%;
+        max-height: 95vh;
+        border-radius: 20px;
+    }
+    
+    .modal-header {
+        padding: 25px 30px 20px;
+    }
+    
+    .modal-title {
+        font-size: 24px;
+    }
+    
+    .modal-content form {
+        padding: 30px 25px;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .images-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .image-upload {
+        min-height: 150px;
+        padding: 25px 15px;
+    }
+    
+    .map-container {
+        height: 280px;
+    }
+    
+    .form-actions {
+        flex-direction: column-reverse;
+        gap: 15px;
+    }
+    
+    .btn-secondary,
+    .btn-primary {
+        width: 100%;
+        padding: 18px 24px;
+    }
+}
+
+/* Estados de error y éxito */
+.form-group.error input,
+.form-group.error select,
+.form-group.error textarea {
+    border-color: #e53e3e;
+    background: #fef5f5;
+    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+}
+
+.form-group.success input,
+.form-group.success select,
+.form-group.success textarea {
+    border-color: #38a169;
+    background: #f0fff4;
+    box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.1);
+}
+
+/* Mensajes de estado */
+.field-message {
+    font-size: 13px;
+    margin-top: 5px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.field-message.error {
+    background: #fed7d7;
+    color: #c53030;
+    border: 1px solid #feb2b2;
+}
+
+.field-message.success {
+    background: #c6f6d5;
+    color: #2f855a;
+    border: 1px solid #9ae6b4;
+}
+
+/* Indicadores de carga en inputs */
+.form-group.loading {
+    position: relative;
+}
+
+.form-group.loading::after {
+    content: '';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e2e8f0;
+    border-top: 2px solid var(--primary-color, #667eea);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: translateY(-50%) rotate(0deg); }
+    100% { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* Mejoras para el selector de idioma */
+.form-group select {
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23666" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 12px;
+    appearance: none;
+    padding-right: 48px;
+}
+
+/* Placeholders mejorados */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #a0aec0;
+    font-style: italic;
+    font-weight: 400;
+}
+
+/* Focus visible mejorado */
+.form-group input:focus-visible,
+.form-group select:focus-visible,
+.form-group textarea:focus-visible,
+.btn-secondary:focus-visible,
+.btn-primary:focus-visible,
+.close-btn:focus-visible {
+    outline: 3px solid rgba(102, 126, 234, 0.5);
+    outline-offset: 2px;
+}
 
         /* Empty State */
         .empty-state {
@@ -754,6 +1303,165 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         .card-image {
             overflow: hidden;
         }
+
+/* Botón flotante para Itinerarios */
+.floating-itinerarios-btn {
+   position: fixed;
+   bottom: 30px;
+   right: 30px;
+   width: 60px;
+   height: 60px;
+   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+   border: none;
+   border-radius: 50%;
+   cursor: pointer;
+   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+   z-index: 1000;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+   overflow: hidden;
+   text-decoration: none;
+   color: white;
+   font-size: 24px;
+   backdrop-filter: blur(10px);
+   border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.floating-itinerarios-btn::before {
+   content: '';
+   position: absolute;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+   transform: translateX(-100%);
+   transition: transform 0.6s ease;
+}
+
+.floating-itinerarios-btn:hover::before {
+   transform: translateX(100%);
+}
+
+.floating-itinerarios-btn:hover {
+   width: 180px;
+   border-radius: 30px;
+   background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+   box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+   transform: translateY(-3px) translateX(-60px);
+}
+
+.floating-itinerarios-btn .btn-icon {
+   font-size: 24px;
+   transition: all 0.4s ease;
+   position: relative;
+   z-index: 1;
+}
+
+.floating-itinerarios-btn .btn-text {
+   position: absolute;
+   right: 20px;
+   font-weight: 600;
+   font-size: 14px;
+   white-space: nowrap;
+   opacity: 0;
+   transform: translateX(10px);
+   transition: all 0.4s ease;
+   z-index: 1;
+   letter-spacing: 0.5px;
+}
+
+.floating-itinerarios-btn:hover .btn-text {
+   opacity: 1;
+   transform: translateX(0);
+}
+
+.floating-itinerarios-btn:hover .btn-icon {
+   transform: translateX(-50px) scale(1.1);
+}
+
+.floating-itinerarios-btn:active {
+   transform: translateY(-1px) scale(0.95);
+   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Animación de pulso sutil */
+@keyframes gentlePulse {
+   0%, 100% {
+       box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+   }
+   50% {
+       box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+   }
+}
+
+.floating-itinerarios-btn {
+   animation: gentlePulse 3s ease-in-out infinite;
+}
+
+.floating-itinerarios-btn:hover {
+   animation: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+   .floating-itinerarios-btn {
+       bottom: 20px;
+       right: 20px;
+       width: 50px;
+       height: 50px;
+   }
+   
+   .floating-itinerarios-btn .btn-icon {
+       font-size: 20px;
+   }
+   
+   .floating-itinerarios-btn:hover {
+       width: 150px;
+       border-radius: 25px;
+       transform: translateY(-3px) translateX(-50px);
+   }
+   
+   .floating-itinerarios-btn .btn-text {
+       right: 15px;
+       font-size: 13px;
+   }
+   
+   .floating-itinerarios-btn:hover .btn-icon {
+       transform: translateX(-40px) scale(1.1);
+   }
+}
+
+/* Toast notifications */
+.toast {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    padding: 20px 25px;
+    border-radius: 15px;
+    color: white;
+    z-index: 20000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    min-width: 300px;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast.success {
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+}
+
+.toast.error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
     </style>
 </head>
 <body>
@@ -771,10 +1479,10 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         <div class="tabs-container">
             <!-- Tabs Navigation -->
             <div class="tabs-nav">
-                <button class="tab-btn active" data-tab="dias">📅 Días</button>
-                <button class="tab-btn" data-tab="alojamientos">🏨 Alojamientos</button>
-                <button class="tab-btn" data-tab="actividades">🎯 Actividades</button>
-                <button class="tab-btn" data-tab="transportes">🚗 Transportes</button>
+                <button class="tab-btn active" data-tab="dias">Días</button>
+                <button class="tab-btn" data-tab="alojamientos">Alojamientos</button>
+                <button class="tab-btn" data-tab="actividades">Actividades</button>
+                <button class="tab-btn" data-tab="transportes">Transportes</button>
             </div>
 
             <!-- Filters Section -->
@@ -2569,7 +3277,16 @@ function showSearchError(message) {
         }
 
         async function deleteResource(id) {
-            if (!confirm('¿Estás seguro de que quieres eliminar este recurso? Esta acción no se puede deshacer.')) {
+            const confirmed = await showConfirmModal({
+                title: '¿Eliminar recurso?',
+                message: '¿Estás seguro de que quieres eliminar este recurso?',
+                details: 'Esta acción no se puede deshacer.',
+                icon: '🗑️',
+                confirmText: 'Eliminar',
+                cancelText: 'Cancelar'
+            });
+
+            if (!confirmed) {
                 return;
             }
             
@@ -2594,13 +3311,13 @@ function showSearchError(message) {
                     throw new Error(result.error || 'Error al eliminar recurso');
                 }
                 
-                alert(result.message || 'Recurso eliminado correctamente');
+                showMessage(result.message || 'Recurso eliminado correctamente', 'success');
                 loadResources(); // Recargar la lista
-                
-            } catch (error) {
-                console.error('Error al eliminar recurso:', error);
-                alert('Error al eliminar el recurso: ' + error.message);
-            }
+
+                } catch (error) {
+                    console.error('Error al eliminar recurso:', error);
+                    showMessage('Error al eliminar el recurso: ' + error.message, 'error');
+                }
         }
 
         // Cargar datos de recurso para editar - MEJORADO
@@ -2706,7 +3423,7 @@ function showSearchError(message) {
                 
             } catch (error) {
                 console.error('Error al cargar datos del recurso:', error);
-                alert('Error al cargar los datos del recurso: ' + error.message);
+                showMessage('Error al cargar los datos del recurso: ' + error.message, 'error');
             }
         }
 
@@ -2717,6 +3434,28 @@ function showSearchError(message) {
                 element.value = value;
             }
         }
+        // Función de notificaciones toast (igual que admin.php)
+function showMessage(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+    toast.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 20px;">${icon}</span>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 100);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => document.body.removeChild(toast), 300);
+    }, 4000);
+}
 
 
         // Función para mostrar imagen en modal
@@ -2871,11 +3610,11 @@ function showSearchError(message) {
                 if (index !== -1) {
                     resources[currentTab][index] = { ...resources[currentTab][index], ...data };
                 }
-                alert('Recurso actualizado correctamente');
+                showMessage('Recurso actualizado correctamente', 'success');
             } else {
                 data.id = Date.now();
                 resources[currentTab].push(data);
-                alert('Recurso creado correctamente');
+                showMessage('Recurso creado correctamente', 'success');
             }
             
             closeModal();
@@ -2947,53 +3686,773 @@ function showSearchError(message) {
         // INTEGRACIÓN CON EL SISTEMA EXISTENTE
         // =====================================
         
-        // Modificar la función openModal existente
-        (function() {
-            const originalOpenModal = window.openModal;
-            window.openModal = function(mode, id = null) {
-                // Llamar función original
-                originalOpenModal.call(this, mode, id);
-                
-                // Inicializar súper autocompletado
-                setTimeout(() => {
-                    if (window.superLocationAutocomplete) {
-                        window.superLocationAutocomplete.initialize();
-                        console.log('🌍 SUPER autocompletado inicializado en modal');
-                    }
-                }, 300);
-            };
-        })();
+(function() {
+    // Guardar referencias a las funciones originales
+    const originalOpenModal = window.openModal;
+    const originalCloseModal = window.closeModal;
+    
+    // Sobrescribir openModal con mejoras
+    window.openModal = function(mode, id = null) {
+        console.log('🎭 Abriendo modal mejorado:', mode, id);
         
-        // Modificar función closeModal existente  
-        (function() {
-            const originalCloseModal = window.closeModal;
-            window.closeModal = function() {
-                // Limpiar súper autocompletado
-                if (window.superLocationAutocomplete) {
-                    window.superLocationAutocomplete.removeSuggestions();
+        // Llamar función original
+        if (originalOpenModal) {
+            originalOpenModal.call(this, mode, id);
+        }
+        
+        // Aplicar mejoras visuales
+        setTimeout(() => {
+            enhanceModalAppearance();
+            addModalAnimations();
+            setupFormValidation();
+            setupImageUploadEnhancements();
+            
+            // Enfocar primer campo
+            const firstInput = document.querySelector('.modal.show input:not([type="hidden"])');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        }, 100);
+    };
+    
+    // Sobrescribir closeModal con mejoras
+    window.closeModal = function() {
+        console.log('🎭 Cerrando modal mejorado');
+        
+        const modal = document.getElementById('resourceModal');
+        if (modal && modal.classList.contains('show')) {
+            // Animación de cierre
+            modal.style.animation = 'modalFadeOut 0.3s ease-out forwards';
+            
+            setTimeout(() => {
+                // Llamar función original después de la animación
+                if (originalCloseModal) {
+                    originalCloseModal.call(this);
                 }
                 
-                // Llamar función original
-                originalCloseModal.call(this);
-            };
-        })();
+                // Limpiar estado
+                clearFormValidation();
+                modal.style.animation = '';
+            }, 300);
+        } else if (originalCloseModal) {
+            originalCloseModal.call(this);
+        }
+    };
+})();
+
+function enhanceModalAppearance() {
+    const modal = document.getElementById('resourceModal');
+    if (!modal) return;
+    
+    // Añadir clase de tema
+    modal.classList.add('enhanced-modal');
+    
+    // Mejorar el título con iconos
+    const title = document.getElementById('modalTitle');
+    if (title) {
+        const currentTab = window.currentTab || 'dias';
+        const icons = {
+            'dias': '📅',
+            'alojamientos': '🏨', 
+            'actividades': '🎯',
+            'transportes': '🚗'
+        };
         
-        // Modificar función loadSpecificFields existente
-        (function() {
-            const originalLoadSpecificFields = window.loadSpecificFields;
-            window.loadSpecificFields = function() {
-                // Llamar función original
-                originalLoadSpecificFields.call(this);
-                
-                // Inicializar súper autocompletado para nuevos campos
-                setTimeout(() => {
-                    if (window.superLocationAutocomplete) {
-                        window.superLocationAutocomplete.initialize();
-                        console.log('🗺️ Campos específicos configurados con SUPER autocompletado');
+        if (!title.textContent.includes(icons[currentTab])) {
+            title.textContent = `${icons[currentTab]} ${title.textContent}`;
+        }
+    }
+    
+    // Mejorar labels con iconos
+    enhanceFormLabels();
+}
+
+function enhanceFormLabels() {
+    const labelIcons = {
+        'idioma': '🌐',
+        'titulo': '📝',
+        'nombre': '🏷️',
+        'ubicacion': '📍',
+        'descripcion': '📄',
+        'tipo': '🏷️',
+        'categoria': '⭐',
+        'sitio_web': '🌐',
+        'medio': '🚗',
+        'lugar_salida': '🛫',
+        'lugar_llegada': '🛬',
+        'duracion': '⏱️',
+        'distancia_km': '📏',
+        'precio': '💰'
+    };
+    
+    Object.keys(labelIcons).forEach(fieldName => {
+        const label = document.querySelector(`label[for="${fieldName}"]`);
+        if (label && !label.textContent.includes(labelIcons[fieldName])) {
+            label.innerHTML = `${labelIcons[fieldName]} ${label.textContent}`;
+        }
+    });
+}
+
+// Función para añadir animaciones al modal
+function addModalAnimations() {
+    const modal = document.getElementById('resourceModal');
+    if (!modal) return;
+    
+    // Animación de entrada para elementos internos
+    const formGroups = modal.querySelectorAll('.form-group');
+    formGroups.forEach((group, index) => {
+        group.style.opacity = '0';
+        group.style.transform = 'translateY(20px)';
+        group.style.animation = `slideInUp 0.4s ease-out ${index * 0.05}s forwards`;
+    });
+    
+    // Añadir CSS de animación
+    if (!document.getElementById('toast-animations')) {
+        const style = document.createElement('style');
+        style.id = 'toast-animations';
+        style.textContent = `
+            @keyframes slideInFromRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOutToRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// Función para limpiar validación del formulario
+function clearFormValidation() {
+    const form = document.getElementById('resourceForm');
+    if (!form) return;
+    
+    // Remover clases de estado
+    form.querySelectorAll('.form-group').forEach(group => {
+        group.classList.remove('error', 'success', 'loading');
+    });
+    
+    // Remover mensajes
+    form.querySelectorAll('.field-message').forEach(message => {
+        message.remove();
+    });
+}
+
+// Función para mejorar la subida de imágenes
+function setupImageUploadEnhancements() {
+    const imageUploads = document.querySelectorAll('.image-upload');
+    
+    imageUploads.forEach(upload => {
+        const input = upload.querySelector('input[type="file"]');
+        if (!input) return;
+        
+        // Drag & Drop mejorado
+        setupDragAndDrop(upload, input);
+        
+        // Preview mejorado
+        input.addEventListener('change', function() {
+            handleImagePreviewEnhanced(this, upload);
+        });
+        
+        // Indicador de progreso
+        setupProgressIndicator(upload, input);
+    });
+}
+
+// Función para configurar drag & drop
+function setupDragAndDrop(uploadArea, input) {
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, () => {
+            uploadArea.classList.add('drag-over');
+            uploadArea.style.borderColor = 'var(--primary-color, #667eea)';
+            uploadArea.style.background = 'linear-gradient(135deg, #f0f4ff 0%, #e6f3ff 100%)';
+            uploadArea.style.transform = 'scale(1.02)';
+        });
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, () => {
+            uploadArea.classList.remove('drag-over');
+            uploadArea.style.borderColor = '';
+            uploadArea.style.background = '';
+            uploadArea.style.transform = '';
+        });
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            input.files = files;
+            handleImagePreviewEnhanced(input, uploadArea);
+        }
+    });
+}
+
+// Función para preview de imagen mejorado
+function handleImagePreviewEnhanced(input, uploadArea) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    // Validar archivo
+    if (!file.type.startsWith('image/')) {
+        showUploadError(uploadArea, 'Solo se permiten archivos de imagen');
+        input.value = '';
+        return;
+    }
+    
+    if (file.size > 5 * 1024 * 1024) {
+        showUploadError(uploadArea, 'El archivo es demasiado grande (máx. 5MB)');
+        input.value = '';
+        return;
+    }
+    
+    // Mostrar indicador de carga
+    showUploadProgress(uploadArea);
+    
+    // Crear preview
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        setTimeout(() => { // Simular tiempo de procesamiento
+            showImagePreview(uploadArea, e.target.result, file.name);
+        }, 800);
+    };
+    
+    reader.onerror = function() {
+        showUploadError(uploadArea, 'Error al leer el archivo');
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+// Función para mostrar progreso de subida
+function showUploadProgress(uploadArea) {
+    const content = uploadArea.querySelector('.upload-content');
+    if (!content) return;
+    
+    const originalContent = content.innerHTML;
+    content.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+            <div style="width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top: 3px solid var(--primary-color, #667eea); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <div style="font-weight: 600; color: #4a5568;">Procesando imagen...</div>
+            <div style="width: 100%; background: #e2e8f0; border-radius: 10px; height: 6px; overflow: hidden;">
+                <div style="height: 100%; background: linear-gradient(90deg, var(--primary-color, #667eea), var(--secondary-color, #764ba2)); width: 0%; animation: progressBar 0.8s ease-out forwards;"></div>
+            </div>
+        </div>
+    `;
+    
+    // Añadir CSS de progreso
+    if (!document.getElementById('progress-animations')) {
+        const style = document.createElement('style');
+        style.id = 'progress-animations';
+        style.textContent = `
+            @keyframes progressBar {
+                to { width: 100%; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// Función para mostrar preview de imagen
+function showImagePreview(uploadArea, imageSrc, fileName) {
+    const content = uploadArea.querySelector('.upload-content');
+    if (!content) return;
+    
+    content.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%;">
+            <div style="position: relative; border-radius: 12px; overflow: hidden; max-width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                <img src="${imageSrc}" alt="${fileName}" style="max-width: 150px; max-height: 100px; object-fit: cover; border-radius: 12px;">
+                <div style="position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px;" onclick="clearImagePreview(this)">×</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-weight: 600; color: #2d3748; font-size: 14px;">✅ Imagen cargada</div>
+                <div style="font-size: 12px; color: #718096; margin-top: 2px;">${fileName}</div>
+            </div>
+        </div>
+    `;
+    
+    // Animación de entrada
+    const img = content.querySelector('img');
+    if (img) {
+        img.style.opacity = '0';
+        img.style.transform = 'scale(0.8)';
+        img.style.transition = 'all 0.3s ease';
+        
+        setTimeout(() => {
+            img.style.opacity = '1';
+            img.style.transform = 'scale(1)';
+        }, 50);
+    }
+}
+
+// Función para limpiar preview de imagen
+function clearImagePreview(button) {
+    const uploadArea = button.closest('.image-upload');
+    const input = uploadArea.querySelector('input[type="file"]');
+    const content = uploadArea.querySelector('.upload-content');
+    
+    if (input) input.value = '';
+    
+    if (content) {
+        // Obtener el tipo de campo para restaurar contenido original
+        const fieldName = input.name;
+        const icons = {
+            'imagen': '📷',
+            'imagen1': '📷',
+            'imagen2': '📷', 
+            'imagen3': '📷'
+        };
+        
+        content.innerHTML = `
+            <div style="font-size: 32px; margin-bottom: 8px;">${icons[fieldName] || '📷'}</div>
+            <div>Subir Imagen</div>
+            <div style="font-size: 12px; color: #718096;">Click para seleccionar archivo</div>
+        `;
+    }
+    
+    // Remover errores
+    const errorMsg = uploadArea.querySelector('.upload-error');
+    if (errorMsg) errorMsg.remove();
+}
+
+// Función para mostrar error de subida
+function showUploadError(uploadArea, message) {
+    const content = uploadArea.querySelector('.upload-content');
+    if (!content) return;
+    
+    // Restaurar contenido original con error
+    const input = uploadArea.querySelector('input[type="file"]');
+    const fieldName = input?.name || 'imagen';
+    
+    content.innerHTML = `
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+            <div style="font-size: 32px; color: #e53e3e;">⚠️</div>
+            <div style="font-weight: 600; color: #e53e3e;">Error</div>
+            <div style="font-size: 12px; color: #c53030; text-align: center;">${message}</div>
+            <button type="button" onclick="clearImagePreview(this)" style="background: #fed7d7; color: #c53030; border: 1px solid #feb2b2; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">
+                Intentar de nuevo
+            </button>
+        </div>
+    `;
+    
+    // Animación de error
+    uploadArea.style.animation = 'shake 0.5s ease-in-out';
+    setTimeout(() => {
+        uploadArea.style.animation = '';
+    }, 500);
+}
+
+// Función para configurar indicador de progreso
+function setupProgressIndicator(uploadArea, input) {
+    // Esta función se puede expandir para mostrar progreso real de subida
+    // Por ahora solo maneja la interfaz visual
+}
+
+// Funciones de validación auxiliares
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+function isValidUrl(url) {
+    try {
+        new URL(url);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+// Función para mejorar el botón de envío
+function enhanceSubmitButton() {
+    const form = document.getElementById('resourceForm');
+    const submitBtn = form?.querySelector('button[type="submit"]');
+    
+    if (!submitBtn) return;
+    
+    // Guardar texto original
+    const originalText = submitBtn.textContent;
+    
+    // Mejorar estado de carga
+    form.addEventListener('submit', function() {
+        submitBtn.disabled = true;
+        submitBtn.style.position = 'relative';
+        submitBtn.innerHTML = `
+            <span style="opacity: 0.7;">${originalText}</span>
+            <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid white; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        `;
+        
+        // Restaurar después de un tiempo (esto debería manejarse en el callback real)
+        setTimeout(() => {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        }, 3000);
+    });
+}
+
+// Función para mejorar navegación por teclado
+function enhanceKeyboardNavigation() {
+    const modal = document.getElementById('resourceModal');
+    if (!modal) return;
+    
+    modal.addEventListener('keydown', function(e) {
+        // ESC para cerrar
+        if (e.key === 'Escape') {
+            closeModal();
+            return;
+        }
+        
+        // Tab mejorado
+        if (e.key === 'Tab') {
+            const focusableElements = modal.querySelectorAll(
+                'input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])'
+            );
+            
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+            
+            if (e.shiftKey && document.activeElement === firstElement) {
+                e.preventDefault();
+                lastElement.focus();
+            } else if (!e.shiftKey && document.activeElement === lastElement) {
+                e.preventDefault();
+                firstElement.focus();
+            }
+        }
+        
+        // Enter en campos que no sean textarea
+        if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+            const form = modal.querySelector('form');
+            const submitBtn = form?.querySelector('button[type="submit"]');
+            
+            if (submitBtn && !submitBtn.disabled) {
+                e.preventDefault();
+                submitBtn.click();
+            }
+        }
+    });
+}
+
+// Función de inicialización principal
+function initializeModalEnhancements() {
+    console.log('🎨 Inicializando mejoras de modals...');
+    
+    // Observar cuando se abre un modal
+    const modal = document.getElementById('resourceModal');
+    if (modal) {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    if (modal.classList.contains('show')) {
+                        setTimeout(() => {
+                            enhanceSubmitButton();
+                            enhanceKeyboardNavigation();
+                        }, 150);
                     }
-                }, 150);
-            };
-        })();
+                }
+            });
+        });
+        
+        observer.observe(modal, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    }
+    
+    console.log('✅ Mejoras de modals inicializadas');
+}
+
+// Auto-inicialización
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeModalEnhancements);
+} else {
+    initializeModalEnhancements();
+}
+
+// Función para aplicar tema de colores dinámico
+function applyDynamicTheme() {
+    const root = document.documentElement;
+    const primaryColor = getComputedStyle(root).getPropertyValue('--primary-color').trim();
+    const secondaryColor = getComputedStyle(root).getPropertyValue('--secondary-color').trim();
+    
+    if (primaryColor && secondaryColor) {
+        console.log('🎨 Aplicando tema dinámico:', { primaryColor, secondaryColor });
+        
+        // Los colores ya están definidos en CSS, solo necesitamos asegurar que se usen
+        const style = document.createElement('style');
+        style.id = 'dynamic-theme';
+        style.textContent = `
+            .modal-header {
+                background: linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%);
+            }
+            
+            .btn-primary {
+                background: linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%);
+                box-shadow: 0 4px 15px ${primaryColor}40;
+            }
+            
+            .form-group input:focus,
+            .form-group select:focus,
+            .form-group textarea:focus {
+                border-color: ${primaryColor};
+                box-shadow: 0 0 0 4px ${primaryColor}20, 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+        `;
+        
+        // Reemplazar si ya existe
+        const existing = document.getElementById('dynamic-theme');
+        if (existing) existing.remove();
+        
+        document.head.appendChild(style);
+    }
+}
+
+// Aplicar tema al cargar
+document.addEventListener('DOMContentLoaded', applyDynamicTheme);
+
+// Función global para debugging
+window.debugModalEnhancements = function() {
+    console.log('🔍 DEBUG - Modal Enhancements:', {
+        modalExists: !!document.getElementById('resourceModal'),
+        enhancementsLoaded: true,
+        currentTab: window.currentTab,
+        activeModals: document.querySelectorAll('.modal.show').length
+    });
+}; si no existe
+    if (!document.getElementById('modal-animations')) {
+        const style = document.createElement('style');
+        style.id = 'modal-animations';
+        style.textContent = `
+            @keyframes slideInUp {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            @keyframes modalFadeOut {
+                from {
+                    opacity: 1;
+                    backdrop-filter: blur(8px);
+                }
+                to {
+                    opacity: 0;
+                    backdrop-filter: blur(0px);
+                }
+            }
+            
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+            
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// Función para configurar validación visual del formulario
+function setupFormValidation() {
+    const form = document.getElementById('resourceForm');
+    if (!form) return;
+    
+    // Validación en tiempo real
+    const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+    
+    inputs.forEach(input => {
+        // Remover listeners anteriores
+        input.removeEventListener('blur', validateField);
+        input.removeEventListener('input', clearFieldError);
+        
+        // Añadir nuevos listeners
+        input.addEventListener('blur', validateField);
+        input.addEventListener('input', clearFieldError);
+        
+        // Validación al enviar
+        form.addEventListener('submit', function(e) {
+            let hasErrors = false;
+            
+            inputs.forEach(field => {
+                if (!validateField.call(field)) {
+                    hasErrors = true;
+                }
+            });
+            
+            if (hasErrors) {
+                e.preventDefault();
+                showValidationSummary();
+                
+                // Scroll al primer error
+                const firstError = form.querySelector('.form-group.error');
+                if (firstError) {
+                    firstError.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                }
+            }
+        });
+    });
+}
+
+// Función para validar un campo individual
+function validateField() {
+    const formGroup = this.closest('.form-group');
+    if (!formGroup) return true;
+    
+    let isValid = true;
+    let message = '';
+    
+    // Limpiar estado anterior
+    formGroup.classList.remove('error', 'success');
+    const existingMessage = formGroup.querySelector('.field-message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+    
+    // Validaciones específicas
+    if (this.hasAttribute('required') && !this.value.trim()) {
+        isValid = false;
+        message = 'Este campo es requerido';
+    } else if (this.type === 'email' && this.value && !isValidEmail(this.value)) {
+        isValid = false;
+        message = 'Ingresa un email válido';
+    } else if (this.type === 'url' && this.value && !isValidUrl(this.value)) {
+        isValid = false;
+        message = 'Ingresa una URL válida';
+    } else if (this.type === 'number' && this.value && this.value < 0) {
+        isValid = false;
+        message = 'El valor no puede ser negativo';
+    } else if (this.name === 'titulo' && this.value.trim().length < 3) {
+        isValid = false;
+        message = 'El título debe tener al menos 3 caracteres';
+    }
+    
+    // Aplicar estado visual
+    if (!isValid) {
+        formGroup.classList.add('error');
+        showFieldMessage(formGroup, message, 'error');
+        
+        // Animación de error
+        this.style.animation = 'shake 0.5s ease-in-out';
+        setTimeout(() => {
+            this.style.animation = '';
+        }, 500);
+    } else if (this.value.trim()) {
+        formGroup.classList.add('success');
+    }
+    
+    return isValid;
+}
+
+// Función para limpiar errores al escribir
+function clearFieldError() {
+    const formGroup = this.closest('.form-group');
+    if (formGroup) {
+        formGroup.classList.remove('error');
+        const errorMessage = formGroup.querySelector('.field-message.error');
+        if (errorMessage) {
+            errorMessage.remove();
+        }
+    }
+}
+
+// Función para mostrar mensaje en campo
+function showFieldMessage(formGroup, message, type) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `field-message ${type}`;
+    messageDiv.textContent = message;
+    
+    // Icono según tipo
+    const icon = type === 'error' ? '⚠️' : '✅';
+    messageDiv.textContent = `${icon} ${message}`;
+    
+    formGroup.appendChild(messageDiv);
+}
+
+function showValidationSummary() {
+   const errors = document.querySelectorAll('.form-group.error');
+   if (errors.length === 0) return;
+   
+   // Crear toast de error
+   const toast = document.createElement('div');
+   toast.style.cssText = `
+       position: fixed;
+       top: 20px;
+       right: 20px;
+       background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+       color: white;
+       padding: 16px 20px;
+       border-radius: 12px;
+       box-shadow: 0 8px 25px rgba(229, 62, 62, 0.3);
+       z-index: 10001;
+       max-width: 350px;
+       animation: slideInFromRight 0.3s ease-out;
+   `;
+   
+   toast.innerHTML = `
+       <div style="display: flex; align-items: center; gap: 12px;">
+           <div style="font-size: 20px;">⚠️</div>
+           <div>
+               <div style="font-weight: 600; margin-bottom: 4px;">Revisa los campos</div>
+               <div style="font-size: 13px; opacity: 0.9;">
+                   ${errors.length} campo${errors.length > 1 ? 's' : ''} necesita${errors.length > 1 ? 'n' : ''} corrección
+               </div>
+           </div>
+       </div>
+   `;
+   
+   document.body.appendChild(toast);
+   
+   // Remover después de 4 segundos
+   setTimeout(() => {
+       toast.style.animation = 'slideOutToRight 0.3s ease-in';
+       setTimeout(() => {
+           if (document.body.contains(toast)) {
+               document.body.removeChild(toast);
+           }
+       }, 300);
+   }, 4000);
+   
+   // Añadir CSS de animación
+   if (!document.getElementById('toast-animations')) {
+       const style = document.createElement('style');
+       style.id = 'toast-animations';
+       style.textContent = `
+           @keyframes slideInFromRight {
+               from { transform: translateX(100%); opacity: 0; }
+               to { transform: translateX(0); opacity: 1; }
+           }
+           
+           @keyframes slideOutToRight {
+               from { transform: translateX(0); opacity: 1; }
+               to { transform: translateX(100%); opacity: 0; }
+           }
+       `;
+       document.head.appendChild(style);
+   }
+}
+    
+
         
         // Inicialización automática cuando se detecten campos
         document.addEventListener('DOMContentLoaded', function() {
@@ -3758,6 +5217,10 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 </script>
-
+<!-- Agregar antes del cierre de </body> -->
+<a href="<?= APP_URL ?>/itinerarios" class="floating-itinerarios-btn" title="Ir a Itinerarios">
+    <span class="btn-icon">🗺️</span>
+    <span class="btn-text">ITINERARIOS</span>
+</a>
 </body>
 </html>

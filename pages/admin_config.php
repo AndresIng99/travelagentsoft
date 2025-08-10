@@ -32,7 +32,7 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+     
         :root {
             --admin-primary: <?= $adminColors['primary'] ?>;
             --admin-secondary: <?= $adminColors['secondary'] ?>;
@@ -141,16 +141,184 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         }
 
         /* Google Translate mejorado */
-        #google_translate_element {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 8px 15px;
-            border-radius: 25px;
-            backdrop-filter: blur(10px);
+        /* Google Translate en la esquina */
+        /* ===== MEJORAR EL SELECTOR DE GOOGLE TRANSLATE ===== */
+
+        /* Contenedor principal */
+        .translate-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
         }
 
-        .goog-te-banner-frame.skiptranslate { display: none !important; }
-        body { top: 0px !important; }
+        /* Caja del widget */
+        #google_translate_element {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            padding: 8px 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
 
+        #google_translate_element:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Ocultar el icono de Google */
+        .goog-te-gadget-icon {
+            display: none !important;
+        }
+
+        /* Contenedor del gadget */
+        .goog-te-gadget-simple {
+            background: transparent !important;
+            border: none !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+
+        /* El enlace principal */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed {
+            background: transparent !important;
+            border: none !important;
+            color: #2d3748 !important;
+            text-decoration: none !important;
+            font-family: inherit !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            padding: 4px 8px !important;
+            border-radius: 6px !important;
+            transition: all 0.2s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+        }
+
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed:hover {
+            background: rgba(102, 126, 234, 0.1) !important;
+            color: #667eea !important;
+        }
+
+        /* El texto "Seleccionar idioma" */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed span:first-child {
+            color: inherit !important;
+            font-weight: inherit !important;
+        }
+
+        /* Ocultar las imágenes separadoras */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed img {
+            display: none !important;
+        }
+
+        /* Ocultar el separador */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed span[style*="border-left"] {
+            display: none !important;
+        }
+
+        /* Mejorar la flecha */
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed span[aria-hidden="true"] {
+            color: #6b7280 !important;
+            font-size: 12px !important;
+            margin-left: 4px !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .VIpgJd-ZVi9od-xl07Ob-lTBxed:hover span[aria-hidden="true"] {
+            color: #667eea !important;
+            transform: translateY(1px) !important;
+        }
+
+        /* Menú desplegable cuando aparece */
+        .goog-te-menu-frame {
+            border: none !important;
+            border-radius: 10px !important;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15) !important;
+            backdrop-filter: blur(10px) !important;
+            overflow: hidden !important;
+            margin-top: 4px !important;
+        }
+
+        .goog-te-menu2 {
+            background: rgba(255, 255, 255, 0.98) !important;
+            border: none !important;
+            padding: 8px 0 !important;
+        }
+
+        /* Items de la lista */
+        .goog-te-menu2-item {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            color: #374151 !important;
+            padding: 10px 16px !important;
+            transition: all 0.15s ease !important;
+            cursor: pointer !important;
+            border: none !important;
+            margin: 0 6px !important;
+            border-radius: 6px !important;
+        }
+
+        .goog-te-menu2-item:hover {
+            background: rgba(102, 126, 234, 0.1) !important;
+            color: #667eea !important;
+            transform: translateX(2px) !important;
+        }
+
+        .goog-te-menu2-item:active {
+            transform: translateX(2px) scale(0.98) !important;
+        }
+
+        .goog-te-menu2-item-selected {
+            background: #667eea !important;
+            color: white !important;
+            font-weight: 600 !important;
+        }
+
+        /* Ocultar banner azul */
+        .goog-te-banner-frame.skiptranslate { 
+            display: none !important; 
+        }
+
+        body { 
+            top: 0px !important; 
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .translate-container {
+                top: 10px;
+                right: 10px;
+            }
+            
+            #google_translate_element {
+                padding: 6px 10px;
+            }
+            
+            .VIpgJd-ZVi9od-xl07Ob-lTBxed {
+                font-size: 12px !important;
+                padding: 3px 6px !important;
+            }
+            .VIpgJd-ZVi9od-ORHb-OEVmcd {
+                left: 0;
+                display: none !important;
+                top: 0;
+            }
+            .goog-te-menu2-item {
+                font-size: 12px !important;
+                padding: 8px 14px !important;
+            }
+        }
+        
+        .goog-te-gadget img {
+            vertical-align: middle;
+            border: none;
+            display: none;
+        }
         /* Main Content mejorado */
         .main-content {
             margin-left: 0;
@@ -468,6 +636,34 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
                 padding: 20px;
             }
         }
+
+        /* Toast notifications (igual que admin.php) */
+.toast {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    padding: 20px 25px;
+    border-radius: 15px;
+    color: white;
+    z-index: 20000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    min-width: 300px;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast.success {
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+}
+
+.toast.error {
+    background: linear-gradient(135deg, var(--admin-primary) 0%, #dc2626 100%);
+}
     </style>
 </head>
 <body>
@@ -974,8 +1170,17 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
                 document.title = `Configuración - ${newTitle}`;
 
                 // Preguntar si desea recargar la página para aplicar cambios
-                setTimeout(() => {
-                    if (confirm('¿Desea recargar la página para ver los cambios aplicados?')) {
+                setTimeout(async () => {
+                    const confirmed = await showConfirmModal({
+                        title: '¡Configuración guardada!',
+                        message: '¿Desea recargar la página para ver los cambios aplicados?',
+                        details: 'Los cambios se aplicarán completamente al recargar la página.',
+                        icon: '🔄',
+                        confirmText: 'Recargar página',
+                        cancelText: 'Continuar sin recargar'
+                    });
+
+                    if (confirmed) {
                         window.location.reload();
                     }
                 }, 2000);
@@ -1005,30 +1210,29 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         }
 
         // Mostrar mensajes
-        function showMessage(message, type) {
-            const successMsg = document.getElementById('successMessage');
-            const errorMsg = document.getElementById('errorMessage');
-            
-            // Ocultar ambos mensajes
-            successMsg.style.display = 'none';
-            errorMsg.style.display = 'none';
-            
-            // Mostrar el mensaje correspondiente
-            if (type === 'success') {
-                successMsg.textContent = message;
-                successMsg.style.display = 'block';
-                setTimeout(() => {
-                    successMsg.style.display = 'none';
-                }, 8000);
-            } else {
-                errorMsg.textContent = message;
-                errorMsg.style.display = 'block';
-                setTimeout(() => {
-                    errorMsg.style.display = 'none';
-                }, 10000);
-            }
-        }
-
+        
+// Usar el sistema de notificaciones de UIComponents (igual que admin.php)
+function showMessage(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+    toast.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 20px;">${icon}</span>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 100);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => document.body.removeChild(toast), 300);
+    }, 4000);
+}
         // Google Translate
         function initializeGoogleTranslate() {
             function googleTranslateElementInit() {
@@ -1086,6 +1290,5 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
             });
         });
     </script>
-    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>

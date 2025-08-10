@@ -77,6 +77,13 @@ if ($isLoggedIn) {
             font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+
+        .VIpgJd-ZVi9od-ORHb-OEVmcd {
+            left: 0;
+            display: none !important;
+            top: 0;
+        }
+        
         :root {
             --primary-color: <?= $config['login_bg_color'] ?? '#667eea' ?>;
             --secondary-color: <?= $config['login_secondary_color'] ?? '#764ba2' ?>;

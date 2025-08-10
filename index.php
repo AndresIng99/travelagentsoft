@@ -98,8 +98,34 @@ switch($path) {
         include 'modules/admin/api.php';
         break;
 
-    case '/preview':
+    case '/perfil':
         App::requireLogin();
+        // Solo permitir acceso a agentes
+        $user = App::getUser();
+        if ($user['role'] !== 'agent') {
+            App::redirect('/dashboard');
+            exit;
+        }
+        include 'pages/perfil.php';
+        break;
+        
+    case '/perfil/api':
+        App::requireLogin();
+        // Solo permitir acceso a agentes  
+        $user = App::getUser();
+        if ($user['role'] !== 'agent') {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Acceso no autorizado']);
+            exit;
+        }
+        include 'modules/perfil/api.php';
+        break;
+   
+    case '/share':
+        include 'share.php';
+        break;
+
+    case '/preview':
         require_once 'pages/preview.php';
         break;
 
@@ -108,13 +134,9 @@ switch($path) {
             header('Location: ' . APP_URL . '/itinerarios');
             exit;
         }
-        require_once __DIR__ . '/pages/itinerary.php';
+        require_once 'pages/itinerary.php';
         break;
-        
-    case '/perfil':
-        App::requireLogin();
-        include 'pages/perfil.php';
-        break;
+    
         
     case '/itinerario':
     case '/mis-itinerarios':

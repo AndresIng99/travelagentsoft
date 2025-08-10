@@ -128,8 +128,8 @@ class ProgramaPreciosAPI {
             }
             
             return [
-                'success' => true,
-                'message' => 'Precios guardados exitosamente'
+                'success' => false,
+                'message' => 'Error al actualizar precios'
             ];
             
         } catch(Exception $e) {
