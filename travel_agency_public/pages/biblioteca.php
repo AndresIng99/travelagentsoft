@@ -1461,7 +1461,191 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
 .toast.error {
     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
 }
+/* ESTILOS PARA UBICACIONES SECUNDARIAS */
+.ubicaciones-secundarias-section {
+    margin: 20px 0;
+    padding: 20px;
+    border: 2px dashed #e2e8f0;
+    border-radius: 12px;
+    background: #fafbfc;
+    transition: all 0.3s ease;
+}
 
+.ubicaciones-secundarias-section.has-items {
+    border-color: var(--primary-color, #667eea);
+    border-style: solid;
+    background: rgba(102, 126, 234, 0.02);
+}
+
+.ubicacion-secundaria-item {
+    margin-bottom: 15px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    position: relative;
+    animation: slideInUp 0.3s ease;
+}
+
+.ubicacion-input-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.ubicacion-secundaria-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.ubicacion-secundaria-input:focus {
+    outline: none;
+    border-color: var(--primary-color, #667eea);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn-remove-ubicacion {
+    background: #fee;
+    border: 1px solid #fcc;
+    color: #c53030;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 18px;
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-remove-ubicacion:hover {
+    background: #fed7d7;
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(197, 48, 48, 0.2);
+}
+
+.btn-add-ubicacion {
+    background: var(--primary-gradient, linear-gradient(135deg, #667eea 0%, #764ba2 100%));
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-add-ubicacion:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.ubicacion-preview {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: #f7fafc;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #4a5568;
+    border-left: 3px solid var(--primary-color, #667eea);
+    display: none;
+}
+
+.ubicacion-preview.show {
+    display: block;
+    animation: fadeInDown 0.3s ease;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@keyframes slideOutUp {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+    to {
+        opacity: 1;
+        backdrop-filter: blur(8px);
+    }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Suggestions dropdown para ubicaciones secundarias */
+.location-suggestions {
+    font-family: inherit;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+/* Responsive para ubicaciones secundarias */
+@media (max-width: 768px) {
+    .ubicacion-input-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .btn-remove-ubicacion {
+        align-self: flex-end;
+        min-width: 44px;
+        height: 44px;
+    }
+    
+    .ubicaciones-secundarias-section {
+        padding: 15px;
+    }
+}
     </style>
 </head>
 <body>
@@ -1635,102 +1819,615 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         // ============================================= 
         // NUEVA FUNCIÓN DE MAPA CON OPENSTREETMAP
         // ============================================= 
+// ================================
+// FUNCIONES PARA UBICACIONES SECUNDARIAS
+// ================================
+
+let ubicacionesSecundariasCount = 0;
+
+function agregarUbicacionSecundaria() {
+    console.log(`🔧 Agregando ubicación secundaria ${ubicacionesSecundariasCount}`);
+    
+    const container = document.getElementById('ubicaciones-secundarias-container');
+    const section = document.getElementById('ubicaciones-secundarias-section');
+    
+    // Mostrar sección
+    if (section.style.display === 'none') {
+        section.style.display = 'block';
+    }
+    
+    // Crear template
+    const currentIndex = ubicacionesSecundariasCount;
+    const template = getUbicacionSecundariaTemplate(currentIndex);
+    container.insertAdjacentHTML('beforeend', template);
+    
+    // Incrementar contador
+    ubicacionesSecundariasCount++;
+    
+    // Inicializar autocompletado después de un momento
+    setTimeout(() => {
+        initializeLocationAutocompleteSecundaria(currentIndex);
+    }, 300);
+    
+    updateSecondaryLocationsSectionClass();
+    
+    console.log('✅ Ubicación secundaria agregada');
+}
+
+function removerUbicacionSecundaria(index) {
+    const item = document.querySelector(`.ubicacion-secundaria-item[data-index="${index}"]`);
+    if (item) {
+        item.style.animation = 'slideOutUp 0.3s ease';
+        setTimeout(() => {
+            item.remove();
+            updateSecondaryLocationsSectionClass();
+        }, 300);
+    }
+    console.log('🗑️ Ubicación secundaria removida:', index);
+}
+
+function getUbicacionSecundariaTemplate(index) {
+    console.log(`📝 Generando template para índice: ${index}`);
+    
+    return `
+        <div class="ubicacion-secundaria-item" data-index="${index}">
+            <div class="ubicacion-input-group">
+                <input type="text" 
+                       name="ubicaciones_secundarias[]" 
+                       placeholder="Ej: Plaza de Bolívar, Museo del Oro, Zona Rosa..."
+                       class="form-control ubicacion-secundaria-input"
+                       data-index="${index}"
+                       id="ubicacion-secundaria-${index}">
+                <input type="hidden" name="ubicaciones_secundarias_lat[]" 
+                       class="lat-input" id="lat-secundaria-${index}">
+                <input type="hidden" name="ubicaciones_secundarias_lng[]" 
+                       class="lng-input" id="lng-secundaria-${index}">
+                <button type="button" class="btn-remove-ubicacion" 
+                        onclick="removerUbicacionSecundaria(${index})" 
+                        title="Eliminar ubicación">
+                    🗑️
+                </button>
+            </div>
+            <div class="ubicacion-preview" id="preview-secundaria-${index}"></div>
+        </div>
+    `;
+}
+
+function initializeLocationAutocompleteSecundaria(index) {
+    console.log(`🔧 Configurando autocompletado simple para ubicación secundaria ${index}`);
+    
+    const input = document.getElementById(`ubicacion-secundaria-${index}`);
+    const latInput = document.getElementById(`lat-secundaria-${index}`);
+    const lngInput = document.getElementById(`lng-secundaria-${index}`);
+    const preview = document.getElementById(`preview-secundaria-${index}`);
+    
+    if (!input) {
+        console.error(`❌ No se encontró input: ubicacion-secundaria-${index}`);
+        return false;
+    }
+    
+    // 🎯 USAR EXACTAMENTE LA MISMA LÓGICA QUE LA UBICACIÓN PRINCIPAL
+    let searchTimeout;
+    
+    input.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const query = this.value.trim();
+        
+        console.log(`📝 Escribiendo en secundaria ${index}:`, query);
+        
+        if (query.length < 3) {
+            hideSuggestions(this);
+            return;
+        }
+        
+        searchTimeout = setTimeout(() => {
+            console.log(`🔍 Buscando para secundaria ${index}:`, query);
+            searchLocation(query, this, latInput, lngInput, preview);
+        }, 500);
+    });
+    
+    input.addEventListener('blur', function() {
+        setTimeout(() => hideSuggestions(this), 200);
+    });
+    
+    console.log(`✅ Autocompletado configurado para ubicación secundaria ${index}`);
+    return true;
+}
+
+function searchLocationForSecondary(query, inputElement, latInput, lngInput, preview, index) {
+    console.log(`🔍 Buscando ubicación para secundaria ${index}:`, query);
+    
+    // Mostrar indicador de carga
+    inputElement.style.backgroundImage = 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23667eea\' stroke-width=\'2\'%3E%3Cpath d=\'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\'/%3E%3Ccircle cx=\'12\' cy=\'10\' r=\'3\'/%3E%3C/svg%3E")';
+    inputElement.style.backgroundRepeat = 'no-repeat';
+    inputElement.style.backgroundPosition = 'right 12px center';
+    inputElement.style.backgroundSize = '16px 16px';
+    
+    // Usar Nominatim para búsqueda
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=co,es,fr,us,it,mx,pe,ar,cl&addressdetails=1&accept-language=es`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(`📍 Resultados para secundaria ${index}:`, data.length);
+            
+            // Limpiar indicador de carga
+            inputElement.style.backgroundImage = '';
+            
+            if (data && data.length > 0) {
+                showSuggestionsForSecondary(data, inputElement, latInput, lngInput, preview, index);
+            } else {
+                console.log(`ℹ️ No se encontraron resultados para: ${query}`);
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error buscando ubicación:', error);
+            inputElement.style.backgroundImage = '';
+        });
+}
+
+function showSuggestionsForSecondary(locations, inputElement, latInput, lngInput, preview, index) {
+    console.log(`📋 Mostrando ${locations.length} sugerencias para secundaria ${index}`);
+    
+    // Limpiar sugerencias anteriores
+    hideSuggestionsForElement(inputElement);
+    
+    const suggestionsContainer = document.createElement('div');
+    suggestionsContainer.className = `location-suggestions secondary-suggestions-${index}`;
+    suggestionsContainer.style.cssText = `
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 40px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 1000;
+        max-height: 200px;
+        overflow-y: auto;
+    `;
+    
+    locations.forEach((location, suggestionIndex) => {
+        const item = document.createElement('div');
+        item.className = 'suggestion-item';
+        item.style.cssText = `
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f7fafc;
+            transition: background 0.2s ease;
+        `;
+        
+        const mainName = location.display_name.split(',')[0];
+        item.innerHTML = `
+            <div style="font-weight: 600; color: #2d3748;">${mainName}</div>
+            <div style="font-size: 12px; color: #718096;">${location.display_name}</div>
+        `;
+        
+        // Hover effects
+        item.addEventListener('mouseenter', () => {
+            item.style.background = '#f7fafc';
+        });
+        
+        item.addEventListener('mouseleave', () => {
+            item.style.background = 'white';
+        });
+        
+        // Click handler
+        item.addEventListener('click', () => {
+            console.log(`✅ Ubicación secundaria ${index} seleccionada:`, location.display_name);
+            
+            inputElement.value = location.display_name;
+            latInput.value = location.lat;
+            lngInput.value = location.lon;
+            
+            // Mostrar preview
+            showLocationPreview(preview, location.display_name);
+            
+            // Limpiar sugerencias
+            hideSuggestionsForElement(inputElement);
+        });
+        
+        suggestionsContainer.appendChild(item);
+    });
+    
+    // Posicionar las sugerencias
+    inputElement.parentElement.style.position = 'relative';
+    inputElement.parentElement.appendChild(suggestionsContainer);
+    
+    console.log(`✅ Sugerencias mostradas para secundaria ${index}`);
+}
+
+function hideSuggestionsForElement(inputElement) {
+    if (!inputElement || !inputElement.parentElement) return;
+    
+    const suggestions = inputElement.parentElement.querySelector('.location-suggestions');
+    if (suggestions) {
+        suggestions.remove();
+    }
+}
+
+
+function setupLocationAutocompleteForElement(input, latInput, lngInput, preview) {
+    if (!input) {
+        console.error('❌ setupLocationAutocompleteForElement: input no válido');
+        return;
+    }
+    
+    console.log('🔧 Configurando autocompletado para:', input.id || input.name || 'input sin id');
+    
+    let timeout;
+    let suggestionsList = null;
+    
+    input.addEventListener('input', function() {
+        clearTimeout(timeout);
+        const query = this.value.trim();
+        
+        console.log('📝 Usuario escribiendo:', query, 'en campo:', this.id);
+        
+        // Limpiar sugerencias anteriores
+        removeSuggestionsFromInput(this);
+        
+        if (query.length < 3) {
+            return;
+        }
+        
+        timeout = setTimeout(() => {
+            console.log('🔍 Iniciando búsqueda para:', query);
+            searchLocationForInput(query, this, latInput, lngInput, preview);
+        }, 500);
+    });
+    
+    input.addEventListener('blur', function() {
+        setTimeout(() => {
+            removeSuggestionsFromInput(this);
+        }, 200);
+    });
+    
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            removeSuggestionsFromInput(this);
+        }
+    });
+    
+    console.log('✅ Autocompletado configurado correctamente para:', input.id);
+}
+
+
+// 🧠 FUNCIÓN PARA GENERAR CONSULTAS INTELIGENTES
+function generateSmartQueries(originalQuery) {
+    const queries = [];
+    const cleanQuery = originalQuery.trim().toLowerCase();
+    
+    // 1. Búsqueda original
+    queries.push(cleanQuery);
+    
+    // 2. Si tiene espacios, buscar sin espacios y con variaciones
+    if (cleanQuery.includes(' ')) {
+        queries.push(cleanQuery.replace(/\s+/g, ''));
+        queries.push(cleanQuery.split(' ').reverse().join(' ')); // Invertir orden
+    }
+    
+    // 3. Agregar contexto geográfico si no lo tiene
+    const geoTerms = ['colombia', 'españa', 'francia', 'méxico', 'argentina'];
+    const hasGeoContext = geoTerms.some(term => cleanQuery.includes(term));
+    
+    if (!hasGeoContext) {
+        queries.push(`${cleanQuery} colombia`);
+        queries.push(`${cleanQuery} españa`);
+        queries.push(`${cleanQuery} francia`);
+    }
+    
+    // 4. Búsquedas específicas por tipo de lugar
+    const placeTypes = ['plaza', 'museo', 'parque', 'centro', 'zona'];
+    const hasPlaceType = placeTypes.some(type => cleanQuery.includes(type));
+    
+    if (!hasPlaceType && cleanQuery.length > 3) {
+        queries.push(`plaza ${cleanQuery}`);
+        queries.push(`centro ${cleanQuery}`);
+        queries.push(`${cleanQuery} centro`);
+    }
+    
+    // 5. Remover duplicados y retornar máximo 6 consultas
+    return [...new Set(queries)].slice(0, 6);
+}
+
+// 🔍 FUNCIÓN PARA REALIZAR UNA BÚSQUEDA INDIVIDUAL
+function performSingleSearch(query) {
+    const url = `https://nominatim.openstreetmap.org/search?` + 
+        `format=json&` +
+        `q=${encodeURIComponent(query)}&` +
+        `limit=8&` +
+        `countrycodes=co,es,fr,us,it,mx,pe,ar,cl,br,ve&` +
+        `addressdetails=1&` +
+        `accept-language=es&` +
+        `extratags=1&` +
+        `namedetails=1`;
+    
+    return fetch(url)
+        .then(response => response.json())
+        .catch(error => {
+            console.warn('⚠️ Error en búsqueda individual:', error);
+            return [];
+        });
+}
+
+// 🔄 FUNCIÓN PARA COMBINAR Y FILTRAR RESULTADOS
+function combineAndFilterResults(resultsArray, originalQuery) {
+    const allResults = [];
+    const seenPlaces = new Set();
+    
+    // Combinar todos los resultados
+    resultsArray.forEach(results => {
+        if (Array.isArray(results)) {
+            allResults.push(...results);
+        }
+    });
+    
+    // Filtrar duplicados basados en coordenadas
+    const uniqueResults = allResults.filter(result => {
+        const key = `${Math.round(result.lat * 1000)}_${Math.round(result.lon * 1000)}`;
+        if (seenPlaces.has(key)) {
+            return false;
+        }
+        seenPlaces.add(key);
+        return true;
+    });
+    
+    // Scoring y ordenamiento inteligente
+    const scoredResults = uniqueResults.map(result => {
+        let score = 0;
+        const displayName = result.display_name.toLowerCase();
+        const query = originalQuery.toLowerCase();
+        
+        // Puntuación por relevancia
+        if (displayName.includes(query)) score += 10;
+        if (displayName.startsWith(query)) score += 15;
+        if (result.class === 'place') score += 5;
+        if (result.type === 'city' || result.type === 'town') score += 8;
+        if (result.importance) score += result.importance * 10;
+        
+        // Penalizar resultados muy lejanos o irrelevantes
+        if (result.type === 'road' && !query.includes('calle') && !query.includes('carrera')) score -= 3;
+        
+        return { ...result, score };
+    });
+    
+    // Ordenar por puntuación y retornar los mejores 10
+    return scoredResults
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10);
+}
+
+// 📭 FUNCIÓN PARA MOSTRAR MENSAJE CUANDO NO HAY RESULTADOS
+function showNoResultsMessage(inputElement) {
+    const parent = inputElement.parentElement;
+    const messageContainer = document.createElement('div');
+    messageContainer.className = 'no-results-message';
+    messageContainer.style.cssText = `
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #fef5e7;
+        border: 2px solid #fbd38d;
+        border-radius: 0 0 8px 8px;
+        padding: 12px 15px;
+        z-index: 2000;
+        font-size: 13px;
+        color: #d69e2e;
+        text-align: center;
+    `;
+    
+    messageContainer.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <span>🔍</span>
+            <span>No se encontraron resultados. Intenta con otro término.</span>
+        </div>
+    `;
+    
+    parent.style.position = 'relative';
+    parent.appendChild(messageContainer);
+    
+    // Remover el mensaje después de 3 segundos
+    setTimeout(() => {
+        if (messageContainer.parentElement) {
+            messageContainer.remove();
+        }
+    }, 3000);
+}
+
+
+
+function removeSuggestionsFromInput(inputElement) {
+    const parent = inputElement.parentElement;
+    if (parent) {
+        const suggestions = parent.querySelector('.location-suggestions-universal');
+        if (suggestions) {
+            suggestions.remove();
+        }
+    }
+}
+
+
+function showLocationSuggestions(locations, inputElement, latInput, lngInput, preview) {
+    hideSuggestions(inputElement);
+    
+    if (locations.length === 0) return;
+    
+    const suggestionsContainer = document.createElement('div');
+    suggestionsContainer.className = 'location-suggestions';
+    suggestionsContainer.style.cssText = `
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 40px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 1000;
+        max-height: 200px;
+        overflow-y: auto;
+    `;
+    
+    locations.forEach(location => {
+        const item = document.createElement('div');
+        item.className = 'suggestion-item';
+        item.style.cssText = `
+            padding: 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f7fafc;
+            transition: background 0.2s ease;
+        `;
+        item.innerHTML = `
+            <div style="font-weight: 600; color: #2d3748;">${location.display_name.split(',')[0]}</div>
+            <div style="font-size: 12px; color: #718096;">${location.display_name}</div>
+        `;
+        
+        item.addEventListener('mouseenter', () => {
+            item.style.background = '#f7fafc';
+        });
+        
+        item.addEventListener('mouseleave', () => {
+            item.style.background = 'white';
+        });
+        
+        item.addEventListener('click', () => {
+            console.log('✅ Ubicación seleccionada:', location.display_name);
+            
+            inputElement.value = location.display_name;
+            latInput.value = location.lat;
+            lngInput.value = location.lon;
+            
+            showLocationPreview(preview, location.display_name);
+            hideSuggestions(inputElement);
+        });
+        
+        suggestionsContainer.appendChild(item);
+    });
+    
+    inputElement.parentElement.style.position = 'relative';
+    inputElement.parentElement.appendChild(suggestionsContainer);
+}
+
+
+function hideSuggestions(inputElement) {
+    const suggestions = inputElement.parentElement.querySelector('.location-suggestions');
+    if (suggestions) {
+        suggestions.remove();
+    }
+}
+
+function showLocationPreview(preview, locationText) {
+    if (preview && locationText) {
+        preview.innerHTML = `📍 ${locationText}`;
+        preview.classList.add('show');
+    }
+}
+
+function updateSecondaryLocationsSectionClass() {
+    const container = document.getElementById('ubicaciones-secundarias-container');
+    const section = document.getElementById('ubicaciones-secundarias-section');
+    const hasItems = container.children.length > 0;
+    
+    if (hasItems) {
+        section.classList.add('has-items');
+    } else {
+        section.classList.remove('has-items');
+        section.style.display = 'none';
+    }
+}
+
+function limpiarUbicacionesSecundarias() {
+    console.log('🧹 Limpiando ubicaciones secundarias...');
+    
+    const container = document.getElementById('ubicaciones-secundarias-container');
+    const section = document.getElementById('ubicaciones-secundarias-section');
+    
+    if (container) {
+        container.innerHTML = '';
+    }
+    
+    if (section) {
+        section.style.display = 'none';
+        section.classList.remove('has-items');
+    }
+    
+    // RESETEAR el contador a 0
+    ubicacionesSecundariasCount = 0;
+    
+    console.log('✅ Ubicaciones secundarias limpiadas. Contador reseteado a 0');
+}
 
         // Inicializar mapa con OpenStreetMap (GRATIS)
-        function initializeMap() {
-            const mapContainer = document.getElementById('map');
+function initializeMap() {
+    const mapContainer = document.getElementById('map');
+    
+    try {
+        // Limpiar contenedor
+        mapContainer.innerHTML = '';
+        
+        // Crear mapa con OpenStreetMap
+        map = L.map('map').setView([4.7110, -74.0721], 10); // Bogotá por defecto
+
+        // Agregar capa gratuita de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 18,
+            minZoom: 2
+        }).addTo(map);
+
+        // Control de zoom
+        L.control.zoom({
+            position: 'topright'
+        }).addTo(map);
+
+        // 🎯 GRUPO DE MARCADORES PARA ORGANIZAR MEJOR
+        window.markersGroup = L.layerGroup().addTo(map);
+
+        // Click en el mapa para seleccionar ubicación PRINCIPAL
+        map.on('click', function(e) {
+            const coords = e.latlng;
+            updatePrimaryLocation(coords.lat, coords.lng);
+        });
+
+        // Cargar ubicaciones existentes al abrir el modal
+        setTimeout(() => {
+            loadAllLocationsOnMap();
+        }, 500);
+
+        // Evento cuando el mapa se carga
+        map.whenReady(function() {
+            console.log('✅ Mapa con ubicaciones múltiples cargado');
             
-            try {
-                // Limpiar contenedor
-                mapContainer.innerHTML = '';
-                
-                // Crear mapa con OpenStreetMap
-                map = L.map('map').setView([4.7110, -74.0721], 10); // Bogotá por defecto
-
-                // Agregar capa gratuita de OpenStreetMap
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
-                    maxZoom: 18,
-                    minZoom: 2
-                }).addTo(map);
-
-                // Control de zoom
-                L.control.zoom({
-                    position: 'topright'
-                }).addTo(map);
-
-                // Click en el mapa para seleccionar ubicación
-                map.on('click', function(e) {
-                    const coords = e.latlng;
-                    
-                    // Remover marcador anterior
-                    if (currentMarker) {
-                        map.removeLayer(currentMarker);
-                    }
-                    
-                    // Agregar nuevo marcador (azul como el tema)
-                    currentMarker = L.marker([coords.lat, coords.lng], {
-                        draggable: true
-                    }).addTo(map);
-
-                    // Popup informativo
-                    currentMarker.bindPopup(`
-                        <div style="text-align: center;">
-                            <strong>📍 Ubicación Seleccionada</strong><br>
-                            <small>Lat: ${coords.lat.toFixed(6)}<br>
-                            Lng: ${coords.lng.toFixed(6)}</small>
-                        </div>
-                    `).openPopup();
-                    
-                    // Geocodificación gratuita
-                    reverseGeocodeOSM(coords.lat, coords.lng);
-                    
-                    // Event listener para arrastrar marcador
-                    currentMarker.on('dragend', function(e) {
-                        const newCoords = e.target.getLatLng();
-                        reverseGeocodeOSM(newCoords.lat, newCoords.lng);
-                        
-                        // Actualizar popup
-                        currentMarker.setPopupContent(`
+            // Mensaje de bienvenida
+            setTimeout(() => {
+                if (window.markersGroup.getLayers().length === 0) {
+                    L.popup()
+                        .setLatLng([4.7110, -74.0721])
+                        .setContent(`
                             <div style="text-align: center;">
-                                <strong>📍 Ubicación Actualizada</strong><br>
-                                <small>Lat: ${newCoords.lat.toFixed(6)}<br>
-                                Lng: ${newCoords.lng.toFixed(6)}</small>
+                                <strong>🗺️ Mapa Interactivo</strong><br>
+                                <small>Haz clic para ubicación principal<br>
+                                Las secundarias se mostrarán automáticamente</small>
                             </div>
-                        `);
-                    });
-                });
+                        `)
+                        .openOn(map);
+                }
+            }, 1000);
+        });
 
-                // Evento cuando el mapa se carga
-                map.whenReady(function() {
-                    console.log('✅ Mapa OpenStreetMap cargado - 100% GRATIS');
-                    
-                    // Mensaje de bienvenida
-                    setTimeout(() => {
-                        if (!currentMarker) {
-                            L.popup()
-                                .setLatLng([4.7110, -74.0721])
-                                .setContent(`
-                                    <div style="text-align: center;">
-                                        <strong>🗺️ Mapa Interactivo</strong><br>
-                                        <small>Haz clic en cualquier lugar para seleccionar ubicación</small>
-                                    </div>
-                                `)
-                                .openOn(map);
-                        }
-                    }, 1000);
-                });
+        // Redimensionar mapa cuando se abre el modal
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 100);
 
-                // Redimensionar mapa cuando se abre el modal
-                setTimeout(() => {
-                    map.invalidateSize();
-                }, 100);
-
-            } catch (error) {
-                console.error('Error cargando mapa:', error);
-                initializeMapFallback();
-            }
-        }
+    } catch (error) {
+        console.error('Error cargando mapa:', error);
+        initializeMapFallback();
+    }
+}
 
         // Función de respaldo si falla el mapa
         function initializeMapFallback() {
@@ -2212,6 +2909,9 @@ function escapeHtml(text) {
             // Limpiar formulario
             document.getElementById('resourceForm').reset();
             
+            // AGREGAR ESTA LÍNEA:
+            limpiarUbicacionesSecundarias();
+            
             // Destruir mapa
             if (map) {
                 map.remove();
@@ -2366,6 +3066,22 @@ function loadSpecificFields() {
                         <label for="ubicacion">Ubicación</label>
                         <input type="text" id="ubicacion" name="ubicacion" required placeholder="Ciudad, País">
                     </div>
+                </div>
+                <div class="form-group ubicaciones-secundarias-section" style="display: block;" id="ubicaciones-secundarias-section">
+                    <label for="ubicaciones_secundarias">
+                        📍 Ubicaciones Secundarias
+                        <small style="display: block; color: #666; font-weight: normal; margin-top: 4px;">
+                            Opcional - Agrega ubicaciones adicionales para este día
+                        </small>
+                    </label>
+                    
+                    <div id="ubicaciones-secundarias-container">
+                        <!-- Ubicaciones secundarias se cargan aquí dinámicamente -->
+                    </div>
+                    
+                    <button type="button" class="btn-add-ubicacion" onclick="agregarUbicacionSecundaria()">
+                        ➕ Agregar Ubicación Secundaria
+                    </button>
                 </div>
                 <div class="form-group">
                     <label for="descripcion">Descripción</label>
@@ -3321,111 +4037,141 @@ function showSearchError(message) {
         }
 
         // Cargar datos de recurso para editar - MEJORADO
-        async function loadResourceData(id) {
-            try {
-                const response = await fetch(`${APP_URL}/biblioteca/api?action=get&type=${currentTab}&id=${id}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                
-                if (!result.success) {
-                    throw new Error(result.error || 'Error al cargar recurso');
-                }
-                
-                const resource = result.data;
-                console.log('Cargando recurso desde API:', resource);
-                
-                document.getElementById('resourceId').value = resource.id;
-                
-                // Cargar campos comunes
-                const commonFields = ['idioma', 'descripcion'];
-                commonFields.forEach(field => {
-                    const element = document.getElementById(field);
-                    if (element && resource[field]) {
-                        element.value = resource[field];
-                    }
-                });
-                
-                // Cargar campos específicos por tipo
-                switch(currentTab) {
-                    case 'dias':
-                        setFieldValue('titulo', resource.titulo);
-                        setFieldValue('ubicacion', resource.ubicacion);
-                        setFieldValue('latitud', resource.latitud);
-                        setFieldValue('longitud', resource.longitud);
-                        loadImagePreviews(['imagen1', 'imagen2', 'imagen3'], resource);
-                        break;
-                        
-                    case 'alojamientos':
-                        setFieldValue('nombre', resource.nombre);
-                        setFieldValue('ubicacion', resource.ubicacion);
-                        setFieldValue('tipo', resource.tipo);
-                        setFieldValue('categoria', resource.categoria);
-                        setFieldValue('sitio_web', resource.sitio_web);
-                        setFieldValue('latitud', resource.latitud);
-                        setFieldValue('longitud', resource.longitud);
-                        loadImagePreviews(['imagen'], resource);
-                        updateCategoryField(); // Actualizar visibilidad de categoría
-                        break;
-                        
-                    case 'actividades':
-                        setFieldValue('nombre', resource.nombre);
-                        setFieldValue('ubicacion', resource.ubicacion);
-                        setFieldValue('latitud', resource.latitud);
-                        setFieldValue('longitud', resource.longitud);
-                        loadImagePreviews(['imagen1', 'imagen2', 'imagen3'], resource);
-                        break;
-                        
-                    case 'transportes':
-                        setFieldValue('medio', resource.medio);
-                        setFieldValue('titulo', resource.titulo);
-                        setFieldValue('lugar_salida', resource.lugar_salida);
-                        setFieldValue('lugar_llegada', resource.lugar_llegada);
-                        setFieldValue('duracion', resource.duracion);
-                        setFieldValue('distancia_km', resource.distancia_km);
-                        setFieldValue('lat_salida', resource.lat_salida);
-                        setFieldValue('lng_salida', resource.lng_salida);
-                        setFieldValue('lat_llegada', resource.lat_llegada);
-                        setFieldValue('lng_llegada', resource.lng_llegada);
-                        break;
-                }
-                
-                // Actualizar mapa si hay coordenadas
-                if (resource.latitud && resource.longitud && map) {
-                    setTimeout(() => {
-                        map.setView([resource.latitud, resource.longitud], 15);
-                        
-                        if (currentMarker) {
-                            map.removeLayer(currentMarker);
-                        }
-                        
-                        currentMarker = L.marker([resource.latitud, resource.longitud], {
-                            draggable: true
-                        }).addTo(map);
-                        
-                        currentMarker.bindPopup(`
-                            <div style="text-align: center;">
-                                <strong>📍 ${resource.titulo || resource.nombre}</strong><br>
-                                <small>${resource.ubicacion}</small>
-                            </div>
-                        `).openPopup();
-                    }, 500);
-                }
-                
-            } catch (error) {
-                console.error('Error al cargar datos del recurso:', error);
-                showMessage('Error al cargar los datos del recurso: ' + error.message, 'error');
-            }
+async function loadResourceData(id) {
+    try {
+        console.log('🔄 Cargando datos del recurso:', id);
+        
+        const response = await fetch(`${APP_URL}/biblioteca/api?action=get&type=${currentTab}&id=${id}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.error || 'Error al cargar recurso');
+        }
+        
+        const resource = result.data;
+        console.log('Cargando recurso desde API:', resource);
+        
+        document.getElementById('resourceId').value = resource.id;
+        
+        // Cargar campos comunes
+        const commonFields = ['idioma', 'descripcion'];
+        commonFields.forEach(field => {
+            const element = document.getElementById(field);
+            if (element && resource[field]) {
+                element.value = resource[field];
+            }
+        });
+        
+        // Cargar campos específicos por tipo
+        switch(currentTab) {
+            case 'dias':
+                setFieldValue('titulo', resource.titulo);
+                setFieldValue('ubicacion', resource.ubicacion);
+                setFieldValue('latitud', resource.latitud);
+                setFieldValue('longitud', resource.longitud);
+                loadImagePreviews(['imagen1', 'imagen2', 'imagen3'], resource);
+                
+                // CARGAR UBICACIONES SECUNDARIAS
+                await loadUbicacionesSecundariasData(id);
+                break;
+                
+            case 'alojamientos':
+                setFieldValue('nombre', resource.nombre);
+                setFieldValue('ubicacion', resource.ubicacion);
+                setFieldValue('tipo', resource.tipo);
+                setFieldValue('categoria', resource.categoria);
+                setFieldValue('sitio_web', resource.sitio_web);
+                setFieldValue('latitud', resource.latitud);
+                setFieldValue('longitud', resource.longitud);
+                loadImagePreviews(['imagen'], resource);
+                break;
+                
+            case 'actividades':
+                setFieldValue('nombre', resource.nombre);
+                setFieldValue('ubicacion', resource.ubicacion);
+                setFieldValue('duracion', resource.duracion);
+                setFieldValue('precio', resource.precio);
+                setFieldValue('latitud', resource.latitud);
+                setFieldValue('longitud', resource.longitud);
+                loadImagePreviews(['imagen1', 'imagen2', 'imagen3'], resource);
+                break;
+                
+            case 'transportes':
+                setFieldValue('titulo', resource.titulo);
+                setFieldValue('medio', resource.medio);
+                setFieldValue('lugar_salida', resource.lugar_salida);
+                setFieldValue('lugar_llegada', resource.lugar_llegada);
+                setFieldValue('duracion', resource.duracion);
+                setFieldValue('distancia_km', resource.distancia_km);
+                setFieldValue('lat_salida', resource.lat_salida);
+                setFieldValue('lng_salida', resource.lng_salida);
+                setFieldValue('lat_llegada', resource.lat_llegada);
+                setFieldValue('lng_llegada', resource.lng_llegada);
+                break;
+        }
+        
+        console.log('✅ Datos cargados correctamente');
+        
+    } catch(error) {
+        console.error('❌ Error cargando datos:', error);
+        showToast('Error al cargar los datos del recurso', 'error');
+    }
+}
+
+// NUEVA FUNCIÓN PARA CARGAR UBICACIONES SECUNDARIAS
+async function loadUbicacionesSecundariasData(diaId) {
+    try {
+        console.log('📍 Cargando ubicaciones secundarias para día:', diaId);
+        
+        const response = await fetch(`${APP_URL}/biblioteca/api?action=get_ubicaciones_secundarias&dia_id=${diaId}`);
+        const result = await response.json();
+        
+        if (result.success && result.ubicaciones && result.ubicaciones.length > 0) {
+            console.log('✅ Ubicaciones secundarias encontradas:', result.ubicaciones);
+            
+            // Limpiar ubicaciones existentes
+            limpiarUbicacionesSecundarias();
+            
+            // Cargar cada ubicación
+            result.ubicaciones.forEach((ubicacion, index) => {
+                agregarUbicacionSecundaria();
+                
+                // Llenar los datos
+                const inputUbicacion = document.getElementById(`ubicacion-secundaria-${index}`);
+                const inputLat = document.getElementById(`lat-secundaria-${index}`);
+                const inputLng = document.getElementById(`lng-secundaria-${index}`);
+                const preview = document.getElementById(`preview-secundaria-${index}`);
+                
+                if (inputUbicacion) {
+                    inputUbicacion.value = ubicacion.ubicacion;
+                }
+                if (inputLat && ubicacion.latitud) {
+                    inputLat.value = ubicacion.latitud;
+                }
+                if (inputLng && ubicacion.longitud) {
+                    inputLng.value = ubicacion.longitud;
+                }
+                
+                // Mostrar preview
+                if (preview && ubicacion.ubicacion) {
+                    showLocationPreview(preview, ubicacion.ubicacion);
+                }
+            });
+            
+            console.log(`📍 ${result.ubicaciones.length} ubicaciones secundarias cargadas`);
+        } else {
+            console.log('ℹ️ No hay ubicaciones secundarias para este día');
+        }
+        
+    } catch(error) {
+        console.error('❌ Error cargando ubicaciones secundarias:', error);
+    }
+}
 
         // NUEVA FUNCIÓN: Establecer valor de campo
         function setFieldValue(fieldId, value) {
@@ -4598,6 +5344,23 @@ function setupAdvancedLocationAutocomplete() {
     });
 }
 
+function searchLocation(query, inputElement, latInput, lngInput, preview) {
+    console.log('🔍 Búsqueda simple para:', query);
+    
+    // Usar Nominatim para búsqueda de ubicaciones (IGUAL QUE LA PRINCIPAL)
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=co,es,fr,us,it&addressdetails=1`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log('📍 Resultados encontrados:', data.length);
+            showLocationSuggestions(data, inputElement, latInput, lngInput, preview);
+        })
+        .catch(error => {
+            console.error('Error buscando ubicación:', error);
+        });
+}
+
 // Función mejorada para buscar ubicaciones con coordenadas
 async function searchLocationWithCoordinates(query, field, fieldType) {
     try {
@@ -4722,27 +5485,184 @@ function selectLocationWithMap(location, field, fieldType) {
     }));
 }
 
-// Función para obtener icono según tipo de ubicación
+function showSuggestionsForInput(locations, inputElement, latInput, lngInput, preview) {
+    console.log('📋 Mostrando', locations.length, 'sugerencias mejoradas para:', inputElement.id);
+    
+    // Limpiar sugerencias anteriores
+    removeSuggestionsFromInput(inputElement);
+    
+    const suggestionsContainer = document.createElement('div');
+    suggestionsContainer.className = 'location-suggestions-universal';
+    suggestionsContainer.style.cssText = `
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-top: none;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        z-index: 2000;
+        max-height: 320px;
+        overflow-y: auto;
+    `;
+    
+    locations.forEach((location, index) => {
+        const item = document.createElement('div');
+        item.className = 'suggestion-item-universal';
+        item.style.cssText = `
+            padding: 14px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f1f1;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            position: relative;
+        `;
+        
+        // Información mejorada del lugar
+        const mainName = location.display_name.split(',')[0];
+        const restOfAddress = location.display_name.split(',').slice(1, 3).join(',').trim();
+        const country = location.display_name.split(',').slice(-1)[0].trim();
+        
+        // Icono según el tipo de lugar
+        const icon = getLocationIcon(location);
+        
+        // Indicador de relevancia
+        const relevanceBar = location.score > 15 ? '🌟' : location.score > 10 ? '⭐' : '📍';
+        
+        item.innerHTML = `
+            <div style="display: flex; align-items: start; gap: 10px;">
+                <span style="font-size: 16px; margin-top: 2px;">${icon}</span>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; color: #2d3748; margin-bottom: 3px; display: flex; align-items: center; gap: 6px;">
+                        ${mainName}
+                        <span style="font-size: 12px;">${relevanceBar}</span>
+                    </div>
+                    <div style="font-size: 12px; color: #718096; line-height: 1.3;">
+                        ${restOfAddress}
+                    </div>
+                    <div style="font-size: 11px; color: #a0aec0; margin-top: 2px;">
+                        📍 ${country} ${location.type ? `• ${location.type}` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Hover effects mejorados
+        item.addEventListener('mouseenter', () => {
+            item.style.backgroundColor = '#f8fafc';
+            item.style.borderLeft = '4px solid var(--primary-color, #667eea)';
+            item.style.paddingLeft = '12px';
+        });
+        
+        item.addEventListener('mouseleave', () => {
+            item.style.backgroundColor = 'white';
+            item.style.borderLeft = 'none';
+            item.style.paddingLeft = '16px';
+        });
+        
+        // Click handler
+        item.addEventListener('click', () => {
+            console.log('✅ Ubicación seleccionada (mejorada):', location.display_name, 'Score:', location.score);
+            
+            // Actualizar campo
+            inputElement.value = location.display_name;
+            
+            // Actualizar coordenadas
+            if (latInput) latInput.value = location.lat;
+            if (lngInput) lngInput.value = location.lon;
+            
+            // Mostrar preview mejorado
+            if (preview) {
+                showLocationPreviewEnhanced(preview, location);
+            }
+            
+            // Limpiar sugerencias
+            removeSuggestionsFromInput(inputElement);
+            
+            // Actualizar mapa si es la ubicación principal
+            if (inputElement.id === 'ubicacion' && window.map) {
+                updateMapWithSelectedLocation(location.display_name, { lat: location.lat, lng: location.lon });
+            }
+        });
+        
+        suggestionsContainer.appendChild(item);
+    });
+    
+    // Header con contador de resultados
+    const header = document.createElement('div');
+    header.style.cssText = `
+        padding: 8px 16px;
+        background: #f8fafc;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 12px;
+        color: #4a5568;
+        font-weight: 600;
+    `;
+    header.textContent = `🔍 ${locations.length} ubicaciones encontradas`;
+    suggestionsContainer.insertBefore(header, suggestionsContainer.firstChild);
+    
+    // Posicionar contenedor
+    const parent = inputElement.parentElement;
+    parent.style.position = 'relative';
+    parent.appendChild(suggestionsContainer);
+    
+    console.log('✅ Sugerencias mejoradas mostradas correctamente');
+}
+
+// 🎨 FUNCIÓN PARA OBTENER ICONO SEGÚN TIPO DE LUGAR
 function getLocationIcon(location) {
     const type = location.type || '';
     const category = location.category || '';
+    const className = location.class || '';
     
+    // Iconos específicos por tipo
     const icons = {
-        city: '🏙️',
-        town: '🏘️',
-        village: '🏡',
-        country: '🌍',
-        hotel: '🏨',
-        restaurant: '🍽️',
-        airport: '✈️',
-        station: '🚂',
-        museum: '🏛️',
-        park: '🌳',
-        beach: '🏖️',
-        mountain: '⛰️'
+        // Lugares administrativos
+        'city': '🏙️', 'town': '🏘️', 'village': '🏡', 'hamlet': '🏠',
+        
+        // Lugares turísticos
+        'attraction': '🎯', 'museum': '🏛️', 'monument': '🗿', 'castle': '🏰',
+        'palace': '🏰', 'cathedral': '⛪', 'church': '⛪', 'temple': '🛕',
+        
+        // Transporte
+        'airport': '✈️', 'bus_station': '🚌', 'train_station': '🚂',
+        'subway_station': '🚇', 'ferry_terminal': '⛴️',
+        
+        // Naturaleza
+        'park': '🌳', 'garden': '🌺', 'beach': '🏖️', 'mountain': '⛰️',
+        'forest': '🌲', 'lake': '🏞️', 'river': '🌊',
+        
+        // Servicios
+        'hotel': '🏨', 'restaurant': '🍽️', 'cafe': '☕', 'shop': '🛍️',
+        'mall': '🏬', 'hospital': '🏥', 'school': '🎓', 'bank': '🏦',
+        
+        // Por categoría
+        'place': '📍', 'tourism': '🎯', 'amenity': '🏢', 'natural': '🌿',
+        'historic': '🏛️', 'leisure': '🎪'
     };
     
-    return icons[type] || icons[category] || '📍';
+    return icons[type] || icons[category] || icons[className] || '📍';
+}
+
+// 🎨 PREVIEW MEJORADO
+function showLocationPreviewEnhanced(preview, location) {
+    if (!preview || !location) return;
+    
+    const icon = getLocationIcon(location);
+    const country = location.display_name.split(',').slice(-1)[0].trim();
+    
+    preview.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span>${icon}</span>
+            <div>
+                <div style="font-weight: 600; color: #2d3748;">${location.display_name.split(',')[0]}</div>
+                <div style="font-size: 11px; color: #718096;">${country}</div>
+            </div>
+        </div>
+    `;
+    preview.classList.add('show');
 }
 
 // ===== CORRECCIÓN 2: IMAGEN CORRECTA PARA TRANSPORTES =====

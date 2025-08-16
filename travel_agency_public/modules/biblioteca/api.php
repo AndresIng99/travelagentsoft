@@ -55,6 +55,10 @@ class BibliotecaAPI {
                 case 'get':
                     $result = $this->getResource($type, $_GET['id']);
                     break;
+                // AGREGAR ESTE NUEVO CASE:
+                case 'get_ubicaciones_secundarias':
+                    $result = $this->getUbicacionesSecundarias($_GET['dia_id']);
+                    break;
                 default:
                     throw new Exception('Acción no válida: ' . $action);
             }
@@ -147,104 +151,114 @@ class BibliotecaAPI {
         }
     }
     
-    private function createResource($type) {
-        $allowedTypes = ['dias', 'alojamientos', 'actividades', 'transportes'];
-        if (!in_array($type, $allowedTypes)) {
-            throw new Exception("Tipo de recurso no válido");
-        }
-        
-        try {
-            $table = "biblioteca_" . $type;
-            
-            // Preparar datos SIN imágenes primero
-            $data = $this->prepareData($type, $_POST);
-            $data['user_id'] = $_SESSION['user_id'];
-            $data['activo'] = 1;
-            $data['idioma'] = 'es';
-            
-            // Validar
-            $this->validateData($type, $data);
-            
-            error_log("=== CREATING RESOURCE ===");
-            error_log("Data to insert: " . print_r($data, true));
-            
-            // Insertar recurso PRIMERO
-            $id = $this->db->insert($table, $data);
-            
-            if (!$id) {
-                throw new Exception('Error al insertar en base de datos');
-            }
-            
-            error_log("Resource created with ID: " . $id);
-            
-            // AHORA procesar imágenes con el ID válido
-            $imageUrls = $this->processImages($type, $id);
-            
-            error_log("Image URLs: " . print_r($imageUrls, true));
-            
-            // Si hay imágenes, actualizar el registro
-            if (!empty($imageUrls)) {
-                $updateResult = $this->db->update($table, $imageUrls, 'id = ?', [$id]);
-                error_log("Update result for images: " . $updateResult);
-            }
-            
-            return ['success' => true, 'id' => $id, 'message' => 'Recurso creado correctamente'];
-            
-        } catch(Exception $e) {
-            error_log("Create error: " . $e->getMessage());
-            error_log("Stack trace: " . $e->getTraceAsString());
-            throw new Exception('Error creando recurso: ' . $e->getMessage());
-        }
+private function createResource($type) {
+    $allowedTypes = ['dias', 'alojamientos', 'actividades', 'transportes'];
+    if (!in_array($type, $allowedTypes)) {
+        throw new Exception("Tipo de recurso no válido");
     }
     
-    private function updateResource($type) {
-        $allowedTypes = ['dias', 'alojamientos', 'actividades', 'transportes'];
-        if (!in_array($type, $allowedTypes)) {
-            throw new Exception("Tipo de recurso no válido");
+    try {
+        $table = "biblioteca_" . $type;
+        
+        // Preparar datos SIN imágenes primero
+        $data = $this->prepareData($type, $_POST);
+        $data['user_id'] = $_SESSION['user_id'];
+        $data['activo'] = 1;
+        $data['idioma'] = 'es';
+        
+        // Validar
+        $this->validateData($type, $data);
+        
+        error_log("=== CREATING RESOURCE ===");
+        error_log("Data to insert: " . print_r($data, true));
+        
+        // Insertar recurso PRIMERO
+        $id = $this->db->insert($table, $data);
+        
+        if (!$id) {
+            throw new Exception('Error al insertar en base de datos');
         }
         
-        $id = (int)$_POST['id'];
-        if ($id <= 0) {
-            throw new Exception('ID de recurso no válido');
+        error_log("Resource created with ID: " . $id);
+        
+        // PROCESAR UBICACIONES SECUNDARIAS (SOLO PARA DÍAS)
+        if ($type === 'dias') {
+            $this->processUbicacionesSecundarias($id, $_POST);
         }
         
-        try {
-            $table = "biblioteca_" . $type;
-            
-            // Verificar permisos
-            $existing = $this->db->fetch("SELECT user_id FROM `{$table}` WHERE id = ?", [$id]);
-            if (!$existing) {
-                throw new Exception('Recurso no encontrado');
-            }
-            
-            if ($existing['user_id'] != $_SESSION['user_id'] && $_SESSION['user_role'] !== 'admin') {
-                throw new Exception('Sin permisos');
-            }
-            
-            // Preparar datos
-            $data = $this->prepareData($type, $_POST);
-            $this->validateData($type, $data);
-            
-            // Procesar imágenes primero
-            $imageUrls = $this->processImages($type, $id);
-            
-            // Agregar URLs de imágenes a los datos
-            foreach($imageUrls as $field => $url) {
-                $data[$field] = $url;
-            }
-            
-            // Actualizar solo si hay datos
-            if (!empty($data)) {
-                $affected = $this->db->update($table, $data, 'id = ?', [$id]);
-                error_log("Updated {$affected} rows for resource {$id}");
-            }
-            
-            return ['success' => true, 'message' => 'Recurso actualizado correctamente'];
-            
-        } catch(Exception $e) {
-            throw new Exception('Error actualizando recurso: ' . $e->getMessage());
+        // AHORA procesar imágenes con el ID válido
+        $imageUrls = $this->processImages($type, $id);
+        
+        error_log("Image URLs: " . print_r($imageUrls, true));
+        
+        // Si hay imágenes, actualizar el registro
+        if (!empty($imageUrls)) {
+            $updateResult = $this->db->update($table, $imageUrls, 'id = ?', [$id]);
+            error_log("Update result for images: " . $updateResult);
         }
+        
+        return ['success' => true, 'id' => $id, 'message' => 'Recurso creado correctamente'];
+        
+    } catch(Exception $e) {
+        error_log("Create error: " . $e->getMessage());
+        error_log("Stack trace: " . $e->getTraceAsString());
+        throw new Exception('Error creando recurso: ' . $e->getMessage());
     }
+}
+    
+private function updateResource($type) {
+    $allowedTypes = ['dias', 'alojamientos', 'actividades', 'transportes'];
+    if (!in_array($type, $allowedTypes)) {
+        throw new Exception("Tipo de recurso no válido");
+    }
+    
+    $id = (int)$_POST['id'];
+    if ($id <= 0) {
+        throw new Exception('ID de recurso no válido');
+    }
+    
+    try {
+        $table = "biblioteca_" . $type;
+        
+        // Verificar permisos
+        $existing = $this->db->fetch("SELECT user_id FROM `{$table}` WHERE id = ?", [$id]);
+        if (!$existing) {
+            throw new Exception('Recurso no encontrado');
+        }
+        
+        if ($existing['user_id'] != $_SESSION['user_id']) {
+            throw new Exception('No tienes permisos para editar este recurso');
+        }
+        
+        // Preparar datos
+        $data = $this->prepareData($type, $_POST);
+        $this->validateData($type, $data);
+        
+        // PROCESAR UBICACIONES SECUNDARIAS (SOLO PARA DÍAS)
+        if ($type === 'dias') {
+            $this->processUbicacionesSecundarias($id, $_POST);
+        }
+        
+        // Procesar imágenes
+        $imageUrls = $this->processImages($type, $id);
+        if (!empty($imageUrls)) {
+            $data = array_merge($data, $imageUrls);
+        }
+        
+        // Actualizar registro principal
+        $success = $this->db->update($table, $data, 'id = ?', [$id]);
+        
+        if ($success) {
+            return ['success' => true, 'message' => 'Recurso actualizado correctamente'];
+        } else {
+            throw new Exception('Error al actualizar en base de datos');
+        }
+        
+    } catch(Exception $e) {
+        error_log("Update error: " . $e->getMessage());
+        throw new Exception('Error actualizando recurso: ' . $e->getMessage());
+    }
+}
     
     private function deleteResource($type) {
         $allowedTypes = ['dias', 'alojamientos', 'actividades', 'transportes'];
@@ -496,6 +510,83 @@ class BibliotecaAPI {
                 return []; // Los transportes no tienen imágenes
             default:
                 return [];
+        }
+    }
+    private function getUbicacionesSecundarias($diaId) {
+        try {
+            if (!$diaId) {
+                throw new Exception('ID de día requerido');
+            }
+            
+            $ubicaciones = $this->db->fetchAll(
+                "SELECT ubicacion, latitud, longitud, orden 
+                FROM biblioteca_dias_ubicaciones_secundarias 
+                WHERE dia_id = ? 
+                ORDER BY orden ASC", 
+                [$diaId]
+            );
+            
+            return [
+                'success' => true,
+                'ubicaciones' => $ubicaciones
+            ];
+            
+        } catch(Exception $e) {
+            error_log("Error obteniendo ubicaciones secundarias: " . $e->getMessage());
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+    private function processUbicacionesSecundarias($diaId, $postData) {
+        try {
+            error_log("=== PROCESANDO UBICACIONES SECUNDARIAS ===");
+            error_log("Día ID: " . $diaId);
+            error_log("POST data ubicaciones: " . print_r($postData, true));
+            
+            // Eliminar ubicaciones existentes
+            $this->db->query("DELETE FROM biblioteca_dias_ubicaciones_secundarias WHERE dia_id = ?", [$diaId]);
+            error_log("✅ Ubicaciones existentes eliminadas");
+            
+            // Verificar si hay ubicaciones secundarias
+            if (isset($postData['ubicaciones_secundarias']) && is_array($postData['ubicaciones_secundarias'])) {
+                $ubicaciones = $postData['ubicaciones_secundarias'];
+                $latitudes = $postData['ubicaciones_secundarias_lat'] ?? [];
+                $longitudes = $postData['ubicaciones_secundarias_lng'] ?? [];
+                
+                $insertedCount = 0;
+                
+                foreach ($ubicaciones as $index => $ubicacion) {
+                    $ubicacion = trim($ubicacion);
+                    if (!empty($ubicacion)) {
+                        $data = [
+                            'dia_id' => $diaId,
+                            'ubicacion' => $ubicacion,
+                            'latitud' => !empty($latitudes[$index]) ? (float)$latitudes[$index] : null,
+                            'longitud' => !empty($longitudes[$index]) ? (float)$longitudes[$index] : null,
+                            'orden' => $index + 1
+                        ];
+                        
+                        $insertId = $this->db->insert('biblioteca_dias_ubicaciones_secundarias', $data);
+                        if ($insertId) {
+                            $insertedCount++;
+                            error_log("✅ Ubicación secundaria insertada: {$ubicacion} (ID: {$insertId})");
+                        } else {
+                            error_log("❌ Error insertando ubicación: {$ubicacion}");
+                        }
+                    }
+                }
+                
+                error_log("📍 Total ubicaciones secundarias procesadas: {$insertedCount}");
+            } else {
+                error_log("ℹ️ No hay ubicaciones secundarias para procesar");
+            }
+            
+        } catch(Exception $e) {
+            error_log("❌ Error procesando ubicaciones secundarias: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            // No lanzamos excepción para no interrumpir el flujo principal
         }
     }
 }
