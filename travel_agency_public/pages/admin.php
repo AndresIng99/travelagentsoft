@@ -1481,55 +1481,63 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         });
 
         // Toggle status del usuario
-        async function toggleUserStatus(id) {
-            console.log('Toggleando usuario ID:', id);
-            
-            const user = users.find(u => u.id == id);
-            if (!user) {
-                console.error('Usuario no encontrado con ID:', id);
-                showToast('Usuario no encontrado', 'error');
-                return;
-            }
+async function toggleUserStatus(id) {
+    // Esperar un poco para que se cargue showConfirmModal
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    try {
+        const user = users.find(u => u.id === id);
+        const action = user.active ? 'desactivar' : 'activar';
+        const confirmed = await showConfirmModal({
+            title: `${action.charAt(0).toUpperCase() + action.slice(1)} usuario`,
+            message: `¿Estás seguro de que quieres ${action} al usuario "${user.username}"?`,
+            details: user.active ? 
+                'El usuario no podrá acceder al sistema hasta que lo reactives.' : 
+                'El usuario podrá acceder nuevamente al sistema.',
+            icon: user.active ? '⏸️' : '▶️',
+            confirmText: action.charAt(0).toUpperCase() + action.slice(1),
+            cancelText: 'Cancelar',
+            confirmButtonStyle: 'danger'
+        });
 
-            const action = user.active ? 'desactivar' : 'activar';
-            if (!confirm(`¿Estás seguro de que quieres ${action} este usuario?`)) {
-                return;
-            }
-
-            try {
-                console.log('Enviando toggle para usuario:', user.username, 'Estado actual:', user.active);
-                
-                const formData = new FormData();
-                formData.append('action', 'toggle_user');
-                formData.append('id', id);
-
-                console.log('FormData enviada:', Object.fromEntries(formData.entries()));
-
-                const response = await fetch(`${APP_URL}/admin/api`, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                console.log('Respuesta de la API:', data);
-
-                if (!data.success) {
-                    throw new Error(data.error || 'Error al cambiar estado del usuario');
-                }
-
-                showToast(data.message, 'success');
-                await loadUsers();
-                await loadStatistics();
-
-            } catch (error) {
-                console.error('Error al cambiar estado:', error);
-                showToast(`Error: ${error.message}`, 'error');
-            }
+        if (!confirmed) {
+            return;
         }
+
+        // Proceder con la acción
+        console.log('Enviando toggle para usuario:', user.username, 'Estado actual:', user.active);
+        
+        const formData = new FormData();
+        formData.append('action', 'toggle_user');
+        formData.append('id', id);
+
+        console.log('FormData enviada:', Object.fromEntries(formData.entries()));
+
+        const response = await fetch(`${APP_URL}/admin/api`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Respuesta de la API:', data);
+
+        if (!data.success) {
+            throw new Error(data.error || 'Error al cambiar estado del usuario');
+        }
+
+        showToast(data.message, 'success');
+        await loadUsers();
+        await loadStatistics();
+
+    } catch (error) {
+        console.error('Error al cambiar estado:', error);
+        showToast(`Error: ${error.message}`, 'error');
+    }
+}
 
         // Escape HTML para prevenir XSS
         function escapeHtml(text) {

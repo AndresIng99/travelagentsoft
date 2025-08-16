@@ -623,45 +623,6 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
             justify-content: center;
         }
 
-        .program-status {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            backdrop-filter: blur(10px);
-        }
-
-        .program-owner {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.9);
-            color: #374151;
-        }
-
-        .status-draft {
-            background: rgba(156, 163, 175, 0.9);
-            color: white;
-        }
-
-        .status-active {
-            background: rgba(34, 197, 94, 0.9);
-            color: white;
-        }
-
-        .status-completed {
-            background: rgba(59, 130, 246, 0.9);
-            color: white;
-        }
 
         .program-content {
             padding: 20px;
@@ -1118,6 +1079,33 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
                 padding: 20px;
             }
         }
+        /* Toast notifications */
+.toast {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    padding: 20px 25px;
+    border-radius: 15px;
+    color: white;
+    z-index: 20000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    min-width: 300px;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast.success {
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+}
+
+.toast.error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
     </style>
 </head>
 
@@ -1162,11 +1150,6 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
                     <span class="stat-number" id="otrosProgramas">0</span>
                     <div class="stat-label">Otros Programas</div>
                 </div>
-                <div class="stat-card">
-                    <i class="fas fa-check-circle stat-icon"></i>
-                    <span class="stat-number" id="programasActivos">0</span>
-                    <div class="stat-label">Activos</div>
-                </div>
             </div>
 
             <!-- Acciones Rápidas -->
@@ -1202,12 +1185,6 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
                             oninput="filtrarProgramas('mios')"
                         >
                     </div>
-                    <select id="filterStatusMios" class="filter-select" onchange="filtrarProgramas('mios')">
-                        <option value="">Todos los estados</option>
-                        <option value="borrador">Borrador</option>
-                        <option value="activo">Activo</option>
-                        <option value="completado">Completado</option>
-                    </select>
                 </div>
             </div>
 
@@ -1499,25 +1476,7 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
                 duracion = dias > 0 ? `${dias} días` : '1 día';
             }
             
-            // Determinar estado
-            let estado = 'borrador';
-            if (programa.estado) {
-                estado = programa.estado;
-            } else if (programa.id_solicitud) {
-                estado = 'activo';
-            }
             
-            const estadoClass = {
-                'borrador': 'status-draft',
-                'activo': 'status-active', 
-                'completado': 'status-completed'
-            }[estado] || 'status-draft';
-            
-            const estadoText = {
-                'borrador': 'Borrador',
-                'activo': 'Activo',
-                'completado': 'Completado'
-            }[estado] || 'Borrador';
             
             // OBTENER IMAGEN DE PORTADA DESDE LA BASE DE DATOS
             const imagenPortada = programa.foto_portada || null;
@@ -1539,7 +1498,6 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
                         `<div class="placeholder"><i class="fas fa-map-marked-alt"></i></div>`
                     }
                     ${esReadonly ? `<div class="program-owner">${autorPrograma}</div>` : ''}
-                    <div class="program-status ${estadoClass}">${estadoText}</div>
                 </div>
                 
                 <div class="program-content">
@@ -1608,8 +1566,17 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         }
 
         // FUNCIONES DE ELIMINACIÓN
-        function confirmarEliminacion(programaId, programaTitulo) {
-            if (confirm(`¿Estás seguro de eliminar el programa "${programaTitulo}"?\n\nEsta acción eliminará TODA la información:\n- Días del itinerario\n- Servicios\n- Precios\n- Todo el programa\n\nEsto NO se puede deshacer.`)) {
+        async function confirmarEliminacion(programaId, programaTitulo) {
+            const confirmed = await showConfirmModal({
+                title: '¿Eliminar programa?',
+                message: `¿Estás seguro de eliminar el programa "${programaTitulo}"?`,
+                details: 'Esta acción eliminará TODA la información: días del itinerario, servicios, precios y todo el programa. Esto NO se puede deshacer.',
+                icon: '🗑️',
+                confirmText: 'Eliminar programa',
+                cancelText: 'Cancelar'
+            });
+
+            if (confirmed) {
                 eliminarPrograma(programaId);
             }
         }
@@ -1648,14 +1615,9 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
             const mios = misProgramasFiltrados.length;
             const otros = otrosProgramasFiltrados.length;
             
-            const activos = allProgramas.filter(p => 
-                p.id_solicitud && p.estado !== 'completado'
-            ).length;
-            
             animateCounter('totalProgramas', total);
             animateCounter('misProgramas', mios);
             animateCounter('otrosProgramas', otros);
-            animateCounter('programasActivos', activos);
             
             // Actualizar badges
             document.getElementById('misProgramasBadge').textContent = mios;
@@ -1685,67 +1647,81 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         
         function filtrarProgramas(tipo) {
             if (tipo === 'mios') {
-                const searchTerm = document.getElementById('searchInputMios').value.toLowerCase();
-                const statusFilter = document.getElementById('filterStatusMios').value;
+                const searchTerm = document.getElementById('searchInputMios').value.toLowerCase().trim();
                 
                 const programasBase = allProgramas.filter(p => p.user_id == CURRENT_USER_ID);
                 
                 misProgramasFiltrados = programasBase.filter(programa => {
-                    const matchesSearch = !searchTerm || 
-                        programa.destino.toLowerCase().includes(searchTerm) ||
-                        programa.nombre_viajero.toLowerCase().includes(searchTerm) ||
-                        programa.apellido_viajero.toLowerCase().includes(searchTerm) ||
-                        (programa.titulo_programa && programa.titulo_programa.toLowerCase().includes(searchTerm)) ||
-                        (programa.id_solicitud && programa.id_solicitud.toLowerCase().includes(searchTerm));
+                    if (!searchTerm) return true;
                     
-                    let programaEstado = 'borrador';
-                    if (programa.estado) {
-                        programaEstado = programa.estado;
-                    } else if (programa.id_solicitud) {
-                        programaEstado = 'activo';
-                    }
+                    const searchFields = [
+                        programa.destino,
+                        programa.nombre_viajero,
+                        programa.apellido_viajero,
+                        programa.titulo_programa,
+                        programa.id_solicitud,
+                        `${programa.nombre_viajero} ${programa.apellido_viajero}`, // Nombre completo
+                        `Viaje a ${programa.destino}` // Título por defecto
+                    ];
                     
-                    const matchesStatus = !statusFilter || programaEstado === statusFilter;
-                    
-                    return matchesSearch && matchesStatus;
+                    return searchFields.some(field => 
+                        field && field.toString().toLowerCase().includes(searchTerm)
+                    );
                 });
                 
                 mostrarProgramasSeccion('mios', misProgramasFiltrados);
-                
+                actualizarPlaceholderBusqueda('mios');
             } else if (tipo === 'otros') {
-                const searchTerm = document.getElementById('searchInputOtros').value.toLowerCase();
-                const statusFilter = document.getElementById('filterStatusOtros').value;
+                const searchTerm = document.getElementById('searchInputOtros').value.toLowerCase().trim();
                 const authorFilter = document.getElementById('filterAuthor').value;
                 
                 const programasBase = allProgramas.filter(p => p.user_id != CURRENT_USER_ID);
                 
                 otrosProgramasFiltrados = programasBase.filter(programa => {
-                    const matchesSearch = !searchTerm || 
-                        programa.destino.toLowerCase().includes(searchTerm) ||
-                        programa.nombre_viajero.toLowerCase().includes(searchTerm) ||
-                        programa.apellido_viajero.toLowerCase().includes(searchTerm) ||
-                        (programa.titulo_programa && programa.titulo_programa.toLowerCase().includes(searchTerm)) ||
-                        (programa.created_by_name && programa.created_by_name.toLowerCase().includes(searchTerm));
+                    // Filtro de búsqueda
+                    const matchesSearch = !searchTerm || (() => {
+                        const searchFields = [
+                            programa.destino,
+                            programa.nombre_viajero,
+                            programa.apellido_viajero,
+                            programa.titulo_programa,
+                            programa.id_solicitud,
+                            programa.created_by_name,
+                            `${programa.nombre_viajero} ${programa.apellido_viajero}`,
+                            `Viaje a ${programa.destino}`
+                        ];
+                        
+                        return searchFields.some(field => 
+                            field && field.toString().toLowerCase().includes(searchTerm)
+                        );
+                    })();
                     
-                    let programaEstado = 'borrador';
-                    if (programa.estado) {
-                        programaEstado = programa.estado;
-                    } else if (programa.id_solicitud) {
-                        programaEstado = 'activo';
-                    }
-                    
-                    const matchesStatus = !statusFilter || programaEstado === statusFilter;
+                    // Filtro de autor
                     const matchesAuthor = !authorFilter || programa.created_by_name === authorFilter;
                     
-                    return matchesSearch && matchesStatus && matchesAuthor;
+                    return matchesSearch && matchesAuthor;
                 });
                 
                 mostrarProgramasSeccion('otros', otrosProgramasFiltrados);
-            }
+                actualizarPlaceholderBusqueda('otros');
+}
             
             actualizarEstadisticas();
             console.log(`🔍 Filtrado ${tipo}: ${tipo === 'mios' ? misProgramasFiltrados.length : otrosProgramasFiltrados.length} programas`);
         }
+
+        function actualizarPlaceholderBusqueda(tipo) {
+    const inputId = tipo === 'mios' ? 'searchInputMios' : 'searchInputOtros';
+    const input = document.getElementById(inputId);
+    const programas = tipo === 'mios' ? misProgramasFiltrados : otrosProgramasFiltrados;
+    const searchTerm = input.value.trim();
+    
+    if (searchTerm) {
+        input.setAttribute('data-results', `${programas.length} resultados`);
+    } else {
+        input.removeAttribute('data-results');
+    }
+}
 
         // ============================================================
         // FUNCIONES DEL MODAL DE CREACIÓN
@@ -2089,75 +2065,25 @@ function abrirEnNuevaVentana(id) {
         }
         
         function showNotification(message, type = 'info') {
-            const existingNotifications = document.querySelectorAll('.custom-notification');
-            existingNotifications.forEach(n => n.remove());
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
             
-            const notification = document.createElement('div');
-            notification.className = `custom-notification notification-${type}`;
-            notification.style.cssText = `
-                position: fixed;
-                top: 80px;
-                right: 20px;
-                z-index: 9999;
-                max-width: 400px;
-                padding: 16px 20px;
-                border-radius: 12px;
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-                backdrop-filter: blur(10px);
-                transform: translateX(100%);
-                transition: transform 0.3s ease;
-                font-weight: 500;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 12px;
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+            toast.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">${icon}</span>
+                    <span>${message}</span>
+                </div>
             `;
             
-            if (type === 'success') {
-                notification.style.background = 'rgba(34, 197, 94, 0.95)';
-                notification.style.color = 'white';
-                notification.style.border = '1px solid rgba(34, 197, 94, 1)';
-            } else if (type === 'error') {
-                notification.style.background = 'rgba(239, 68, 68, 0.95)';
-                notification.style.color = 'white';
-                notification.style.border = '1px solid rgba(239, 68, 68, 1)';
-            } else {
-                notification.style.background = 'rgba(59, 130, 246, 0.95)';
-                notification.style.color = 'white';
-                notification.style.border = '1px solid rgba(59, 130, 246, 1)';
-            }
+            document.body.appendChild(toast);
             
-            notification.innerHTML = `
-                <span>${message}</span>
-                <button onclick="this.parentElement.remove()" style="
-                    background: none;
-                    border: none;
-                    color: inherit;
-                    font-size: 18px;
-                    cursor: pointer;
-                    padding: 0;
-                    margin: 0;
-                    opacity: 0.8;
-                    transition: opacity 0.2s;
-                " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">×</button>
-            `;
-            
-            document.body.appendChild(notification);
+            setTimeout(() => toast.classList.add('show'), 100);
             
             setTimeout(() => {
-                notification.style.transform = 'translateX(0)';
-            }, 100);
-            
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.style.transform = 'translateX(100%)';
-                    setTimeout(() => {
-                        if (notification.parentElement) {
-                            notification.remove();
-                        }
-                    }, 300);
-                }
-            }, 5000);
+                toast.classList.remove('show');
+                setTimeout(() => document.body.removeChild(toast), 300);
+            }, 4000);
         }
 
         // Google Translate con idioma por defecto del sistema

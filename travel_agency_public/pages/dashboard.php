@@ -624,7 +624,7 @@ try {
             <div class="role-badge">
                 <?= $user['role'] === 'admin' ? '👑 Administrador del Sistema' : '✈️ Agente de Viajes' ?>
             </div>
-            <h1 class="welcome-title">¡Bienvenido<?= $user['role'] === 'admin' ? '' : 'a' ?>, <?= htmlspecialchars($user['name']) ?>!</h1>
+            <h1 class="welcome-title">¡Bienvenido<?= $user['role'] === 'admin' ? '' : '' ?>, <?= htmlspecialchars($user['name']) ?>!</h1>
             <p class="welcome-subtitle">
                 <?php if ($user['role'] === 'admin'): ?>
                     Administra el sistema completo, gestiona usuarios, supervisa todas las operaciones y configura la plataforma desde este panel de control avanzado.
@@ -746,9 +746,11 @@ try {
                 <div class="stat-item">
                     <div class="stat-number"><?php 
                         try {
-                            $count = $db->fetch("SELECT COUNT(*) as total FROM itinerarios WHERE user_id = ? AND activo = 1", [$user['id']]);
-                            echo $count['total'] ?? 0;
+                            $userId = (int)$user['id'];
+                            $count = $db->fetch("SELECT COUNT(*) as total FROM programa_solicitudes WHERE user_id = ?", [$userId]);
+                            echo (int)($count['total'] ?? 0);
                         } catch(Exception $e) {
+                            error_log("Error contando programas para user_id " . $user['id'] . ": " . $e->getMessage());
                             echo "0";
                         }
                     ?></div>
@@ -779,9 +781,11 @@ try {
                 <div class="stat-item">
                     <div class="stat-number"><?php 
                         try {
-                            $count = $db->fetch("SELECT COUNT(*) as total FROM biblioteca_actividades WHERE user_id = ? AND activo = 1", [$user['id']]);
-                            echo $count['total'] ?? 0;
+                            $userId = (int)$user['id'];
+                            $count = $db->fetch("SELECT COUNT(*) as total FROM biblioteca_actividades WHERE user_id = ? AND activo = 1", [$userId]);
+                            echo (int)($count['total'] ?? 0);
                         } catch(Exception $e) {
+                            error_log("Error contando actividades para user_id " . $user['id'] . ": " . $e->getMessage());
                             echo "0";
                         }
                     ?></div>

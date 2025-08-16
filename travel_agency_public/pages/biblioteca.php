@@ -1434,6 +1434,34 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
    }
 }
 
+/* Toast notifications */
+.toast {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    padding: 20px 25px;
+    border-radius: 15px;
+    color: white;
+    z-index: 20000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    min-width: 300px;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast.success {
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+}
+
+.toast.error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
     </style>
 </head>
 <body>
@@ -3249,7 +3277,16 @@ function showSearchError(message) {
         }
 
         async function deleteResource(id) {
-            if (!confirm('¿Estás seguro de que quieres eliminar este recurso? Esta acción no se puede deshacer.')) {
+            const confirmed = await showConfirmModal({
+                title: '¿Eliminar recurso?',
+                message: '¿Estás seguro de que quieres eliminar este recurso?',
+                details: 'Esta acción no se puede deshacer.',
+                icon: '🗑️',
+                confirmText: 'Eliminar',
+                cancelText: 'Cancelar'
+            });
+
+            if (!confirmed) {
                 return;
             }
             
@@ -3274,12 +3311,12 @@ function showSearchError(message) {
                     throw new Error(result.error || 'Error al eliminar recurso');
                 }
                 
-                alert(result.message || 'Recurso eliminado correctamente');
+                showMessage(result.message || 'Recurso eliminado correctamente', 'success');
                 loadResources(); // Recargar la lista
                 
             } catch (error) {
                 console.error('Error al eliminar recurso:', error);
-                alert('Error al eliminar el recurso: ' + error.message);
+                showMessage('Error al eliminar el recurso: ' + error.message, 'error');
             }
         }
 
@@ -3386,7 +3423,7 @@ function showSearchError(message) {
                 
             } catch (error) {
                 console.error('Error al cargar datos del recurso:', error);
-                alert('Error al cargar los datos del recurso: ' + error.message);
+                showMessage('Error al cargar los datos del recurso: ' + error.message, 'error');
             }
         }
 
@@ -3397,6 +3434,28 @@ function showSearchError(message) {
                 element.value = value;
             }
         }
+        // Función de notificaciones toast (igual que admin.php)
+function showMessage(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+    toast.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 20px;">${icon}</span>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 100);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => document.body.removeChild(toast), 300);
+    }, 4000);
+}
 
 
         // Función para mostrar imagen en modal
@@ -3551,11 +3610,11 @@ function showSearchError(message) {
                 if (index !== -1) {
                     resources[currentTab][index] = { ...resources[currentTab][index], ...data };
                 }
-                alert('Recurso actualizado correctamente');
+                showMessage('Recurso actualizado correctamente', 'success');
             } else {
                 data.id = Date.now();
                 resources[currentTab].push(data);
-                alert('Recurso creado correctamente');
+                showMessage('Recurso creado correctamente', 'success');
             }
             
             closeModal();

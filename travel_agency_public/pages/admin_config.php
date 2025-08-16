@@ -32,7 +32,7 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+     
         :root {
             --admin-primary: <?= $adminColors['primary'] ?>;
             --admin-secondary: <?= $adminColors['secondary'] ?>;
@@ -303,16 +303,15 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
                 font-size: 12px !important;
                 padding: 3px 6px !important;
             }
-            
+            .VIpgJd-ZVi9od-ORHb-OEVmcd {
+                left: 0;
+                display: none !important;
+                top: 0;
+            }
             .goog-te-menu2-item {
                 font-size: 12px !important;
                 padding: 8px 14px !important;
             }
-        }
-        .VIpgJd-ZVi9od-ORHb-OEVmcd {
-            left: 0;
-            display: none !important;
-            top: 0;
         }
         
         .goog-te-gadget img {
@@ -637,6 +636,34 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
                 padding: 20px;
             }
         }
+
+        /* Toast notifications (igual que admin.php) */
+.toast {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    padding: 20px 25px;
+    border-radius: 15px;
+    color: white;
+    z-index: 20000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    min-width: 300px;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast.success {
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+}
+
+.toast.error {
+    background: linear-gradient(135deg, var(--admin-primary) 0%, #dc2626 100%);
+}
     </style>
 </head>
 <body>
@@ -1143,8 +1170,17 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
                 document.title = `Configuración - ${newTitle}`;
 
                 // Preguntar si desea recargar la página para aplicar cambios
-                setTimeout(() => {
-                    if (confirm('¿Desea recargar la página para ver los cambios aplicados?')) {
+                setTimeout(async () => {
+                    const confirmed = await showConfirmModal({
+                        title: '¡Configuración guardada!',
+                        message: '¿Desea recargar la página para ver los cambios aplicados?',
+                        details: 'Los cambios se aplicarán completamente al recargar la página.',
+                        icon: '🔄',
+                        confirmText: 'Recargar página',
+                        cancelText: 'Continuar sin recargar'
+                    });
+
+                    if (confirmed) {
                         window.location.reload();
                     }
                 }, 2000);
@@ -1174,30 +1210,29 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
         }
 
         // Mostrar mensajes
-        function showMessage(message, type) {
-            const successMsg = document.getElementById('successMessage');
-            const errorMsg = document.getElementById('errorMessage');
-            
-            // Ocultar ambos mensajes
-            successMsg.style.display = 'none';
-            errorMsg.style.display = 'none';
-            
-            // Mostrar el mensaje correspondiente
-            if (type === 'success') {
-                successMsg.textContent = message;
-                successMsg.style.display = 'block';
-                setTimeout(() => {
-                    successMsg.style.display = 'none';
-                }, 8000);
-            } else {
-                errorMsg.textContent = message;
-                errorMsg.style.display = 'block';
-                setTimeout(() => {
-                    errorMsg.style.display = 'none';
-                }, 10000);
-            }
-        }
-
+        
+// Usar el sistema de notificaciones de UIComponents (igual que admin.php)
+function showMessage(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+    toast.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 20px;">${icon}</span>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 100);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => document.body.removeChild(toast), 300);
+    }, 4000);
+}
         // Google Translate
         function initializeGoogleTranslate() {
             function googleTranslateElementInit() {
@@ -1255,6 +1290,5 @@ $defaultLanguage = ConfigManager::getDefaultLanguage();
             });
         });
     </script>
-    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
