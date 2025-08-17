@@ -63,6 +63,30 @@ try {
         [$programa_id]
     );
     
+foreach ($dias as &$dia) {
+    // Buscar el día de biblioteca que coincida por título y ubicación
+    $biblioteca_dia = $db->fetch(
+        "SELECT id FROM biblioteca_dias 
+         WHERE titulo = ? AND ubicacion = ? AND activo = 1
+         LIMIT 1", 
+        [$dia['titulo'], $dia['ubicacion']]
+    );
+    
+    if ($biblioteca_dia) {
+        $dia['ubicaciones_secundarias'] = $db->fetchAll(
+            "SELECT ubicacion, latitud, longitud, orden 
+             FROM biblioteca_dias_ubicaciones_secundarias 
+             WHERE dia_id = ? 
+             ORDER BY orden ASC", 
+            [$biblioteca_dia['id']]
+        );
+        error_log("DEBUG - Programa: " . $dia['titulo'] . " -> Biblioteca ID: " . $biblioteca_dia['id'] . " -> Ubicaciones: " . count($dia['ubicaciones_secundarias']));
+    } else {
+        $dia['ubicaciones_secundarias'] = [];
+        error_log("DEBUG - No se encontró biblioteca_dia para: " . $dia['titulo']);
+    }
+}
+
     // Obtener servicios para cada día con todas las alternativas
     foreach ($dias as &$dia) {
         $servicios_raw = $db->fetchAll(
@@ -203,6 +227,22 @@ try {
             }
         }
     }
+// Agregar ubicaciones secundarias al mapa
+if (!empty($dia['ubicaciones_secundarias'])) {
+    foreach ($dia['ubicaciones_secundarias'] as $ubicacion_sec) {
+        if ($ubicacion_sec['latitud'] && $ubicacion_sec['longitud']) {
+            $puntos_mapa[] = [
+                'lat' => floatval($ubicacion_sec['latitud']),
+                'lng' => floatval($ubicacion_sec['longitud']),
+                'titulo' => $ubicacion_sec['ubicacion'],
+                'descripcion' => 'Ubicación secundaria - ' . $dia['titulo'],
+                'tipo' => 'ubicacion_secundaria',
+                'dia' => $dia['dia_numero'],
+                'ubicacion' => $ubicacion_sec['ubicacion']
+            ];
+        }
+    }
+}
     
 } catch(Exception $e) {
     error_log("Error cargando programa: " . $e->getMessage());
@@ -1978,6 +2018,136 @@ body {
                 display: none !important;
             }
         }
+        /* ========================================
+   UBICACIONES SECUNDARIAS - DISEÑO MEJORADO
+   ======================================== */
+.main-location {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.secondary-locations-section {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8fffe;
+    border-radius: 12px;
+    border-left: 4px solid #27ae60;
+    border: 1px solid #e8f5e8;
+}
+
+.secondary-locations-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #27ae60;
+    font-size: 0.9rem;
+}
+
+.secondary-locations-header i {
+    font-size: 14px;
+}
+
+.secondary-locations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.secondary-location-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e8f5e8;
+    transition: all 0.3s ease;
+}
+
+.secondary-location-item:hover {
+    transform: translateX(3px);
+    box-shadow: 0 3px 10px rgba(39, 174, 96, 0.1);
+    border-color: #27ae60;
+}
+
+.location-marker {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 10px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.location-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.location-name {
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 0.9rem;
+    line-height: 1.3;
+}
+
+.location-coords {
+    font-size: 0.75rem;
+    color: #7f8c8d;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.location-coords i {
+    font-size: 10px;
+    color: #95a5a6;
+}
+
+/* Responsive para ubicaciones secundarias */
+@media (max-width: 768px) {
+    .secondary-locations-section {
+        margin-top: 10px;
+        padding: 12px;
+    }
+    
+    .secondary-location-item {
+        padding: 8px 10px;
+    }
+    
+    .location-name {
+        font-size: 0.85rem;
+    }
+    
+    .location-coords {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .secondary-locations-list {
+        gap: 6px;
+    }
+    
+    .secondary-location-item {
+        gap: 8px;
+    }
+    
+    .location-marker {
+        width: 20px;
+        height: 20px;
+        font-size: 9px;
+    }
+}
     </style>
 </head>
 
@@ -2232,12 +2402,39 @@ body {
                             </h3>
                             <div class="day-location">
                                 <i class="fas fa-map-marker-alt"></i>
-                                <?= htmlspecialchars($dia['ubicacion']) ?>
+                                <span class="main-location"><?= htmlspecialchars($dia['ubicacion']) ?></span>
                                 <?php if ($duracion > 1): ?>
                                     <span class="stay-duration-note">
                                         <i class="fas fa-calendar-check"></i>
                                         Estancia de <?= $duracion ?> días
                                     </span>
+                                <?php endif; ?>
+                                
+                                <?php if (!empty($dia['ubicaciones_secundarias'])): ?>
+                                    <div class="secondary-locations-section">
+                                        <div class="secondary-locations-header">
+                                            <i class="fas fa-route"></i>
+                                            <span>Otros lugares que visitarás:</span>
+                                        </div>
+                                        <div class="secondary-locations-list">
+                                            <?php foreach ($dia['ubicaciones_secundarias'] as $index => $ubicacion_sec): ?>
+                                                <div class="secondary-location-item">
+                                                    <div class="location-marker">
+                                                        <i class="fas fa-map-pin"></i>
+                                                    </div>
+                                                    <div class="location-details">
+                                                        <span class="location-name"><?= htmlspecialchars($ubicacion_sec['ubicacion']) ?></span>
+                                                        <?php if ($ubicacion_sec['latitud'] && $ubicacion_sec['longitud']): ?>
+                                                            <span class="location-coords">
+                                                                <i class="fas fa-crosshairs"></i>
+                                                                <?= number_format($ubicacion_sec['latitud'], 4) ?>, <?= number_format($ubicacion_sec['longitud'], 4) ?>
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                         </div>
